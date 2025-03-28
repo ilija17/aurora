@@ -18,7 +18,6 @@ export default defineNuxtConfig({
   vite: {
     resolve: {
       alias: {
-        // Force using the correct ESM-compatible version of `cookie`
         cookie: 'cookie/index.js'
       }
     }
