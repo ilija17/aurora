@@ -10,22 +10,22 @@
           v-model="email"
           type="email"
           placeholder="Email"
-          class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="input-primary"
         />
         <input
           v-model="password"
           type="password"
           placeholder="Password"
-          class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="input-primary"
         />
         <button
           @click="handleAuth"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition"
+          class="button-primary"
         >
           {{ isLogin ? 'Login' : 'Register' }}
         </button>
 
-        <p v-if="errorMsg" class="text-red-500 text-sm text-center">{{ errorMsg }}</p>
+        <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
 
         <p class="text-sm text-center">
           <a href="#" @click.prevent="toggleMode" class="text-blue-600 hover:underline">
@@ -33,7 +33,7 @@
           </a>
         </p>
         <p class="text-sm text-center">
-          <a href="#" @click.prevent="goToResetPage" class="text-blue-600 hover:underline">
+          <a href="#" @click.prevent="goToResetPage" class="clickable-text">
             Forgot password?
           </a>
         </p>
