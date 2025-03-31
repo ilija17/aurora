@@ -1,27 +1,47 @@
 <template>
-  <div>
-    <h2>{{ isLogin ? 'Login' : 'Register' }}</h2>
+  <div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-md space-y-6">
+      <h2 class="text-2xl font-semibold text-center text-gray-800">
+        {{ isLogin ? 'Login' : 'Register' }}
+      </h2>
 
-    <input v-model="email" type="email" placeholder="Email" />
-    <input v-model="password" type="password" placeholder="Password" />
+      <div class="space-y-4">
+        <input
+          v-model="email"
+          type="email"
+          placeholder="Email"
+          class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <input
+          v-model="password"
+          type="password"
+          placeholder="Password"
+          class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          @click="handleAuth"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition"
+        >
+          {{ isLogin ? 'Login' : 'Register' }}
+        </button>
 
-    <button @click="handleAuth">
-      {{ isLogin ? 'Login' : 'Register' }}
-    </button>
+        <p v-if="errorMsg" class="text-red-500 text-sm text-center">{{ errorMsg }}</p>
 
-    <p v-if="errorMsg" style="color: red;">{{ errorMsg }}</p>
-
-    <p>
-      <a href="#" @click.prevent="toggleMode">
-        {{ isLogin ? "Don't have an account? Register" : "Already have an account? Login" }}
-      </a>
-    </p>
-    <p>
-      <a href="#" @click.prevent="goToResetPage">Forgot password?</a>
-    </p>
-
+        <p class="text-sm text-center">
+          <a href="#" @click.prevent="toggleMode" class="text-blue-600 hover:underline">
+            {{ isLogin ? "Don't have an account? Register" : "Already have an account? Login" }}
+          </a>
+        </p>
+        <p class="text-sm text-center">
+          <a href="#" @click.prevent="goToResetPage" class="text-blue-600 hover:underline">
+            Forgot password?
+          </a>
+        </p>
+      </div>
+    </div>
   </div>
 </template>
+
 
 <script setup lang="ts">
 const supabase = useSupabaseClient()
@@ -60,14 +80,13 @@ const handleAuth = async () => {
     if (result.error) {
       errorMsg.value = result.error.message
     } else {
-      navigateTo('/logoutpage') // ✅ Redirect after login/register
+      navigateTo('/logoutpage')
     }
   } catch (err) {
     errorMsg.value = 'Unexpected error occurred'
   }
 }
 
-// Optional: redirect to /logoutpage if user is already logged in
 const user = useSupabaseUser()
 watch(user, () => {
   if (user.value) {
