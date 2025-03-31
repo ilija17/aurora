@@ -1,7 +1,23 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { publicRoutes } from './utils/publicRoutes'
+import tailwindcss from "@tailwindcss/vite";
+
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
+
+  css: ['~/assets/css/main.css'],
+  vite: {
+    plugins: [
+      tailwindcss(),
+    ],
+
+    resolve: {
+      alias: {
+        cookie: 'cookie/index.js'
+      }
+    }
+  },
 
   modules: [
     '@nuxt/content',
@@ -12,14 +28,21 @@ export default defineNuxtConfig({
     '@nuxt/scripts',
     '@nuxt/test-utils',
     '@nuxt/ui',
-    '@nuxtjs/supabase'
+    '@nuxtjs/supabase',
   ],
+  
+  ui: {
 
-  vite: {
-    resolve: {
-      alias: {
-        cookie: 'cookie/index.js'
-      }
+  },
+
+  supabase: {
+    url: process.env.SUPABASE_URL,
+    key: process.env.SUPABASE_KEY,
+
+    redirectOptions: {
+      login: '/login',
+      callback: '/confirm',
+      exclude: publicRoutes,
     }
-  }
+  },
 })
