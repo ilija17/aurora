@@ -1,18 +1,27 @@
-@import "tailwindcss";
-@import "@nuxt/ui";
-
-.input-primary {
-  @apply w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500;
+@font-face {
+    font-family: 'ComicSansCustom';
+    src: url('/fonts/comic-sans.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+  
+* {
+    font-family: 'ComicSansCustom', cursive;
+}
+  
+html[data-theme='light'] {
+    background-color: #fff;
+    color: rgba(0, 0, 0, 0.8);
 }
 
-.button-primary {
-    @apply w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition
+html[data-theme='dark'] {
+    background-color: #091a28;
+    color: #ebf4f1;
 }
 
-.error {
-    @apply text-red-500 text-sm text-center
+html[data-theme='sepia'] {
+    background-color: #f1e7d0;
+    color: #433422;
 }
-
-.clickable-text {
-    @apply  text-blue-600 hover:underline
-}
+  

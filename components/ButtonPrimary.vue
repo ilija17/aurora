@@ -1,8 +1,9 @@
 <template>
-  <div>
-    <h1>JASD</h1>
-  </div>
+  <button type="button">
+    <slot>Default Text</slot>
+  </button>
 </template>
+
 
 <script lang="ts" setup>
 
