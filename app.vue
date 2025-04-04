@@ -1,8 +1,6 @@
-<script setup lang="ts">
-import { NuxtPage } from '#components';
-
-</script>
-
+<!-- app.vue -->
 <template>
-  <NuxtPage/>
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>

@@ -1,39 +1,36 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-    <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-md space-y-6">
-      <h2 class="text-2xl font-semibold text-center text-gray-800">
+  <ThemeSwitcher />
+  <div>
+    <div>
+      <h2>
         {{ isLogin ? 'Login' : 'Register' }}
       </h2>
 
-      <div class="space-y-4">
+      <div>
         <input
           v-model="email"
           type="email"
           placeholder="Email"
-          class="input-primary"
         />
         <input
           v-model="password"
           type="password"
           placeholder="Password"
-          class="input-primary"
         />
-        <button
-          @click="handleAuth"
-          class="button-primary"
-        >
+        <button @click="handleAuth">
           {{ isLogin ? 'Login' : 'Register' }}
         </button>
 
-        <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
+        <p v-if="errorMsg">{{ errorMsg }}</p>
 
-        <p class="text-sm text-center">
-          <a href="#" @click.prevent="toggleMode" class="text-blue-600 hover:underline">
+        <p>
+          <a href="#" @click.prevent="toggleMode">
             {{ isLogin ? "Don't have an account? Register" : "Already have an account? Login" }}
           </a>
         </p>
-        <p class="text-sm text-center">
-          <a href="#" @click.prevent="goToResetPage" class="clickable-text">
+
+        <p>
+          <a href="#" @click.prevent="goToResetPage">
             Forgot password?
           </a>
         </p>
@@ -41,7 +38,6 @@
     </div>
   </div>
 </template>
-
 
 <script setup lang="ts">
 const supabase = useSupabaseClient()
@@ -98,6 +94,4 @@ const goToResetPage = () => {
   console.log('[login.vue] Forgot password clicked')
   navigateTo('/forgot-password')
 }
-
-
 </script>
