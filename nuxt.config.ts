@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   supabase: {
-    redirect: true
+    redirect: false
   },
 
   colorMode: {
@@ -27,5 +27,11 @@ export default defineNuxtConfig({
     optimizeDeps: {
       exclude: ['@supabase/ssr', 'cookie'],
     },
+
+    resolve: {
+      alias: {
+        cookie: 'cookie/index.js'
+      }
+    }
   },
 })

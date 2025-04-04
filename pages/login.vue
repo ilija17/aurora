@@ -1,23 +1,97 @@
 <template>
+  <ThemeSwitcher />
   <div>
-    <h1>Color mode: {{ colorMode.value }}</h1>
+    <div>
+      <h2>
+        {{ isLogin ? 'Login' : 'Register' }}
+      </h2>
 
-    <select v-model="colorMode.preference" @change="onChange">
-      <option value="system">System</option>
-      <option value="light">Light</option>
-      <option value="dark">Dark</option>
-      <option value="sepia">Sepia</option>
-    </select>
+      <div>
+        <input
+          v-model="email"
+          type="email"
+          placeholder="Email"
+        />
+        <input
+          v-model="password"
+          type="password"
+          placeholder="Password"
+        />
+        <button @click="handleAuth">
+          {{ isLogin ? 'Login' : 'Register' }}
+        </button>
+
+        <p v-if="errorMsg">{{ errorMsg }}</p>
+
+        <p>
+          <a href="#" @click.prevent="toggleMode">
+            {{ isLogin ? "Don't have an account? Register" : "Already have an account? Login" }}
+          </a>
+        </p>
+
+        <p>
+          <a href="#" @click.prevent="goToResetPage">
+            Forgot password?
+          </a>
+        </p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-const colorMode = useColorMode()
-console.log('colorMode setup:', colorMode)
+const supabase = useSupabaseClient()
+const email = ref('')
+const password = ref('')
+const errorMsg = ref('')
+const isLogin = ref(true)
 
+const toggleMode = () => {
+  isLogin.value = !isLogin.value
+  errorMsg.value = ''
+}
 
-function onChange(e: Event) {
-  const selected = (e.target as HTMLSelectElement).value
-  console.log('Color mode changed:', selected)
+const handleAuth = async () => {
+  if (!email.value || !password.value) {
+    errorMsg.value = 'Please enter both email and password'
+    return
+  }
+
+  errorMsg.value = ''
+
+  try {
+    let result
+    if (isLogin.value) {
+      result = await supabase.auth.signInWithPassword({
+        email: email.value,
+        password: password.value,
+      })
+    } else {
+      result = await supabase.auth.signUp({
+        email: email.value,
+        password: password.value,
+      })
+    }
+
+    if (result.error) {
+      errorMsg.value = result.error.message
+    } else {
+      navigateTo('/logoutpage')
+    }
+  } catch (err) {
+    errorMsg.value = 'Unexpected error occurred'
+  }
+}
+
+const user = useSupabaseUser()
+watch(user, () => {
+  if (user.value) {
+    navigateTo('/logoutpage')
+  }
+}, { immediate: true })
+
+const goToResetPage = () => {
+  console.log('[login.vue] Forgot password clicked')
+  navigateTo('/forgot-password')
 }
 </script>
