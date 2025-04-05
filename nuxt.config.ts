@@ -27,11 +27,5 @@ export default defineNuxtConfig({
     optimizeDeps: {
       exclude: ['@supabase/ssr', 'cookie'],
     },
-
-    resolve: {
-      alias: {
-        cookie: 'cookie/index.js'
-      }
-    }
   },
 })
