@@ -7,19 +7,28 @@
       </h2>
 
       <div>
-        <input
-          v-model="email"
-          type="email"
-          placeholder="Email"
-        />
-        <input
-          v-model="password"
-          type="password"
-          placeholder="Password"
-        />
-        <button @click="handleAuth">
-          {{ isLogin ? 'Login' : 'Register' }}
-        </button>
+        <form @submit.prevent="handleAuth" class="space-y-4">
+          <FormInput
+            id="email"
+            label="Email"
+            type="email"
+            v-model="email"
+            placeholder="name@example.com"
+          />
+
+          <FormInput
+            id="password"
+            label="Password"
+            type="password"
+            v-model="password"
+            placeholder="••••••••"
+          />
+
+          <button type="submit">
+            {{ isLogin ? 'Login' : 'Register' }}
+          </button>
+        </form>
+
 
         <p v-if="errorMsg">{{ errorMsg }}</p>
 
