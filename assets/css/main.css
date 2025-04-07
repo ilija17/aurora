@@ -9,19 +9,98 @@
 * {
     font-family: 'ComicSansCustom', cursive;
 }
-  
-html[data-theme='light'] {
-    background-color: #fff;
-    color: rgba(0, 0, 0, 0.8);
-}
 
+/* Theme: DARK */
 html[data-theme='dark'] {
-    background-color: #091a28;
-    color: #ebf4f1;
-}
-
-html[data-theme='sepia'] {
-    background-color: #f1e7d0;
-    color: #433422;
-}
+    --bg: #1A1D25;
+    --fg: #ebf4f1;
+    --primary: #64548E;
+    --secondary: #292F3F;
+    --accent: #2ECFCF;
+    --border: #444;
+    --input-bg: #1a2b3c;
+    --input-color: #ebf4f1;
+    --input-border: #444;
+    --muted: #8a8fa3;
+  }
   
+  /* Theme: LIGHT */
+  html[data-theme='light'] {
+    --bg: #ffffff;
+    --fg: #1A1D25;
+    --primary: #4B3C8E;
+    --secondary: #E2E8F0;
+    --accent: #0D9BAA;
+    --border: #ccc;
+    --input-bg: #f9fafb;
+    --input-color: #111827;
+    --input-border: #ccc;
+    --muted: #6b7280;
+  }
+  
+  /* Universal element styles */
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: 'ComicSansCustom', cursive;
+  }
+  
+  /* Common elements */
+  a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  input,
+  select,
+  textarea {
+    background-color: var(--input-bg);
+    color: var(--input-color);
+    border: 1px solid var(--input-border);
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 1rem;
+  }
+  
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  
+  button {
+    background-color: var(--primary);
+    color: var(--fg);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  button:hover {
+    background-color: var(--accent);
+  }
+  
+  hr {
+    border-color: var(--border);
+  }
+  
+  ::placeholder {
+    color: var(--muted);
+  }
+  
+  code,
+  pre {
+    background-color: var(--secondary);
+    color: var(--fg);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-family: monospace;
+  }
