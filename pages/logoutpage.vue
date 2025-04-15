@@ -26,7 +26,6 @@ const logout = async () => {
 
 //TODO: OVO POPRAVIT DOLJE
 const deleteUser = async () => {
-  console.log("CALLED")
   const { error } = await $fetch('/api/delete-user', {
     method: 'POST',
     body: {
