@@ -24,7 +24,6 @@ const logout = async () => {
   await supabase.auth.signOut()
 }
 
-//TODO: OVO POPRAVIT DOLJE
 const deleteUser = async () => {
   const { error } = await $fetch('/api/delete-user', {
     method: 'POST',
@@ -32,6 +31,10 @@ const deleteUser = async () => {
       userId: user.value.id,
     },
   })
+
+  if(!error){
+    logout()
+  }
 }
 
 </script>
