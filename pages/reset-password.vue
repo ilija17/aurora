@@ -1,9 +1,11 @@
 <template>
-  <div>
-    <h2>Set a new password</h2>
-    <input v-model="password" type="password" placeholder="New password" />
-    <button @click="updatePassword">Update password</button>
-    <p v-if="message">{{ message }}</p>
+  <div class="grid place-items-center h-screen">
+    <div>
+      <h2>Set a new password</h2>
+      <input v-model="password" type="password" placeholder="New password" />
+      <button @click="updatePassword">Update password</button>
+      <p v-if="message">{{ message }}</p>
+    </div>
   </div>
 </template>
 
