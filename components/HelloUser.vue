@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div v-if="user">
-      <h2>Welcome, {{ username || user.email }}</h2>
+    <div v-if="user" class="grid place-items-center">
+      <p class="text-4xl font-extrabold text-gray-900 dark:text-white">Welcome,<br> {{ username || user.email }} 😀</p>
     </div>
   </div>
 </template>
