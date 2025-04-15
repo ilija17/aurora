@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 @font-face {
     font-family: 'ComicSansCustom';
     src: url('/fonts/comic-sans.woff') format('woff');
