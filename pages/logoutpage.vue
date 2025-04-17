@@ -33,7 +33,6 @@ const deleteAccount = async () => {
     await $fetch('/api/delete-user-self', { method: 'POST' })
     await logout()
   } catch (err: any) {
-    console.error(err)
     alert(err.statusMessage || err.message || 'Failed to delete account')
   }
 }
