@@ -10,6 +10,10 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  requiresAuth: false
+})
+
 import { useRuntimeConfig } from '#imports'
 
 const config = useRuntimeConfig()

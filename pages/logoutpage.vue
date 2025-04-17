@@ -16,6 +16,10 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  requiresAuth: true
+})
+
 const supabase = useSupabaseClient()
 const user      = useSupabaseUser()
 
