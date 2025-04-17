@@ -1,40 +1,44 @@
 <template>
   <div v-if="user">
     <HelloUser />
-    <button @click="deleteUser">Delete</button>
-    <button @click="logout">Logout</button>
-  </div>
 
+    <button @click="deleteAccount">
+      Delete my account
+    </button>
+
+    <button @click="logout">
+      Logout
+    </button>
+  </div>
   <div v-else>
-    <p>Redirecting to login...</p>
+    <p>Redirecting to login…</p>
   </div>
 </template>
 
 <script setup lang="ts">
 const supabase = useSupabaseClient()
-const user = useSupabaseUser()
+const user      = useSupabaseUser()
 
-watch(user, () => {
-  if (!user.value) {
-    navigateTo('/login')
-  }
+watch(user, val => {
+  if (!val) navigateTo('/login')
 }, { immediate: true })
 
 const logout = async () => {
   await supabase.auth.signOut()
+  navigateTo('/login')
 }
 
-const deleteUser = async () => {
-  const { error } = await $fetch('/api/delete-user', {
-    method: 'POST',
-    body: {
-      userId: user.value.id,
-    },
-  })
-
-  if(!error){
-    logout()
+const deleteAccount = async () => {
+  try {
+    await $fetch('/api/delete-user-self', { method: 'POST' })
+    await logout()
+  } catch (err: any) {
+    console.error(err)
+    alert(err.statusMessage || err.message || 'Failed to delete account')
   }
 }
-
 </script>
+
+<style scoped>
+
+</style>
