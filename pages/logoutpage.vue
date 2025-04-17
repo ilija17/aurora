@@ -1,6 +1,7 @@
 <template>
   <div v-if="user">
-    <h2>Welcome, {{ user.email }}</h2>
+    <HelloUser />
+    <button @click="deleteUser">Delete</button>
     <button @click="logout">Logout</button>
   </div>
 
@@ -22,4 +23,18 @@ watch(user, () => {
 const logout = async () => {
   await supabase.auth.signOut()
 }
+
+const deleteUser = async () => {
+  const { error } = await $fetch('/api/delete-user', {
+    method: 'POST',
+    body: {
+      userId: user.value.id,
+    },
+  })
+
+  if(!error){
+    logout()
+  }
+}
+
 </script>

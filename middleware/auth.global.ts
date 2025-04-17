@@ -1,7 +1,9 @@
-function isAuthenticated(): boolean { return true }
-
 export default defineNuxtRouteMiddleware((to, from) => {
-  if (isAuthenticated() === false) {
+  const user = useSupabaseUser()
+
+  const requiresAuth = to.meta.requiresAuth
+
+  if (requiresAuth && !user.value) {
     return navigateTo('/login')
   }
 })
