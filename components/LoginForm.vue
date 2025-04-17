@@ -75,6 +75,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import zxcvbn from 'zxcvbn'
+import DOMPurify from 'dompurify'
 
 // regex za username
 const usernamePattern = /^[A-Za-z0-9_-]{3,30}$/
@@ -137,7 +138,7 @@ const handleAuth = async () => {
       result = await supabase.auth.signUp({
         email: email.value,
         password: password.value,
-        options: { data: { username: username.value } },
+        options: { data: { username: DOMPurify.sanitize(username.value) } },
       })
     }
 
