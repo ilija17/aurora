@@ -81,6 +81,7 @@ const user      = useSupabaseUser()
 async function onNext() {
   if (selected.value === 0 || !user.value) return
 
+  
   const { error } = await supabase
     .from('mood_entries')
     .insert([{
