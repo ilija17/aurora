@@ -18,6 +18,7 @@ html[data-theme='dark'] {
     --fg: #ebf4f1;
     --primary: #64548E;
     --secondary: #292F3F;
+    --tertiary: #2A2A3B;
     --accent: #2ECFCF;
     --border: #444;
     --input-bg: #1a2b3c;
