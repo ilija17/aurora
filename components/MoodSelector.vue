@@ -46,32 +46,56 @@
   </button>
 </template>
 
-<script setup>
-import { ref, watch, computed } from 'vue';
+<script setup lang="ts">
+import { ref, watch, computed } from 'vue'
+import { useSupabaseClient, useSupabaseUser } from '#imports'
 
 const props = defineProps({
-  modelValue: { type: String, default: '' }
-});
-const emit = defineEmits(['update:modelValue']);
+  modelValue: { type: Number, default: 0 }
+})
 
-const localValue = ref(props.modelValue);
-watch(() => props.modelValue, v => (localValue.value = v));
-watch(localValue, v => emit('update:modelValue', v));
+const emit = defineEmits(['update:modelValue', 'next'])
 
+const localValue = ref<number>(props.modelValue)
+watch(() => props.modelValue, v => {
+  localValue.value = v
+})
+watch(localValue, v => {
+  emit('update:modelValue', v)
+})
+
+// mood options
 const options = [
-  { value: 'Great', label: 'Great',  emoji: '😃' },
-  { value: 'Good',  label: 'Good',   emoji: '🙂' },
-  { value: 'Fine',  label: 'Fine',   emoji: '😐' },
-  { value: 'Bad',   label: 'Bad',    emoji: '☹️' },
-  { value: 'Awful', label: 'Awful',  emoji: '😫' }
-];
+  { value: 5, label: 'Great', emoji: '😃' },
+  { value: 4, label: 'Good',  emoji: '🙂' },
+  { value: 3, label: 'Fine',  emoji: '😐' },
+  { value: 2, label: 'Bad',   emoji: '☹️' },
+  { value: 1, label: 'Awful', emoji: '😫' },
+]
 
-const selected = computed(() => localValue.value);
+const selected = computed(() => localValue.value)
 
-function onNext() {
-  console.log(localValue.value)
+const supabase = useSupabaseClient()
+const user      = useSupabaseUser()
+
+async function onNext() {
+  if (selected.value === 0 || !user.value) return
+
+  const { error } = await supabase
+    .from('mood_entries')
+    .insert([{
+      user_id:      user.value.id,
+      general_mood: selected.value
+    }])
+
+  if (error) {
+    console.error('failed to insert mood:', error)
+  } else {
+    emit('next')
+  }
 }
 </script>
+
 
 <style scoped>
 label:hover,
