@@ -1,17 +1,5 @@
 <template>
   <div>
-    <FormInput
-      id="number"
-      label="Number"
-      type="number"
-      v-model="number"
-      placeholder="5"
-    />
-
-    <button @click="callMoods">
-      Load detailed moods
-    </button>
-
     <ul v-if="detailedMoods.length">
       <li v-for="opt in detailedMoods" :key="opt.id">
         {{ opt.mood_name }}
@@ -21,28 +9,42 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { watch, ref } from 'vue'
 import { useSupabaseClient, useSupabaseUser } from '#imports'
 
-const number = ref('')
-const detailedMoods = ref<Array<{ id: number; mood_name: string }>>([])
-
+const props = defineProps<{ selectedMood: number }>()
+const detailedMoods = ref<{ id: number; mood_name: string }[]>([])
 const supabase = useSupabaseClient()
 const user     = useSupabaseUser()
 
-async function callMoods() {
-  if (!user.value) return
+watch(
+  () => props.selectedMood,
+  async (newTypeId) => {
+    if (!newTypeId || !user.value) {
+      detailedMoods.value = []
+      return
+    }
 
-  const { data, error } = await supabase
-    .from('detailed_moods')
-    .select('id, mood_name')
-    .eq('type_id', Number(number.value))
+    if(newTypeId === 1 || newTypeId === 2){
+      newTypeId = 1
+    } else if (newTypeId === 3 ) {
+      newTypeId = 2
+    } else if (newTypeId === 4 || newTypeId === 5){
+      newTypeId = 3
+    }
 
-  if (error) {
-    console.error('error loading detailed moods:', error)
-  } else {
-    detailedMoods.value = data || []
-    console.log('detailedMoods:', detailedMoods.value)
-  }
-}
+    const { data, error } = await supabase
+      .from('detailed_moods')
+      .select('id, mood_name')
+      .eq('type_id', newTypeId)
+
+    if (error) {
+      console.error('error loading detailed moods:', error)
+      detailedMoods.value = []
+    } else {
+      detailedMoods.value = data || []
+    }
+  },
+  { immediate: true }
+)
 </script>

@@ -137,7 +137,6 @@ export type Database = {
       }
       mood_entries: {
         Row: {
-          detailed_mood_id: number | null
           entry_timestamp: string
           general_mood: number
           id: number
@@ -147,7 +146,6 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          detailed_mood_id?: number | null
           entry_timestamp?: string
           general_mood: number
           id?: number
@@ -157,7 +155,6 @@ export type Database = {
           user_id: string
         }
         Update: {
-          detailed_mood_id?: number | null
           entry_timestamp?: string
           general_mood?: number
           id?: number
