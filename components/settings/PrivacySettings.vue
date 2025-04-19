@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-8">
     <!-- Local LLM only toggle -->
-    <div class="bg-[var(--tertiary)] p-4 rounded-lg">
+    <div class="bg-[var(--secondary)] p-4 rounded-lg">
       <div class="flex items-center justify-between">
         <div>
           <h3 class="text-lg font-semibold text-[var(--fg)]">Local LLM only</h3>
@@ -24,7 +24,7 @@
     </div>
 
     <!-- Export data -->
-    <div class="bg-[var(--tertiary)] p-4 rounded-lg flex justify-between items-center">
+    <div class="bg-[var(--secondary)] p-4 rounded-lg flex justify-between items-center">
       <div>
         <h3 class="text-lg font-semibold text-[var(--fg)]">Export data</h3>
         <p class="text-sm text-[var(--muted)]">Download your account data</p>
@@ -37,7 +37,7 @@
     </div>
 
     <!-- Delete account -->
-    <div class="bg-[var(--tertiary)] p-4 rounded-lg flex justify-between items-center">
+    <div class="bg-[var(--secondary)] p-4 rounded-lg flex justify-between items-center">
       <div>
         <h3 class="text-lg font-semibold text-[var(--fg)]">Delete account</h3>
         <p class="text-sm text-[var(--muted)]">Permanently delete your account and data</p>

@@ -1,7 +1,7 @@
 <template>
   <div class="bg-[var(--bg)] min-h-screen flex px-8 py-12 gap-8">
     <!-- Sidebar -->
-    <aside class="w-64 bg-[var(--tertiary)] rounded-2xl shadow-lg p-4 h-fit">
+    <aside class="w-64 bg-[var(--secondary)] rounded-2xl shadow-lg p-4 h-fit">
       <h2 class="text-xl text-[var(--fg)] mb-4">Settings</h2>
       <nav class="space-y-2">
         <button
@@ -23,7 +23,7 @@
 
     <!-- Main Content Panel -->
     <main class="flex-1 max-w-4xl">
-      <div class="rounded-2xl bg-[var(--tertiary)] shadow-2xl p-8">
+      <div class="rounded-2xl bg-[var(--secondary)] shadow-2xl p-8">
         <ClientOnly>
           <div class="text-[var(--fg)]">
             <component :is="currentComponent" />
