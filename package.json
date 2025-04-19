@@ -22,5 +22,8 @@
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",
     "zxcvbn": "^4.4.2"
+  },
+  "devDependencies": {
+    "@types/zxcvbn": "^4.4.5"
   }
 }

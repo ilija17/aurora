@@ -1,22 +1,9 @@
+<!-- pages/index.vue -->
 <template>
-  <div style="padding: 100px" class="grid place-items-center">
-    <div class="grid place-items-center gap-24 p-24">
-      <HelloUser/>
-      <MoodSelector/>
-    </div>
+  <div class="mx-auto p-6 max-w-md">
+    <Moods />
   </div>
 </template>
 
-<script lang="ts" setup>
-  import { ref } from 'vue';
-
-  const mood = ref('')
-
-  definePageMeta({
-    requiresAuth: true
-  })
+<script setup lang="ts">
 </script>
-
-<style>
-
-</style>
