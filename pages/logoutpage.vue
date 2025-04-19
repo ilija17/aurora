@@ -1,11 +1,6 @@
 <template>
   <div v-if="user">
     <HelloUser />
-
-    <button @click="deleteAccount">
-      Delete my account
-    </button>
-
     <button @click="logout">
       Logout
     </button>
@@ -21,7 +16,7 @@ definePageMeta({
 })
 
 const supabase = useSupabaseClient()
-const user      = useSupabaseUser()
+const user     = useSupabaseUser()
 
 watch(user, val => {
   if (!val) navigateTo('/login')
@@ -30,15 +25,6 @@ watch(user, val => {
 const logout = async () => {
   await supabase.auth.signOut()
   navigateTo('/login')
-}
-
-const deleteAccount = async () => {
-  try {
-    await $fetch('/api/delete-user-self', { method: 'POST' })
-    await logout()
-  } catch (err: any) {
-    alert(err.statusMessage || err.message || 'Failed to delete account')
-  }
 }
 </script>
 

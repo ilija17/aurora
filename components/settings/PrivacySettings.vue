@@ -35,17 +35,6 @@
         Export data
       </button>
     </div>
-
-    <!-- Delete account -->
-    <div class="bg-[var(--secondary)] p-4 rounded-lg flex justify-between items-center">
-      <div>
-        <h3 class="text-lg font-semibold text-[var(--fg)]">Delete account</h3>
-        <p class="text-sm text-[var(--muted)]">Permanently delete your account and data</p>
-      </div>
-      <button class="px-4 py-2 rounded text-white bg-red-600 hover:bg-red-700 transition">
-        Delete account
-      </button>
-    </div>
   </div>
 </template>
 
