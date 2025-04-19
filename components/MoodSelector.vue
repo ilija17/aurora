@@ -35,15 +35,6 @@
       </label>
     </div>
   </div>
-
-  <button 
-    type="submit"
-    :disabled="!selected"
-    @click="onNext"
-    class="mt-4 px-4 py-2 rounded-lg transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-    >
-      Next
-  </button>
 </template>
 
 <script setup lang="ts">
@@ -66,11 +57,11 @@ watch(localValue, v => {
 
 // mood options
 const options = [
-  { value: 5, label: 'Great', emoji: '😃' },
-  { value: 4, label: 'Good',  emoji: '🙂' },
+  { value: 1, label: 'Great', emoji: '😃' },
+  { value: 2, label: 'Good',  emoji: '🙂' },
   { value: 3, label: 'Fine',  emoji: '😐' },
-  { value: 2, label: 'Bad',   emoji: '☹️' },
-  { value: 1, label: 'Awful', emoji: '😫' },
+  { value: 4, label: 'Bad',   emoji: '☹️' },
+  { value: 5, label: 'Awful', emoji: '😫' },
 ]
 
 const selected = computed(() => localValue.value)
