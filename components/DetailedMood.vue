@@ -23,12 +23,20 @@
 import { watch, ref } from 'vue'
 import { useSupabaseClient, useSupabaseUser } from '#imports'
 
-const props = defineProps<{ selectedMood: number }>()
+const props = defineProps<{ 
+  selectedMood: number 
+  modelSelectedDetails: number[]
+}>()
+
 const detailedMoods = ref<{ id: number; mood_name: string }[]>([])
 const selectedDetails = ref<number[]>([])
 
 const supabase = useSupabaseClient()
 const user     = useSupabaseUser()
+
+const emit = defineEmits<{
+  (e: 'update:modelSelectedDetails', v: number[]): void
+}>()
 
 watch(
   () => props.selectedMood,
@@ -65,5 +73,6 @@ function toggleDetail(id: number) {
   const i = selectedDetails.value.indexOf(id)
   if (i === -1) selectedDetails.value.push(id)
   else            selectedDetails.value.splice(i, 1)
+  emit('update:modelSelectedDetails', selectedDetails.value)
 }
 </script>

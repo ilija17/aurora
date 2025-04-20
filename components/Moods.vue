@@ -12,22 +12,28 @@
 
       <!-- slide 2: detaild mood -->
       <div class="flex-shrink-0 w-full p-4">
-        <DetailedMood :selectedMood="selectedMood"/>
+        <DetailedMood
+          :selectedMood="selectedMood"
+          v-model:modelSelectedDetails="selectedDetails"
+        />
       </div>
 
-      <div class="flex-shrink-0 w-full p-4 text-center">
-        <p>test</p>
+      <!-- slide 3: location / company -->
+      <div class="flex-shrink-0 w-full p-4">
+        <AdditionalContext
+          v-model:modelValueLocations="selectedLocations"
+          v-model:modelValueSocials="selectedSocials"
+        />
       </div>
 
-      <!-- slide 3: Confirmation -->
-      <div class="flex-shrink-0 w-full p-4 text-center">
-        <p class="mb-4">You selected mood {{ selectedMood }}!</p>
-        <button
-          @click="reset"
-          class="px-4 py-2 bg-green-500 text-white rounded"
-        >
-          Start Over
-        </button>
+      <!-- slide 4: Confirmation -->
+      <div class="flex-shrink-0 w-full p-4">
+        <NoteConfirmation
+          :selectedMood="selectedMood"
+          :detailedMoodContext="selectedDetails"
+          :locationContext="selectedLocations"
+          :socialContext="selectedSocials"
+        />
       </div>
     </div>
 
@@ -40,7 +46,7 @@
     </button>
     <button
       @click="next"
-      :disabled="current === 2 || (current === 0 && selectedMood === 0)"
+      :disabled="current === 3 || (current === 0 && selectedMood === 0)"
     >
       ›
     </button>
@@ -50,27 +56,35 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import MoodSelector from '~/components/MoodSelector.vue'
+import DetailedMood from './DetailedMood.vue'
+
+const slides = 4
 
 // track slide number
 const current = ref(0)
 
 // mood selector great/fine/awful...
 const selectedMood = ref(0)
+const selectedLocations = ref<number[]>([])
+const selectedSocials   = ref<number[]>([])
+const selectedDetails   = ref<number[]>([])
+
+const isFirstSlide = computed(() => current.value === 0)
+const isLastSlide  = computed(() => current.value === slides - 1)
+const nextDisabled = computed(() =>
+  isLastSlide.value ||
+  (isFirstSlide.value && selectedMood.value === 0)
+)
 
 function next() {
-  if (current.value === 0 && selectedMood.value === 0) return
-  if (current.value < 2) current.value++
+  if (!nextDisabled.value) {
+    current.value++
+  }
 }
 
 function prev() {
   if (current.value > 0) current.value--
 }
 
-function reset() {
-  selectedMood.value = 0
-  current.value = 0
-}
-
-// reset when mood changes
 watch(selectedMood, () => current.value = 0)
 </script>

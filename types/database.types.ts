@@ -140,27 +140,21 @@ export type Database = {
           entry_timestamp: string
           general_mood: number
           id: number
-          location_context: number | null
           notes: string | null
-          social_context: number | null
           user_id: string
         }
         Insert: {
           entry_timestamp?: string
           general_mood: number
           id?: number
-          location_context?: number | null
           notes?: string | null
-          social_context?: number | null
           user_id: string
         }
         Update: {
           entry_timestamp?: string
           general_mood?: number
           id?: number
-          location_context?: number | null
           notes?: string | null
-          social_context?: number | null
           user_id?: string
         }
         Relationships: [
@@ -168,18 +162,6 @@ export type Database = {
             foreignKeyName: "moodEntries_general_mood_fkey"
             columns: ["general_mood"]
             referencedRelation: "general_moods"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "moodEntries_location_context_fkey"
-            columns: ["location_context"]
-            referencedRelation: "location_context"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "moodEntries_social_context_fkey"
-            columns: ["social_context"]
-            referencedRelation: "social_context"
             referencedColumns: ["id"]
           },
           {
@@ -192,19 +174,16 @@ export type Database = {
       }
       mood_entries_detailed_moods: {
         Row: {
-          detailed_mood_id: number | null
-          id: number
-          mood_entry_id: number | null
+          detailed_mood_id: number
+          mood_entry_id: number
         }
         Insert: {
-          detailed_mood_id?: number | null
-          id?: number
-          mood_entry_id?: number | null
+          detailed_mood_id: number
+          mood_entry_id: number
         }
         Update: {
-          detailed_mood_id?: number | null
-          id?: number
-          mood_entry_id?: number | null
+          detailed_mood_id?: number
+          mood_entry_id?: number
         }
         Relationships: [
           {
@@ -217,6 +196,62 @@ export type Database = {
             foreignKeyName: "mood_entries_detailed_moods_mood_entry_id_fkey"
             columns: ["mood_entry_id"]
             referencedRelation: "mood_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mood_entry_locations: {
+        Row: {
+          location_context_id: number
+          mood_entry_id: number
+        }
+        Insert: {
+          location_context_id: number
+          mood_entry_id: number
+        }
+        Update: {
+          location_context_id?: number
+          mood_entry_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mood_entry_locations_location_context_id_fkey"
+            columns: ["location_context_id"]
+            referencedRelation: "location_context"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mood_entry_locations_mood_entry_id_fkey"
+            columns: ["mood_entry_id"]
+            referencedRelation: "mood_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mood_entry_socials: {
+        Row: {
+          mood_entry_id: number
+          social_context_id: number
+        }
+        Insert: {
+          mood_entry_id: number
+          social_context_id: number
+        }
+        Update: {
+          mood_entry_id?: number
+          social_context_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mood_entry_socials_mood_entry_id_fkey"
+            columns: ["mood_entry_id"]
+            referencedRelation: "mood_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mood_entry_socials_social_context_id_fkey"
+            columns: ["social_context_id"]
+            referencedRelation: "social_context"
             referencedColumns: ["id"]
           },
         ]
@@ -283,7 +318,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      insert_mood_entry: {
+        Args: {
+          p_user_id: string
+          p_general_mood: number
+          p_detailed_ids: number[]
+          p_location_ids: number[]
+          p_social_ids: number[]
+          p_notes?: string
+        }
+        Returns: {
+          entry_id: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
