@@ -1,19 +1,19 @@
 <template>
-  <button @click="loginWithSpotify">
-    Sign in with Spotify
-  </button>
+  <div>
+    <button v-if="!user" @click="loginWithSpotify">Login with Spotify</button>
+    <div v-else>Welcome, {{ user.email }}</div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { useSupabaseClient } from '#imports'
-
+import { useSupabaseClient, useSupabaseUser } from '#imports'
 const supabase = useSupabaseClient()
+const user     = useSupabaseUser()
 
 async function loginWithSpotify() {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'spotify'
+  await supabase.auth.signInWithOAuth({
+    provider: 'spotify',
+    options: { redirectTo: 'https://aurora.ilijabosnjak.com/' }
   })
-  if (error) console.error('Spotify sign‑in error:', error)
-  // you’ll be redirected to Spotify; on success it comes back to your redirect URI
 }
 </script>
