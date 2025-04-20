@@ -24,7 +24,7 @@ const message   = ref('')
 const sendResetEmail = async () => {
   const redirectTo = `${config.public.siteUrl}/reset-password`
   const { error } = await supabase.auth.resetPasswordForEmail(email.value, {
-    redirectTo,
+    redirectTo: 'http://localhost:3000/reset-password',
   })
 
   message.value = error
