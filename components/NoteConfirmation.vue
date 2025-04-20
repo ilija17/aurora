@@ -13,6 +13,7 @@
   </div>
 </template>
 
+
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useSupabaseClient, useSupabaseUser } from '#imports'

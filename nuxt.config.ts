@@ -32,7 +32,16 @@ export default defineNuxtConfig({
     },
     plugins: [
       tailwindcss(),
-    ]
+    ],
+    server: {
+      allowedHosts: ['aurora.ilijabosnjak.com'],
+
+      hmr: {
+        host: 'aurora.ilijabosnjak.com',
+        protocol: 'wss',
+        port: 443,
+      }
+    }
   },
 
   runtimeConfig: {
