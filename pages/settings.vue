@@ -33,13 +33,11 @@
 <script setup lang="ts">
 import ProfileSettings from '../components/settings/ProfileSettings.vue';
 import PrivacySettings from '../components/settings/PrivacySettings.vue';
-import PasswordSettings from '../components/settings/PasswordSettings.vue';
 import DataSettings from '../components/settings/YourDataSettings.vue';
 
 const tabs = [
   { key: 'profile', label: 'Profile', component: ProfileSettings },
   { key: 'privacy', label: 'Privacy and safety', component: PrivacySettings },
-  { key: 'password', label: 'Password', component: PasswordSettings },
   { key: 'data', label: 'Your Data', component: DataSettings },
 ];
 
