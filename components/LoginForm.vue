@@ -1,4 +1,3 @@
-<!-- components/LoginForm.vue -->
 <template>
   <div>
     <div class="grid place-items-center h-screen">
@@ -7,118 +6,163 @@
           {{ isLogin ? 'Login' : 'Register' }}
         </h2>
 
-        <div>
-          <form @submit.prevent="handleAuth" class="space-y-4">
-
+        <form @submit.prevent="handleAuth" class="space-y-4">
+          <!-- Username only for registration -->
+          <div v-if="!isLogin">
             <FormInput
-              v-if="!isLogin"
               id="username"
               label="Username"
               type="text"
               v-model="username"
               placeholder="Your name or nickname"
             />
+            <p v-if="usernameError" class="text-red-600 text-sm mt-1">
+              {{ usernameError }}
+            </p>
+          </div>
 
-            <FormInput
-              id="email"
-              label="Email"
-              type="email"
-              v-model="email"
-              placeholder="name@example.com"
-            />
+          <!-- Email -->
+          <FormInput
+            id="email"
+            label="Email"
+            type="email"
+            v-model="email"
+            placeholder="name@example.com"
+          />
 
-            <FormInput
-              id="password"
-              label="Password"
-              type="password"
-              v-model="password"
-              placeholder="••••••••"
-            />
-            
-            <button type="submit">
-              {{ isLogin ? 'Login' : 'Register' }}
-            </button>
-          </form>
+          <!-- Password -->
+          <FormInput
+            id="password"
+            label="Password"
+            type="password"
+            v-model="password"
+            placeholder="••••••••"
+          />
 
+          <!-- Password strength feedback -->
+          <div v-if="!isLogin" class="text-sm">
+            <p>Strength: {{ strengthText }}</p>
+            <p v-if="strengthFeedback" class="mt-1">{{ strengthFeedback }}</p>
+          </div>
 
-          <p v-if="errorMsg">{{ errorMsg }}</p>
+          <button
+            type="submit"
+            :disabled="!email || !password || (!isLogin && passwordScore < 3)"
+            class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+          >
+            {{ isLogin ? 'Login' : 'Register' }}
+          </button>
+        </form>
 
-          <p>
-            <a href="#" @click.prevent="toggleMode">
-              {{ isLogin ? "Don't have an account? Register" : "Already have an account? Login" }}
-            </a>
-          </p>
+        <p v-if="errorMsg" class="mt-2 text-red-600">{{ errorMsg }}</p>
 
-          <p>
-            <a href="#" @click.prevent="goToResetPage">
-              Forgot password?
-            </a>
-          </p>
-        </div>
+        <p class="mt-4">
+          <a href="#" @click.prevent="toggleMode" class="text-blue-500 hover:underline">
+            {{ isLogin ? "Don't have an account? Register" : "Already have an account? Login" }}
+          </a>
+        </p>
+
+        <p class="mt-2">
+          <a href="#" @click.prevent="goToResetPage" class="text-blue-500 hover:underline">
+            Forgot password?
+          </a>
+        </p>
       </div>
     </div>
   </div>
 </template>
 
-  <script setup lang="ts">
-  const supabase = useSupabaseClient()
-  const username = ref('')
-  const email = ref('')
-  const password = ref('')
-  const errorMsg = ref('')
-  const isLogin = ref(true)
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+import zxcvbn from 'zxcvbn'
+import DOMPurify from 'dompurify'
 
-  const toggleMode = () => {
-    isLogin.value = !isLogin.value
-    errorMsg.value = ''
+// regex za username
+const usernamePattern = /^[A-Za-z0-9_-]{3,30}$/
+const usernameError   = ref('')
+
+const supabase = useSupabaseClient()
+const username = ref('')
+const email    = ref('')
+const password = ref('')
+const errorMsg = ref('')
+const isLogin  = ref(true)
+
+// strength metrics
+const passwordScore    = ref(0)
+const strengthText     = ref('')
+const strengthFeedback = ref('')
+
+watch(password, (pw) => {
+  const { score, feedback } = zxcvbn(pw)
+  passwordScore.value = score
+  strengthText.value = ['Very weak','Weak','Fair','Good','Strong'][score]
+  strengthFeedback.value = feedback.warning || feedback.suggestions.join(' ')
+})
+
+const toggleMode = () => {
+  isLogin.value = !isLogin.value
+  errorMsg.value = ''
+  usernameError.value = ''
+}
+
+const handleAuth = async () => {
+  if (!email.value || !password.value) {
+    errorMsg.value = 'Please enter both email and password'
+    return
   }
 
-  const handleAuth = async () => {
-    if (!email.value || !password.value) {
-      errorMsg.value = 'Please enter both email and password'
-      return
-    }
-
-    errorMsg.value = ''
-
-    try {
-      let result
-      if (isLogin.value) {
-        result = await supabase.auth.signInWithPassword({
-          email: email.value,
-          password: password.value,
-        })
-      } else {
-        result = await supabase.auth.signUp({
-          email: email.value,
-          password: password.value,
-
-          options: {
-            data: {
-              username: username.value,
-            },
-          },
-        })
-      }
-
-      if (result.error) {
-        errorMsg.value = result.error.message
-      } else {
-        navigateTo('/logoutpage')
-      }
-    } catch (err) {
-      errorMsg.value = 'Unexpected error occurred'
-    }
+  // password test
+  if (!isLogin.value && passwordScore.value < 3) {
+    errorMsg.value = 'Please choose a stronger password.'
+    return
   }
 
-  const user = useSupabaseUser()
-  watch(user, () => {
-    if (user.value) {
+  // username test
+  if (!isLogin.value && !usernamePattern.test(username.value)) {
+    usernameError.value =
+      'Username must be 3–30 characters, letters, numbers, underscores or hyphens only.'
+    return
+  }
+
+  errorMsg.value = ''
+
+  try {
+    let result
+    if (isLogin.value) {
+      result = await supabase.auth.signInWithPassword({
+        email: email.value,
+        password: password.value,
+      })
+    } else {
+      result = await supabase.auth.signUp({
+        email: email.value,
+        password: password.value,
+        options: { data: { username: DOMPurify.sanitize(username.value) } },
+      })
+    }
+
+    if (result.error) {
+      errorMsg.value = result.error.message
+    } else {
       navigateTo('/logoutpage')
     }
-  }, { immediate: true })
-
-  const goToResetPage = () => {
-    navigateTo('/forgot-password')
+  } catch (err) {
+    errorMsg.value = 'Unexpected error occurred'
   }
+}
+
+const user = useSupabaseUser()
+watch(user, () => {
+  if (user.value) {
+    navigateTo('/logoutpage')
+  }
+}, { immediate: true })
+
+const goToResetPage = () => {
+  navigateTo('/forgot-password')
+}
 </script>
+
+<style scoped>
+</style>

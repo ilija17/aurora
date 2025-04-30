@@ -1,15 +1,10 @@
+<!-- pages/index.vue -->
 <template>
-  <div>
-    <HelloUser/>
+  <div class="mx-auto p-6 max-w-md">
+    <SpotifySignIn />
+    <Moods />
   </div>
 </template>
 
-<script lang="ts" setup>
-  definePageMeta({
-    requiresAuth: true
-  })
+<script setup lang="ts">
 </script>
-
-<style>
-
-</style>

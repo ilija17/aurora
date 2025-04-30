@@ -1,9 +1,8 @@
-export default defineNuxtRouteMiddleware((to, from) => {
+export default defineNuxtRouteMiddleware((to, _from) => {
   const user = useSupabaseUser()
 
-  const requiresAuth = to.meta.requiresAuth
-
-  if (requiresAuth && !user.value) {
+  const isPublic = to.meta.requiresAuth === false
+  if (!isPublic && !user.value) {
     return navigateTo('/login')
   }
 })

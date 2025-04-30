@@ -14,5 +14,9 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  requiresAuth: false
+})
+
 const colorMode = useColorMode()
 </script>

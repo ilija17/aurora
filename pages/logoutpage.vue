@@ -1,40 +1,33 @@
 <template>
   <div v-if="user">
     <HelloUser />
-    <button @click="deleteUser">Delete</button>
-    <button @click="logout">Logout</button>
+    <button @click="logout">
+      Logout
+    </button>
   </div>
-
   <div v-else>
-    <p>Redirecting to login...</p>
+    <p>Redirecting to login…</p>
   </div>
 </template>
 
 <script setup lang="ts">
-const supabase = useSupabaseClient()
-const user = useSupabaseUser()
+definePageMeta({
+  requiresAuth: true
+})
 
-watch(user, () => {
-  if (!user.value) {
-    navigateTo('/login')
-  }
+const supabase = useSupabaseClient()
+const user     = useSupabaseUser()
+
+watch(user, val => {
+  if (!val) navigateTo('/login')
 }, { immediate: true })
 
 const logout = async () => {
   await supabase.auth.signOut()
+  navigateTo('/login')
 }
-
-const deleteUser = async () => {
-  const { error } = await $fetch('/api/delete-user', {
-    method: 'POST',
-    body: {
-      userId: user.value.id,
-    },
-  })
-
-  if(!error){
-    logout()
-  }
-}
-
 </script>
+
+<style scoped>
+
+</style>

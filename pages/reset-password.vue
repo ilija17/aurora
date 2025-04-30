@@ -10,6 +10,10 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  requiresAuth: false
+})
+
 const supabase = useSupabaseClient()
 const password = ref('')
 const message = ref('')

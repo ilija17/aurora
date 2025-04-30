@@ -15,10 +15,15 @@
     "@tailwindcss/vite": "^4.1.4",
     "@vee-validate/nuxt": "^4.15.0",
     "cookie": "^0.7.2",
+    "dompurify": "^3.2.5",
     "nuxt": "^3.16.2",
     "tailwindcss": "^4.1.4",
     "vite-tsconfig-paths": "^5.1.4",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "vue-router": "^4.5.0",
+    "zxcvbn": "^4.4.2"
+  },
+  "devDependencies": {
+    "@types/zxcvbn": "^4.4.5"
   }
 }
