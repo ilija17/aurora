@@ -2,7 +2,19 @@
   <div class="grid place-items-center h-screen">
     <div>
       <h2>Set a new password</h2>
-      <input v-model="password" type="password" placeholder="New password" />
+      <FormInput
+            id="password"
+            label="Password"
+            type="password"
+            v-model="password"
+            placeholder="••••••••"
+          />
+
+      <div class="text-sm">
+        <p>Strength: {{ strengthText }}</p>
+        <p v-if="strengthFeedback" class="mt-1">{{ strengthFeedback }}</p>
+      </div>
+      <p v-if="errorMsg" class="mt-2 text-red-600">{{ errorMsg }}</p>
       <button @click="updatePassword">Update password</button>
       <p v-if="message">{{ message }}</p>
     </div>
@@ -10,6 +22,8 @@
 </template>
 
 <script setup lang="ts">
+import zxcvbn from 'zxcvbn'
+
 definePageMeta({
   requiresAuth: false
 })
@@ -19,7 +33,25 @@ const password = ref('')
 const message = ref('')
 const user = useSupabaseUser()
 
+const errorMsg = ref('')
+
+const passwordScore    = ref(0)
+const strengthText     = ref('')
+const strengthFeedback = ref('')
+
+watch(password, (pw) => {
+  const { score, feedback } = zxcvbn(pw)
+  passwordScore.value = score
+  strengthText.value = ['Very weak','Weak','Fair','Good','Strong'][score]
+  strengthFeedback.value = feedback.warning || feedback.suggestions.join(' ')
+})
+
 const updatePassword = async () => {
+  if (passwordScore.value < 3) {
+    errorMsg.value = 'Please choose a stronger password.'
+    return
+  }
+
   if (!password.value) {
     message.value = 'Please enter a new password'
     return
@@ -28,6 +60,8 @@ const updatePassword = async () => {
   const { data, error } = await supabase.auth.updateUser({
     password: password.value,
   })
+
+  errorMsg.value = ''
 
   if (error) {
     message.value = error.message
