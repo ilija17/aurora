@@ -73,94 +73,60 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import zxcvbn from 'zxcvbn'
-import DOMPurify from 'dompurify'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useSupabaseClient } from '#imports'
+import { usePasswordStrength } from '~/composables/usePasswordStrength'
+import { useUsernameValidator } from '~/composables/useUsernameValidator'
 
-// regex za username
-const usernamePattern = /^[A-Za-z0-9_-]{3,30}$/
-const usernameError   = ref('')
+const router       = useRouter()
+const supabase  = useSupabaseClient()
+const isLogin     = ref(true)
+const email       = ref('')
+const password    = ref('')
+const username    = ref('')
+const errorMsg    = ref('')
 
-const supabase = useSupabaseClient()
-const username = ref('')
-const email    = ref('')
-const password = ref('')
-const errorMsg = ref('')
-const isLogin  = ref(true)
+const { score: passwordScore, text: strengthText, feedback: strengthFeedback }
+  = usePasswordStrength(password)
 
-// strength metrics
-const passwordScore    = ref(0)
-const strengthText     = ref('')
-const strengthFeedback = ref('')
+const { error: usernameError, validate: validateUsername, sanitized: sanitizeUsername }
+  = useUsernameValidator(username)
 
-watch(password, (pw) => {
-  const { score, feedback } = zxcvbn(pw)
-  passwordScore.value = score
-  strengthText.value = ['Very weak','Weak','Fair','Good','Strong'][score]
-  strengthFeedback.value = feedback.warning || feedback.suggestions.join(' ')
-})
-
-const toggleMode = () => {
+function toggleMode() {
   isLogin.value = !isLogin.value
   errorMsg.value = ''
-  usernameError.value = ''
 }
 
-const handleAuth = async () => {
-  if (!email.value || !password.value) {
-    errorMsg.value = 'Please enter both email and password'
-    return
-  }
+function goToResetPage() {
+  router.push('/forgot-password')
+}
 
-  // password test
-  if (!isLogin.value && passwordScore.value < 3) {
-    errorMsg.value = 'Please choose a stronger password.'
-    return
-  }
-
-  // username test
-  if (!isLogin.value && !usernamePattern.test(username.value)) {
-    usernameError.value =
-      'Username must be 3–30 characters, letters, numbers, underscores or hyphens only.'
-    return
-  }
-
+async function handleAuth () {
   errorMsg.value = ''
-
+  
   try {
-    let result
-    if (isLogin.value) {
-      result = await supabase.auth.signInWithPassword({
-        email: email.value,
+    const { session } = await $fetch('/api/auth', {
+      method: 'POST',
+      body: {
+        email:    email.value,
         password: password.value,
-      })
-    } else {
-      result = await supabase.auth.signUp({
-        email: email.value,
-        password: password.value,
-        options: { data: { username: DOMPurify.sanitize(username.value) } },
+        isLogin:  isLogin.value,
+        ...(isLogin.value ? {} : { username: sanitizeUsername() })
+      }
+    })
+
+    if (session) {
+      await supabase.auth.setSession({
+        access_token:  session.access_token,
+        refresh_token: session.refresh_token
       })
     }
 
-    if (result.error) {
-      errorMsg.value = result.error.message
-    } else {
-      navigateTo('/logoutpage')
-    }
-  } catch (err) {
-    errorMsg.value = 'Unexpected error occurred'
+    router.push('/logoutpage')
+  } catch (err: any) {
+    errorMsg.value = err.message || 'Unexpected error'
   }
-}
-
-const user = useSupabaseUser()
-watch(user, () => {
-  if (user.value) {
-    navigateTo('/logoutpage')
-  }
-}, { immediate: true })
-
-const goToResetPage = () => {
-  navigateTo('/forgot-password')
 }
 </script>
 
