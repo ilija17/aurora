@@ -6,7 +6,7 @@ import { useRuntimeConfig }              from '#imports'
 export default defineEventHandler(async (event) => {
   // valid sesion
   const sessionUser = await serverSupabaseUser(event);
-  const config        = useRuntimeConfig();
+  const config      = useRuntimeConfig();
   if (!sessionUser) {
     throw createError({ statusCode: 401, statusMessage: 'Authentication required' });
   }
