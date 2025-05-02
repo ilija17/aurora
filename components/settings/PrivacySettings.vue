@@ -109,7 +109,7 @@
 
   async function confirmDelete(){
     try {
-      await $fetch('/api/delete-user-self', { method: 'POST' });
+      await $fetch('/api/user/delete-user-self', { method: 'POST' });
       await logout();
     } catch (err: any) {
       console.log(err);
