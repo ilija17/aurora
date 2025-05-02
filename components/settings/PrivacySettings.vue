@@ -1,63 +1,22 @@
 <template>
   <div class="space-y-8">
 
+    <!-- change password -->
 
-    <!-- Change password -->
-    <div class="bg-[var(--secondary)] p-4 rounded-lg flex justify-between items-center">
-      <div>
-        <h3 class="text-lg font-semibold text-[var(--fg)]">Change your password</h3>
-        <p class="text-sm text-[var(--muted)]">This will change the password you log in with</p>
+    <div class="flex justify-between items-center">
+      <div class="bg-[var(--secondary)] p-4 rounded-lg flex-col w-2/3">
+        <div>
+          <h3 class="text-lg font-semibold text-[var(--fg)]">Change password</h3>
+          <p class="text-sm text-[var(--muted)]">Send a password reset link to your e-mail</p>
+        </div>
       </div>
-        <button
-        @click="changePass"
-        class="text-nowrap w-auto px-4 py-2 rounded text-[var(--fg)] bg-[var(--primary)] hover:bg-[var(--accent)] transition"
-        >
-          Change
-        </button>
+      <button
+        class="m-4 p-2 rounded transition text-white disabled:opacity-50"
+        @click="handleChangePassword"
+      >
+        Change
+      </button>
     </div>
-
-    <div
-    v-if="showChangePassModal"
-    class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-    >
-    <div class="bg-[var(--secondary)] p-6 rounded-xl shadow-lg w-[90%] max-w-md text-[var(--fg)]">
-      <h2 class="text-xl font-bold mb-4">Are you sure?</h2>
-      <p class="text-sm text-[var(--muted)] mb-4">
-        This action will change your account's password. Be careful not to forget it.
-      </p>
-      <p class="text-sm text-[var(--muted)] mb-2">
-        Please type your current password to confirm.
-      </p>
-
-      <input
-        v-model="currentPassInput"
-        type="text"
-        placeholder="Enter current password"
-        class="w-full p-2 mb-6 bg-[var(--border)] text-[var(--fg)] rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-      />
-
-      <div class="flex justify-end gap-3">
-        <button
-          @click="showChangePassModal = false"
-          class="px-4 py-2 rounded bg-[var(--border)] hover:bg-[var(--muted)] text-[var(--fg)] transition"
-        >
-          Cancel
-        </button>
-        <button
-          @click="confirmChangePass"
-          :disabled="usernameInput !== user?.user_metadata?.username"
-          class="px-4 py-2 rounded transition text-white disabled:opacity-50"
-          :class="usernameInput === user?.user_metadata?.username
-            ? 'bg-red-600 hover:bg-red-700 cursor-pointer'
-            : 'bg-red-300 cursor-not-allowed pointer-events-none'
-          "
-        >
-          Yes, delete
-        </button>
-      </div>
-    </div>
-  </div>
-    <!-- End change password -->
 
     <!-- Delete account -->
     <div class="bg-[var(--secondary)] p-4 rounded-lg flex justify-between items-center">
@@ -111,25 +70,44 @@
       </div>
     </div>
   </div>
-
-  <!-- End delete account -->
 </div>
 </template>
 
 <script setup lang="ts">
+  const config = useRuntimeConfig()
   const supabase = useSupabaseClient();
   const user     = useSupabaseUser();
+
+  async function handleChangePassword(){
+    if (!user.value?.email) {
+      alert("No email found. Are you logged in?");
+      return;
+    }
+
+    const redirectTo = `${config.public.siteUrl}/reset-password`
+    const { error } = await supabase.auth.resetPasswordForEmail(user.value.email, {
+      redirectTo: 'http://localhost:3000/reset-password',
+    })
+
+    if (error) {
+      alert("Failed to send password reset email.");
+      console.error(error.message);
+      return;
+    }
+
+    alert("Password reset email sent.");
+  }
 
   // logika za potvrdu brisanja accounta
   const showDeleteModal = ref(false);
   const usernameInput = ref('');
 
-  const deleteAccountConfirmation = async () => {
+  async function deleteAccountConfirmation(){
     usernameInput.value = '';
     showDeleteModal.value = true;
   }
 
-  const confirmDelete = async () => {
+  async function confirmDelete(){
     try {
       await $fetch('/api/delete-user-self', { method: 'POST' });
       await logout();
@@ -139,16 +117,8 @@
     }
   }
 
-  const logout = async () => {
+  async function logout(){
     await supabase.auth.signOut();
     navigateTo('/login');
   }
-
-  //logika za mjenjanje lozinke
-  const showChangePassModal = ref(false);
-  const currentPassInput = ref('');
-  const newPassInput = ref('');
-
-
-  
 </script>
