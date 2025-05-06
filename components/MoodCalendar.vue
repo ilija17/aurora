@@ -16,8 +16,12 @@
         </tr>
       </thead>
       <tr v-for="week in weeks">
-        <td v-for="n in 7">
-          {{ daysArray[7 * (week - 1)  + (n-1)] }}
+        <td v-for="day in week"
+        :class="{
+          'bg-[var(--secondary)]':   day.type === 'prev' || day.type === 'next',
+          'bg-[var(--tertiary)]':  day.type === 'current'
+        }">
+          {{ day.day }}
         </td>
       </tr>
     </table>
@@ -28,41 +32,60 @@
 </template>
 
 <script lang="ts" setup>
+  import { getDay, startOfMonth, endOfMonth, sub, add, format } from "date-fns";
+
+  interface CalendarDay{
+    date: Date;
+    day: number;
+    type: 'prev' | 'current' | 'next';
+  }
+
   const Month = ref<number>(0);
   const Year = ref<number>(0);
 
-  function generateMonthArray(year: number, month: number): number[] {
-    let days: number[] = new Array;
-    let firstDay: number = new Date(year, month, 1).getDay(); //first day of week of current month
-    let lastDate: number = new Date(year, month+1, 0).getDate(); //last date of previous month
-    let lastDay: number = new Date(year, month+1, 0).getDay(); //last day of week of previous month
+  function generateCalendarDays(year: number, month: number): CalendarDay[] {
+  const firstOfMonth = startOfMonth(new Date(year, month-1));
+  const lastOfMonth = endOfMonth(firstOfMonth);
+  const startOffset = getDay(firstOfMonth); // sunday = 0
+  const days: CalendarDay[] = [];
 
-    for(let i=firstDay; i>0; i--){
-      let temp = new Date(year, month, 0).getDate(); //last date of previous month
-      days.push(temp-i+1);
-    }
-
-    for(let i=0; i<lastDate; i++){
-      days.push(i+1);
-    }
-
-    for(let i=0; i<(6-lastDay); i++){
-      let temp = new Date(year, month+1, 1).getDate(); //first date of next month
-      days.push(temp + i);
-    }
-    return days;
+  for (let i = startOffset; i > 0; i--) {
+    const d = sub(firstOfMonth, {days: i});
+    days.push({ date: d, day: d.getDate(), type: 'prev' });
   }
 
-  const weeks = computed(() =>{
-    return Math.ceil(generateMonthArray(Year.value, Month.value).length / 7);
+  for (let i = 0; i < lastOfMonth.getDate(); i++) {
+    const d = add(firstOfMonth, {days: i});
+    days.push({ date: d, day: d.getDate(), type: 'current' });
+  }
+
+  const totalDays = Math.ceil(days.length/7)*7;
+
+  while (days.length < totalDays) {
+    const d = add(lastOfMonth, {days: days.length - (startOffset + lastOfMonth.getDate())});
+    days.push({ date: d, day: d.getDate(), type: 'next' });
+  }
+
+  return days;
+}
+
+  const daysArray = computed<CalendarDay[]>(() => {
+    return generateCalendarDays(Year.value, Month.value);
   });
 
-  const daysArray = computed(() => {
-    return generateMonthArray(Year.value, Month.value);
+  const weeks = computed<CalendarDay[][]>(() => {
+    const chunkSize = 7;
+    const weeksArray: CalendarDay[][] = [];
+    for (let i = 0; i < daysArray.value.length; i += chunkSize) {
+      const chunk = daysArray.value.slice(i, i + chunkSize);
+      weeksArray.push(chunk);
+    }
+
+    return weeksArray;
   });
 
   const monthYear = computed(() => {
-    return new Date(Year.value, Month.value).toLocaleDateString('en-US', {
+    return new Date(Year.value, Month.value-1).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long'
       });
@@ -71,22 +94,12 @@
 
 <style scoped>
   table {
-    border: 2px solid white;
-    padding: 20px;   
-    margin: 12px;
-    border-collapse: collapse;
+    background-color: var(--primary)
   }
-
-  tr{
-    border: 2px solid white;
+  table, th, td, tr{
+    border: 2px solid var(--border);
     padding: 12px;   
     margin: 12px;
-    border-collapse: collapse;
-  }
-
-  th, td{
-    border: 2px solid white;
-    padding: 12px;   
     border-collapse: collapse;
   }
 </style>
