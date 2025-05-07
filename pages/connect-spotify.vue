@@ -9,6 +9,10 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  requiresAuth: false
+})
+
 import { ref } from 'vue'
 import { useSupabaseClient } from '@supabase/auth-helpers-nuxt'
 
