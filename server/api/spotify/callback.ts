@@ -5,9 +5,11 @@ import { URLSearchParams } from 'url'
 export default defineEventHandler(async (event) => {
   const { spotifyClientId, spotifyClientSecret, spotifyRedirectUri } = useRuntimeConfig()
   const { code, state } = getQuery(event)
+
   const storedState = event.node.req.headers.cookie
     ?.split('; ')
-    .find(c => c.startsWith('spotify_state='))?.split('=')[1]
+    .find(c => c.startsWith('spotify_state='))
+    ?.split('=')[1]
 
   if (!state || state !== storedState) {
     throw createError({ statusCode: 400, statusMessage: 'state_mismatch' })
@@ -16,7 +18,7 @@ export default defineEventHandler(async (event) => {
   const body = new URLSearchParams({
     grant_type: 'authorization_code',
     code: String(code),
-    redirect_uri: spotifyRedirectUri
+    redirect_uri: spotifyRedirectUri,
   })
   const basic = Buffer
     .from(`${spotifyClientId}:${spotifyClientSecret}`)
@@ -26,18 +28,18 @@ export default defineEventHandler(async (event) => {
     method: 'POST',
     headers: {
       Authorization: `Basic ${basic}`,
-      'Content-Type': 'application/x-www-form-urlencoded'
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: body.toString()
+    body: body.toString(),
   })
 
   setCookie(event, 'spotify_access_token', tokenRes.access_token, {
     httpOnly: true,
-    maxAge: tokenRes.expires_in
+    maxAge: tokenRes.expires_in,
   })
   setCookie(event, 'spotify_refresh_token', tokenRes.refresh_token, {
-    httpOnly: true
+    httpOnly: true,
   })
 
-  sendRedirect(event, '/')
+  sendRedirect(event, '/spotify')
 })

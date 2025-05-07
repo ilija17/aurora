@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
 
   const body = new URLSearchParams({
     grant_type: 'refresh_token',
-    refresh_token: refreshToken
+    refresh_token: refreshToken,
   })
   const basic = Buffer
     .from(`${spotifyClientId}:${spotifyClientSecret}`)
@@ -21,14 +21,14 @@ export default defineEventHandler(async (event) => {
     method: 'POST',
     headers: {
       Authorization: `Basic ${basic}`,
-      'Content-Type': 'application/x-www-form-urlencoded'
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: body.toString()
+    body: body.toString(),
   })
 
   setCookie(event, 'spotify_access_token', tokenRes.access_token, {
     httpOnly: true,
-    maxAge: tokenRes.expires_in
+    maxAge: tokenRes.expires_in,
   })
 
   return { access_token: tokenRes.access_token, expires_in: tokenRes.expires_in }
