@@ -12,7 +12,7 @@ export default defineEventHandler((event) => {
     client_id: spotifyClientId,
     scope: 'user-read-private user-read-email user-top-read user-library-read',
     redirect_uri: spotifyRedirectUri,
-    state
+    state,
   })
 
   sendRedirect(event, `https://accounts.spotify.com/authorize?${params.toString()}`)
