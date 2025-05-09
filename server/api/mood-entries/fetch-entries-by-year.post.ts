@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
 
   const { data, error } = await client
     .from('mood_entries')
-    .select('entry_timestamp, general_mood, general_moods ( mood_name )')
+    .select('id, entry_timestamp, general_mood, general_moods ( mood_name )')
     .eq('user_id', userId)
     .gte('entry_timestamp', fromDate)
     .lt('entry_timestamp', toDate);
@@ -32,6 +32,5 @@ export default defineEventHandler(async (event) => {
     throw error;
   }
 
-  console.log(data);
   return { success: true, mood_entries: data };
 })
