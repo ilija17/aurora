@@ -3,47 +3,50 @@
     <textarea
       rows="5"
       cols="80"
-      v-model="title"
+      v-model="notes"
       placeholder="Enter some notes…"
-    />
+    ></textarea>
 
-    <button @click="test">
-      Submit
+    <button :disabled="isSubmitting" @click="submit">
+      {{ isSubmitting ? 'Submitting…' : 'Submit' }}
     </button>
   </div>
 </template>
 
-
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useSupabaseClient, useSupabaseUser } from '#imports'
-
-const title = ref('')
 
 const props = defineProps<{
   selectedMood:         number
   detailedMoodContext:  number[]
   locationContext:      number[]
   socialContext:        number[]
+  spotifySongId:        string|null
 }>()
 
-const supabase = useSupabaseClient()
-const user     = useSupabaseUser()
+const notes = ref('')
+const isSubmitting = ref(false)
 
-async function test() {
-  const { data, error } = await supabase.rpc('insert_mood_entry', {
-    p_user_id:       user.value!.id,
-    p_general_mood:  props.selectedMood,
-    p_detailed_ids:  props.detailedMoodContext,
-    p_location_ids:  props.locationContext,
-    p_social_ids:    props.socialContext,
-    p_notes:         title.value,
-  })
+async function submit() {
+  isSubmitting.value = true
+  try {
+    const result = await $fetch('/api/mood-entry', {
+      method: 'POST',
+      body: {
+        selectedMood:        props.selectedMood,
+        detailedMoodContext: props.detailedMoodContext,
+        locationContext:     props.locationContext,
+        socialContext:       props.socialContext,
+        notes:               notes.value,
+        spotifySongId:       props.spotifySongId
+      }
+    })
 
-  if (error) {
-    console.error('Insert failed:', error)
-  } else {
-    console.log('New entry ID:', data![0].entry_id)
+    console.log('New entry created:', result[0].entry_id)
+  } catch (err: any) {
+    console.error('Insert failed:', err.statusMessage || err.message)
+  } finally {
+    isSubmitting.value = false
   }
 }
 </script>
