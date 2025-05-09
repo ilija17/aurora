@@ -1,4 +1,3 @@
-// server/api/mood-entry.ts
 import { defineEventHandler, readBody, createError } from 'h3'
 import { serverSupabaseClient }          from '#supabase/server'
 
