@@ -39,7 +39,7 @@ ${artistLines}
       { role: 'user',   content: user.trim()   }
     ],
     temperature: 0.9,
-    max_tokens: 150,
+    max_tokens: 1500,
   })
 
   return { roast: choices[0].message.content.trim() }
