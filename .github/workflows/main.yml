@@ -1,4 +1,4 @@
-name: Build & hot‑swap Aurora (local image)
+name: Build & hot-swap Aurora (local image)
 
 on:
   push:
@@ -15,16 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - run: cp /home/ilija/.env $GITHUB_WORKSPACE/.env
+      - name: Copy .env into the build context
+        run: cp /home/ilija/.env $GITHUB_WORKSPACE/.env
 
-      - name: 🏗️ Build image (env available during build)
-        run: |
-          set -o allexport
-          source .env
-          set +o allexport
-          # convert every KEY in .env into --build-arg KEY=value
-          BUILD_ARGS=$(grep -v '^#' .env | xargs -I{} printf -- '--build-arg %s ' "{}")
-          eval docker build $BUILD_ARGS -t nuxt-app:latest .
+      - name: 🏗️ Build image
+        run: docker build -t nuxt-app:latest $GITHUB_WORKSPACE
 
       - name: 🔥 Replace old container
         run: docker rm -f aurora || true
