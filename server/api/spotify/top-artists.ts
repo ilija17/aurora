@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
   if (!token) throw createError({ statusCode: 401, statusMessage: 'Not authenticated' })
 
   const fetchTopArtists = () =>
-    $fetch('https://api.spotify.com/v1/me/top/artists', {
+    $fetch('https://api.spotify.com/v1/me/top/artists?time_range=long_term', {
       headers: { Authorization: `Bearer ${token}` },
       params: { limit: '10' }
     })

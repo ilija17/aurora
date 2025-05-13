@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const fetchTop = () =>
-    $fetch('https://api.spotify.com/v1/me/top/tracks', {
+    $fetch('https://api.spotify.com/v1/me/top/tracks?time_range=long_term', {
       headers: { Authorization: `Bearer ${token}` },
       params: { limit: '10' }
     })

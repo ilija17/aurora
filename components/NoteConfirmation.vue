@@ -41,8 +41,6 @@ async function submit() {
         spotifySongId:       props.spotifySongId
       }
     })
-
-    console.log('New entry created:', result[0].entry_id)
   } catch (err: any) {
     console.error('Insert failed:', err.statusMessage || err.message)
   } finally {

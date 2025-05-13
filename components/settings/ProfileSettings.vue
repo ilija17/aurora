@@ -71,19 +71,12 @@
     </div>
   </div>
 
-    <button
-      class="m-4 p-2 rounded transition text-white disabled:opacity-50"
-      @click="handleEditProfile"
-    >
-      Save
-    </button>
 
   </div>
   
 </template>
 
 <script setup lang="ts">
-  const supabase = useSupabaseClient();
   const user     = useSupabaseUser();
 
   const email = ref('');
@@ -91,24 +84,6 @@
   const password = ref('');
 
   const showConfirmPassModal = ref(false);
-
-
-async function handleEditProfile() {
-  const { data, error } = await useFetch('/api/edit-profile', {
-    method: 'POST',
-    body: {
-      email: email,
-      username: username,
-    }
-  });
-
-  if (error.value) {
-    alert(error.value.data.statusMessage)
-  } else {
-    alert("Profile updated!")
-  }
- console.log(email, username);
-}
 
 async function handleUpdateUsername() {
   const { data, error } = await useFetch<{ message: string }>('/api/user/update-username', {
