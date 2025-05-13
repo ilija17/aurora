@@ -1,4 +1,4 @@
-name: Build & hot‑swap Aurora (local image)
+name: Build & hot‑swap Aurora
 
 on:
   push:
@@ -15,15 +15,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: 🏗️ Build image
-        run: |
-          docker build -t nuxt-app:latest .
+      - run: cp /home/ilija/.env $GITHUB_WORKSPACE/.env
 
-      - name: 🔥 Replace old container
+      - name: Build image
         run: |
-          docker rm -f aurora || true
+          set -o allexport
+          source .env
+          set +o allexport
+          docker build \
+            --build-arg SUPABASE_URL=$SUPABASE_URL \
+            --build-arg SUPABASE_KEY=$SUPABASE_KEY \
+            -t nuxt-app:latest .
 
-      - name: 🚀 Run container
+      - run: docker rm -f aurora || true
+
+      - name: Run container
         run: |
           docker run \
             --name aurora \
