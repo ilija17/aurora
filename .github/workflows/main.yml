@@ -7,24 +7,20 @@ on:
 concurrency:
   group: deploy-aurora
   cancel-in-progress: true
-
+  
 jobs:
   deploy:
     runs-on: [ self-hosted ]
-
     env:
       IMAGE_NAME: aurora-app:latest
       CONTAINER_NAME: aurora
 
     steps:
-      - name: 📥 Check out code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: 🐳 Set up Buildx
-        uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v3
 
-      - name: 🏗️ Build & load image locally
-        uses: docker/build-push-action@v5
+      - uses: docker/build-push-action@v5
         with:
           context: .
           push: false
@@ -32,21 +28,24 @@ jobs:
           tags: ${{ env.IMAGE_NAME }}
           platforms: linux/amd64
 
-      - name: 🔥 Stop & remove old container (if exists)
-        continue-on-error: true
-        run: docker rm -f ${{ env.CONTAINER_NAME }}
+      - run: docker rm -f ${{ env.CONTAINER_NAME }} || true
 
-      - name: 🚀 Run new container with custom env file
+      - name: Copy .env.nuxt into workspace
+        run: cp /home/ilija/actions-runner/.env.nuxt $GITHUB_WORKSPACE/.env.nuxt
+
+      - name: Run new container
         run: |
           docker run -d \
             --name ${{ env.CONTAINER_NAME }} \
-            --env-file /home/ilija/actions-runner/.env.nuxt \
+            --env-file ./.env.nuxt \
             -p 3001:3000 \
             ${{ env.IMAGE_NAME }}
 
-      - name: ✅ Smoke-check (TCP port open)
+      - name: Dump container env (debug)
+        run: docker exec ${{ env.CONTAINER_NAME }} printenv SUPABASE_URL SUPABASE_KEY || true
+
+      - name: Smoke-check (TCP port)
         run: |
-          # wait up to 5s for the port to open
           if timeout 5 bash -c "</dev/tcp/localhost/3001"; then
             echo "🌄 Aurora is running"
           else
