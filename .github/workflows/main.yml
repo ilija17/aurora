@@ -13,7 +13,6 @@ jobs:
   deploy:
     runs-on:
       - self-hosted
-      - DXP6800PRO
 
     env:
       IMAGE_NAME: aurora-app:latest
