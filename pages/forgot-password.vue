@@ -10,6 +10,8 @@
 </template>
 
 <script setup lang="ts">
+const { siteUrl } = useRuntimeConfig().public
+
 definePageMeta({
   requiresAuth: false
 })
@@ -24,7 +26,7 @@ const message   = ref('')
 const sendResetEmail = async () => {
   const redirectTo = `${config.public.siteUrl}/reset-password`
   const { error } = await supabase.auth.resetPasswordForEmail(email.value, {
-    redirectTo: 'http://localhost:3000/reset-password',
+    redirectTo: `${siteUrl}/reset-password`,
   })
 
   message.value = error

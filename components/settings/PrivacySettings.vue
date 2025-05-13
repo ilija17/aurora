@@ -74,6 +74,8 @@
 </template>
 
 <script setup lang="ts">
+  const { siteUrl } = useRuntimeConfig().public
+
   const config = useRuntimeConfig()
   const supabase = useSupabaseClient();
   const user     = useSupabaseUser();
@@ -86,7 +88,7 @@
 
     const redirectTo = `${config.public.siteUrl}/reset-password`
     const { error } = await supabase.auth.resetPasswordForEmail(user.value.email, {
-      redirectTo: 'http://localhost:3000/reset-password',
+      redirectTo: `${siteUrl}/reset-password`,
     })
 
     if (error) {
