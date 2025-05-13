@@ -32,13 +32,13 @@ jobs:
         run: docker rm -f ${{ env.CONTAINER_NAME }} || true
 
       - name: 📄 Copy .env.nuxt into workspace
-        run: cp /home/ilija/actions-runner/.env.nuxt $GITHUB_WORKSPACE/.env.nuxt
+        run: cp /home/ilija/.env $GITHUB_WORKSPACE/.env
 
       - name: 🚀 Run new container
         run: |
           docker run -d \
             --name ${{ env.CONTAINER_NAME }} \
-            --env-file ./.env.nuxt \
+            --env-file ./.env \
             -p 3001:3000 \
             ${{ env.IMAGE_NAME }}
 
