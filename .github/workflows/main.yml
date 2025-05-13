@@ -48,15 +48,15 @@ jobs:
         continue-on-error: true
         run: docker rm -f ${{ env.CONTAINER_NAME }}
 
-      - name: 🚀  Run new container with preserved env
+      - name: 🚀 Run new container with custom env file
         run: |
           docker run -d \
             --name ${{ env.CONTAINER_NAME }} \
-            --env-file /tmp/aurora-env.list \
-            -p 3000:3000 \
-            ${{ env.IMAGE_NAME }} \
-            $(cat /tmp/aurora-cmd.list || true)
+            --env-file /home/ilija/actions-runner/.env.nuxt \
+            -p 3001:3000 \
+            ${{ env.IMAGE_NAME }}
+
 
       - name: ✅  Smoke‑check
         run: |
-          curl --fail --silent http://localhost:3000/health || (echo "Health check failed" && exit 1)
+          curl --fail --silent http://localhost:3001/health || (echo "Health check failed" && exit 1)
