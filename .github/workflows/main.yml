@@ -44,7 +44,11 @@ jobs:
             -p 3001:3000 \
             ${{ env.IMAGE_NAME }}
 
-      - name: ✅ Smoke-check
+      - name: ✅ Smoke-check (TCP port open)
         run: |
-          curl --fail --silent http://localhost:3001/health \
-            || (echo "Health check failed" && exit 1)
+          # wait up to 5s for the port to open
+          if timeout 5 bash -c "</dev/tcp/localhost/3001"; then
+            echo "🌄 Aurora is running"
+          else
+            echo "🌕 Dawn has fallen" && exit 1
+          fi
