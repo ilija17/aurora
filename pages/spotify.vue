@@ -1,5 +1,12 @@
 <template>
+  <!-- dizajn je ass, ovo bi trebalo ići negdje drugdje -->
   <div class="dashboard">
+    <select name="timeframe" id="timeframe" v-model="timeframe" @change="">
+      <option value="short_term">Last 4 weeks</option>
+      <option value="medium_term">Last 6 months</option>
+      <option value="long_term">All time</option>
+    </select>
+    
     <h1>My Spotify Top 10</h1>
     <button
       v-if="tracksError?.statusCode === 401"
@@ -31,6 +38,7 @@
         </ul>
       </section>
     </div>
+    <button @click="fetchRoast()">Roast me</button>
     <div class="roast">
       <p v-if="roastLoad">Generating roast…</p>
       <p v-else-if="roastErr">Couldn’t fetch roast.</p>
@@ -44,35 +52,64 @@ import { ref, watch, computed } from 'vue'
 import MarkdownIt from 'markdown-it'
 definePageMeta({ requiresAuth: false })
 const md = new MarkdownIt()
-const { data: tracks, error: tracksError } = await useFetch<any[]>('/api/spotify/top-tracks')
-const { data: artists } = await useFetch<any[]>('/api/spotify/top-artists')
+const timeframe = ref<'short_term' | 'medium_term' | 'long_term'>('short_term')
+const { data: tracks, error: tracksError } =
+  await useFetch<any[]>(() => `/api/spotify/top-tracks/${timeframe.value}`)
+const { data: artists, error: artistsError } =
+  await useFetch<any[]>(() => `/api/spotify/top-artists/${timeframe.value}`)
+
+watch(timeframe, async () => {
+  try{
+    const tr = await $fetch<any[]>(`/api/spotify/top-tracks/${timeframe.value}`)
+    tracks.value = tr
+
+    const ar = await $fetch<any[]>(`/api/spotify/top-artists/${timeframe.value}`)
+    artists.value = ar
+  } catch (e) {
+    // ovo ne radi sigurno ali koda errore ikad riješavamo 🚢
+    console.error('Error fetching Spotify data:', e)
+    tracksError.value = e
+    artistsError.value = e
+  }
+ })
+
 const roast = ref('')
 const roastErr = ref(false)
 const roastLoad = ref(false)
-watch(
-  () => [tracks.value, artists.value],
-  async ([t, a]) => {
-    if (!t || !a) return
-    roastLoad.value = true
-    roastErr.value = false
-    try {
-      const { data } = await useFetch('/api/openai/roast', {
-        method: 'POST',
-        body: {
-          prompt: 'Roast my Spotify Rewind. Don’t hold back.',
-          tracks: t,
-          artists: a
-        }
-      })
-      roast.value = data.value.roast
-    } catch {
-      roastErr.value = true
-    } finally {
-      roastLoad.value = false
+
+async function fetchRoast() {
+  console.log('Fetching roast...')
+  
+  if (!tracks.value.length || !artists.value.length) return
+  roastLoad.value = true
+  roastErr.value = false
+  try {
+    const response = await fetch('/api/openai/roast', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt: 'Roast my Spotify Rewind. Don’t hold back.',
+        tracks: tracks.value,
+        artists: artists.value,
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch roast')
     }
-  },
-  { immediate: true }
-)
+
+    const data = await response.json()
+    roast.value = data.roast
+  } catch (error) {
+    console.error('Error fetching roast:', error)
+    roastErr.value = true
+  } finally {
+    roastLoad.value = false
+  }
+}
+
 const roastHtml = computed(() => roast.value ? md.render(roast.value) : '')
 function login() {
   window.location.href = '/api/spotify/login'
