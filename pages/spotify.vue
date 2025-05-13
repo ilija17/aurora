@@ -1,7 +1,7 @@
 <template>
   <!-- dizajn je ass, ovo bi trebalo ići negdje drugdje -->
   <div class="dashboard">
-    <select name="timeframe" id="timeframe" v-model="timeframe" @change="">
+    <select name="timeframe" id="timeframe" v-model="timeframe" @change="" v-if="tracksError?.statusCode != 401">
       <option value="short_term">Last 4 weeks</option>
       <option value="medium_term">Last 6 months</option>
       <option value="long_term">All time</option>
@@ -38,7 +38,7 @@
         </ul>
       </section>
     </div>
-    <button @click="fetchRoast()">Roast me</button>
+    <button v-if="tracksError?.statusCode !== 401" @click="fetchRoast()">Roast me</button>
     <div class="roast">
       <p v-if="roastLoad">Generating roast…</p>
       <p v-else-if="roastErr">Couldn’t fetch roast.</p>

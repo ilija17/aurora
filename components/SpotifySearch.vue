@@ -26,7 +26,7 @@
     </ul>
 
     <div v-if="localSelectedId" class="actions">
-      <button @click="onContinue">Continue</button>
+      <button @click="onContinue">Select</button>
     </div>
 
     <p v-if="displayedId" class="song-id">
