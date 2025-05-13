@@ -10,21 +10,27 @@
       </button>
     </div>
   
-    <div class="h-[800px] bg-[var(--secondary)] rounded-4xl pt-10 pb-10 pl-5 pr-5 overflow-y-auto scroll-smooth">
-      <div v-for="month in monthsArray" class="mb-20">
+    <div class="min-h-[600px] h-[800px] bg-[var(--secondary)] rounded-4xl pt-10 pb-10 pl-5 pr-5 overflow-y-auto scroll-smooth">
+      <div v-for="month in monthsArray" :key="month.month" class="mb-20">
         <div class="month-name relative top-0 left-0 px-4 py-2 text-lg font-semibold">{{ month.month }}</div>
         <table>
           <tbody>
-            <tr v-for="week in month.calendarMonth">
-              <td v-for="day in week" class="day-cell">
+            <tr v-for="(week, weekIndex) in month.calendarMonth" :key="weekIndex">
+              <td v-for="day in week" :key="format(day.date, 'dd-MM-yyyy')" class="day-cell">
                 <div
                   class="w-full h-full cursor-pointer border-2 rounded-2xl border-transparent hover:border-[var(--accent)] transition-colors ease-in-out"
                   :class="{
                     'invisible': day.day === 0,
-                    'bg-[var(--primary)]/50': isToday(day.date)
+                    //'bg-[var(--primary)]/50': isToday(day.date) odkomentirat po zelji
                   }"
-                  @click="openDayModal(day.date)"
+                  @click="openDayModal(day.date);"
                 >
+                  <div v-if="isToday(day.date)" class="rounded-full w-2 h-2 bg-[var(--accent)] absolute top-2 left-2"></div>
+                  <div v-if="hasSpotifySongOnDay(day.date)" class="absolute top-1 right-3 w-2 h-1">
+                    <svg width="26" height="23" viewBox="0 0 26 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12.4084 19.0666C11.1444 19.0666 10.0623 18.6166 9.16221 17.7164C8.26208 16.8163 7.81201 15.7342 7.81201 14.4702C7.81201 13.2062 8.26208 12.1241 9.16221 11.224C10.0623 10.3239 11.1444 9.87382 12.4084 9.87382C12.8489 9.87382 13.2511 9.93127 13.615 10.0462C13.998 10.1419 14.3619 10.2952 14.7066 10.5058V-1.61719H21.6012V2.97921H17.0048V14.4702C17.0048 15.7342 16.5547 16.8163 15.6546 17.7164C14.7545 18.6166 13.6724 19.0666 12.4084 19.0666Z" fill="#FEF7FF"/>
+                    </svg>
+                  </div>
                   <div v-if="!loadingEntriesByYear" class="image-container">
                     <img
                       :src="moodImageMap.get(moodMap?.get(format(day.date, 'dd.MM.yyyy'))) ?? defaultMoodUrl"
@@ -67,7 +73,7 @@
               </div>
             </div>
             <img
-              class="w-6 h-6 object-contain"
+              class="w-12 h-12 object-contain"
               :src="moodImageMap.get(entry.general_mood) ?? defaultMoodUrl"
               alt="Mood image"
             />
@@ -92,69 +98,71 @@
   class="fixed inset-0 bg-transparent flex items-center justify-center z-50"
 >
   <div class="bg-[var(--secondary)] p-6 rounded-xl shadow-lg w-[90%] max-w-md text-[var(--fg)] flex flex-col min-h-[300px] h-[50vh]">
-  
+
     <!-- scrollable content section -->
-    <div class="flex items-start mb-4 overflow-y-auto flex-grow">
-      <img
-        :src="moodImageMap.get(entryDetailsById?.general_mood_id) ?? defaultMoodUrl"
-        alt="Mood image"
-        class="w-12 h-12 object-cover mr-4"
-      />
-
-      <div class="flex flex-col gap-4 w-full">
-        <!-- general Mood -->
-        <div>
-          <div class="text-sm font-medium text-[var(--muted-foreground)]">Today's mood</div>
-          <div class="text-lg font-semibold">{{ entryDetailsById?.general_mood }}</div>
+    <div class="flex flex-col gap-4 overflow-y-auto mb-4">
+      <div class="flex w-full items-center">
+        <img
+          :src="moodImageMap.get(entryDetailsById?.general_mood_id) ?? defaultMoodUrl"
+          alt="Mood image"
+          class="w-12 h-12 object-cover mr-4"
+        />
+        <div class="flex flex-col justify-center">
+          <div class="text-lg font-semibold">
+            {{ format(parseISO(entryDetailsById?.entry_timestamp), 'EEE') }},
+            {{ format(parseISO(entryDetailsById.entry_timestamp), 'h:mm a') }}
+          </div>
         </div>
+      </div>
 
-        <!-- spotify Song -->
-        <div v-if="entryDetailsById?.spotify_song_id">
-          <iframe
-            :src="`https://open.spotify.com/embed/track/${entryDetailsById?.spotify_song_id}`"
-            width="300"
-            height="80"
-            frameborder="0"
-            allowtransparency="true"
-            allow="encrypted-media"
-          ></iframe>
-        </div>
+      <!-- spotify widget -->
+      <div v-if="entryDetailsById?.spotify_song_id" class="mb-4 self-start w-full ">
+        <iframe
+          :src="`https://open.spotify.com/embed/track/${entryDetailsById?.spotify_song_id}`"
+          width="250"
+          height="80"
+          frameborder="0"
+          allowtransparency="true"
+          allow="encrypted-media"
+        ></iframe>
+      </div>
 
-        <!-- note -->
-        <div>
-          <div class="text-sm font-medium text-[var(--muted-foreground)]">Notes</div>
-          <div class="text-lg">{{ entryDetailsById?.notes || "No notes for today" }}</div>
+      <!-- note -->
+      <div>
+        <div class="text-sm font-medium text-[var(--muted-foreground)]">Notes:</div>
+        <div class="border-2 border-transparent bg-[var(--input-bg)] rounded-md p-3 mt-2 w-full h-auto m-h-80 text-lg overflow-y-auto overflow-x-hidden break-words">
+          {{ entryDetailsById?.notes || "No notes for today" }}
         </div>
+      </div>
 
-        <!-- detailed Moods -->
-        <div>
-          <div class="text-sm font-medium text-[var(--muted-foreground)]">Detailed Moods</div>
-          <ul class="list-disc pl-5">
-            <li v-for="mood in entryDetailsById?.detailed_moods" :key="mood.mood_name" class="text-lg">
-              {{ mood.mood_name }}
-            </li>
-          </ul>
-        </div>
+      <!-- detailed Moods -->
+      <div>
+        <div class="text-sm font-medium text-[var(--muted-foreground)]">Detailed Moods:</div>
+        <ul class="list-disc pl-5">
+          <li v-for="mood in entryDetailsById?.detailed_moods" :key="mood.mood_name" class="text-lg">
+            {{ mood.mood_name }}
+          </li>
+        </ul>
+      </div>
 
-        <!-- social Contexts -->
-        <div>
-          <div class="text-sm font-medium text-[var(--muted-foreground)]">Who you were with</div>
-          <ul class="list-disc pl-5">
-            <li v-for="context in entryDetailsById?.social_contexts" :key="context.social_name" class="text-lg">
-              {{ context.social_name }}
-            </li>
-          </ul>
-        </div>
+      <!-- social Contexts -->
+      <div>
+        <div class="text-sm font-medium text-[var(--muted-foreground)]">Who you were with:</div>
+        <ul class="list-disc pl-5">
+          <li v-for="context in entryDetailsById?.social_contexts" :key="context.social_name" class="text-lg">
+            {{ context.social_name }}
+          </li>
+        </ul>
+      </div>
 
-        <!-- location Contexts -->
-        <div>
-          <div class="text-sm font-medium text-[var(--muted-foreground)]">Where you were</div>
-          <ul class="list-disc pl-5">
-            <li v-for="location in entryDetailsById?.location_contexts" :key="location.location_name" class="text-lg">
-              {{ location.location_name }}
-            </li>
-          </ul>
-        </div>
+      <!-- location Contexts -->
+      <div>
+        <div class="text-sm font-medium text-[var(--muted-foreground)]">Where you were:</div>
+        <ul class="list-disc pl-5">
+          <li v-for="location in entryDetailsById?.location_contexts" :key="location.location_name" class="text-lg">
+            {{ location.location_name }}
+          </li>
+        </ul>
       </div>
     </div>
 
@@ -169,17 +177,15 @@
     </div>
   </div>
 </div>
-
-
 </template>
 
 <script lang="ts" setup>
+  //import musicalNoteUrl from '@assets/images/music_note.svg'; <-- ne znam zasto ne zeli importat ovaj, a moodove je normalno
   import mood1Url from '@/assets/images/1.svg';
   import mood2Url from '@/assets/images/2.svg';
   import mood3Url from '@/assets/images/3.svg';
   import mood4Url from '@/assets/images/4.svg';
   import mood5Url from '@/assets/images/5.svg';
-  import defaultMoodUrl from '@/assets/images/default-mood.svg';
   import { getDay, startOfMonth, endOfMonth, sub, add, format, parseISO, isToday } from 'date-fns';
 
   interface CalendarDay {
@@ -190,6 +196,26 @@
   interface CalendarMonth {
     calendarMonth: CalendarDay[][];
     month: string;
+  }
+
+  interface MoodEntry {
+  id: number;
+  entry_timestamp: string;
+  general_mood: number;
+  spotify_song_id?: string;
+  notes?: string;
+  detailed_moods?: { mood_name: string }[];
+  social_contexts?: { social_name: string }[];
+  location_contexts?: { location_name: string }[];
+}
+
+  //utility funkcija da provjeri ako dan ima barem 1 spotify entry (ovaj kod postaje katastrofa)
+  function hasSpotifySongOnDay(date: Date): boolean {
+    const formattedDate = format(date, 'dd.MM.yyyy');
+    return moodEntries.value.some(entry => 
+      format(parseISO(entry.entry_timestamp), 'dd.MM.yyyy') === formattedDate &&
+      entry.spotify_song_id
+    );
   }
 
   // refs for showing specific entry modal
@@ -211,7 +237,7 @@
   // refs for showing day modal
   const showDayDetails = ref(false);
   const selectedDate = ref<Date | null>(null);
-  const selectedMoods = ref<any[]>([]);
+  const selectedMoods = ref<MoodEntry[]>([]);
 
   function openDayModal(day: Date) {
     showDayDetails.value = true;
@@ -239,7 +265,7 @@
   const formattedYear = ref(thisYear);
   const currentDayRef = ref<HTMLElement | null>(null);
 
-  const moodEntries = ref([]);
+  const moodEntries = ref<MoodEntry[]>([]);
   const moodMap = computed<Map<string, number>>(() => mapMoodEntries(moodEntries.value));
   const moodImageMap: Map<string, string> = new Map([
     [1, mood1Url],
@@ -248,7 +274,7 @@
     [4, mood4Url],
     [5, mood5Url]
   ]);
-  const entryDetailsById = ref([]);
+  const entryDetailsById = ref<MoodEntry | null>(null);
 
   onMounted(() => {
     fetchEntriesByYear(); // fetch moods when component is mounted (otherwise calendar doesn't render until the year is changed)
@@ -268,7 +294,6 @@
     }
 
     entryDetailsById.value = response.mood_entry;
-    console.log(JSON.stringify(entryDetailsById.value));
   } catch (err) {
     console.error("Error fetching mood data:", err);
     fetchError.value = err as Error;
@@ -333,6 +358,7 @@
       }
 
       moodEntries.value = response.mood_entries;
+      console.log(moodEntries.value);
     } catch (err) {
       console.error("Error fetching mood data:", err);
       fetchError.value = err as Error;
@@ -438,7 +464,7 @@
   .day-image {
     max-width: 80%; /* Adjust the size of the image */
     max-height: 70%; /* Adjust the height of the image */
-    object-fit: contain;
+    object-fit: fit;
   }
 
   .day-number {
