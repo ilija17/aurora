@@ -6,8 +6,11 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Not authenticated' })
   }
 
+  const { timeframe } = event.context.params as {
+    timeframe: string
+  }
   const fetchTop = () =>
-    $fetch('https://api.spotify.com/v1/me/top/tracks?time_range=long_term', {
+    $fetch(`https://api.spotify.com/v1/me/top/artists?time_range=${timeframe}`, {
       headers: { Authorization: `Bearer ${token}` },
       params: { limit: '10' }
     })
