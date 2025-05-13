@@ -110,8 +110,14 @@
 
         <!-- spotify Song -->
         <div v-if="entryDetailsById?.spotify_song_id">
-          <div class="text-sm font-medium text-[var(--muted-foreground)]">Spotify Song</div>
-          <div class="text-lg">{{ entryDetailsById?.spotify_song_id }}</div>
+          <iframe
+            :src="`https://open.spotify.com/embed/track/${entryDetailsById?.spotify_song_id}`"
+            width="300"
+            height="80"
+            frameborder="0"
+            allowtransparency="true"
+            allow="encrypted-media"
+          ></iframe>
         </div>
 
         <!-- note -->

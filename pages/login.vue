@@ -1,5 +1,4 @@
 <template>
-  <ThemeSwitcher />
   <LoginForm />
 </template>
 

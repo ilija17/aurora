@@ -1,6 +1,8 @@
 <!-- ovo je takav brainrot al uglavom router skuži na kojoj se stranici i stavi ovaj drugi css -->
 <template>
-  <nav class="nav" aria-label="Main menu">
+  <ThemeSwitcher/>
+  
+  <nav class="nav" aria-label="Main menu">    
     <NuxtLink
       to="/spotify"
       class="btn"
