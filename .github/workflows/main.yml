@@ -1,4 +1,4 @@
-name: Build & hot-swap Aurora container (local image)
+name: Build & hot‑swap Aurora (local image)
 
 on:
   push:
@@ -10,42 +10,24 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: [ self-hosted ]
-
-    env:
-      IMAGE_NAME: aurora-app:latest
-      CONTAINER_NAME: aurora
+    runs-on: self-hosted
 
     steps:
-      - name: 📥 Check out code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: 🏗️ Build image with plain Docker
+      - name: 🏗️ Build image
         run: |
-          docker build \
-            --pull \
-            --file Dockerfile \
-            --tag ${{ env.IMAGE_NAME }} \
-            .
+          docker build -t nuxt-app:latest .
 
-      - name: 🔥 Stop & remove old container (if exists)
-        run: docker rm -f ${{ env.CONTAINER_NAME }} || true
-
-      - name: 📄 Copy .env.nuxt into workspace
-        run: cp /home/ilija/.env $GITHUB_WORKSPACE/.env
-
-      - name: 🚀 Run new container
+      - name: 🔥 Replace old container
         run: |
-          docker run -d \
-            --name ${{ env.CONTAINER_NAME }} \
-            --env-file ./.env \
+          docker rm -f aurora || true
+
+      - name: 🚀 Run container
+        run: |
+          docker run \
+            --name aurora \
+            --env-file /home/ilija/.env \
+            -d \
             -p 3001:3000 \
-            ${{ env.IMAGE_NAME }}
-
-      - name: ✅ Smoke-check (TCP port open)
-        run: |
-          if timeout 5 bash -c "</dev/tcp/localhost/3001"; then
-            echo "🌄 Aurora is running"
-          else
-            echo "🌕 Dawn has fallen" && exit 1
-          fi
+            nuxt-app:latest
