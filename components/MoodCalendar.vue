@@ -119,7 +119,7 @@
       <div v-if="entryDetailsById?.spotify_song_id" class="mb-4 self-start w-full ">
         <iframe
           :src="`https://open.spotify.com/embed/track/${entryDetailsById?.spotify_song_id}`"
-          width="250"
+          width="300"
           height="80"
           frameborder="0"
           allowtransparency="true"
