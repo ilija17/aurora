@@ -10,24 +10,23 @@
 </template>
 
 <script setup lang="ts">
-const { siteUrl } = useRuntimeConfig().public
-
 definePageMeta({
   requiresAuth: false
 })
 
-import { useRuntimeConfig } from '#imports'
+import { ref } from 'vue'
+import { useRuntimeConfig, useSupabaseClient } from '#imports'
 
-const config = useRuntimeConfig()
-const supabase = useSupabaseClient()
-const email     = ref('')
-const message   = ref('')
+const { public: { siteUrl } } = useRuntimeConfig()
+const supabase      = useSupabaseClient()
+const email         = ref('')
+const message       = ref('')
 
 const sendResetEmail = async () => {
-  const redirectTo = `${config.public.siteUrl}/reset-password`
-  const { error } = await supabase.auth.resetPasswordForEmail(email.value, {
-    redirectTo: `${siteUrl}/reset-password`,
-  })
+  const redirectTo = siteUrl.replace(/\/+$/, '') + '/reset-password'
+
+  const { error } = await supabase.auth
+    .resetPasswordForEmail(email.value, { redirectTo })
 
   message.value = error
     ? error.message
