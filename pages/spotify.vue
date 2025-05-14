@@ -40,6 +40,16 @@
     </div>
     <button v-if="tracksError?.statusCode !== 401" @click="fetchRoast()">Roast me</button>
     <div class="roast">
+      <select name="characters" id="characters" @change="" v-model="characters" v-if="tracksError?.statusCode !== 401">
+        <option value="Default">Default</option>
+        <option value="SlavojZizek">Slavoj Žižek</option>
+        <option value="JoeBiden">Joe Biden</option>
+        <option value="JeremyClarkson">Jeremy Clarkson</option>
+        <option value="SansUndertale">Sans</option>
+        <option value="LadyGaga">Lady Gaga</option>
+        <option value="Laufey">Laufey</option>
+      </select>
+
       <p v-if="roastLoad">Generating roast…</p>
       <p v-else-if="roastErr">Couldn’t fetch roast.</p>
       <div v-else v-html="roastHtml"></div>
@@ -52,6 +62,7 @@ import { ref, watch, computed } from 'vue'
 import MarkdownIt from 'markdown-it'
 definePageMeta({ requiresAuth: false })
 const md = new MarkdownIt()
+const characters = ref('Default')
 const timeframe = ref<'short_term' | 'medium_term' | 'long_term'>('short_term')
 const { data: tracks, error: tracksError } =
   await useFetch<any[]>(() => `/api/spotify/top-tracks/${timeframe.value}`)
@@ -73,26 +84,25 @@ watch(timeframe, async () => {
   }
  })
 
+
 const roast = ref('')
 const roastErr = ref(false)
 const roastLoad = ref(false)
 
-async function fetchRoast() {
-  console.log('Fetching roast...')
-  
+async function fetchRoast() {  
   if (!tracks.value.length || !artists.value.length) return
   roastLoad.value = true
   roastErr.value = false
   try {
-    const response = await fetch('/api/openai/roast', {
+    const response = await fetch(`/api/openai/roast`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        prompt: 'Roast my Spotify Rewind. Don’t hold back.',
         tracks: tracks.value,
         artists: artists.value,
+        character: characters.value,
       }),
     })
 

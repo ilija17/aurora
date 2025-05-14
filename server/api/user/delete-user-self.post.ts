@@ -73,7 +73,6 @@ export default defineEventHandler(async (event) => {
   // only current user can delete itself
   const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
   if (error) {
-    console.log("error in /server/api/delete-user-self.ts", error);
     throw createError({ statusCode: 500, statusMessage: error.message });
   }
 

@@ -268,7 +268,6 @@
     }
 
     entryDetailsById.value = response.mood_entry;
-    console.log(JSON.stringify(entryDetailsById.value));
   } catch (err) {
     console.error("Error fetching mood data:", err);
     fetchError.value = err as Error;

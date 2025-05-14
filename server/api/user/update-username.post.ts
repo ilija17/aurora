@@ -48,6 +48,5 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 500, statusMessage: updateError.message });
   }
 
-  console.log("updated username to: ", username);
   return { success: true, message: 'Username updated' };
 });

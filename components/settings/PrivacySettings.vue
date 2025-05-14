@@ -114,7 +114,6 @@
       await $fetch('/api/user/delete-user-self', { method: 'POST' });
       await logout();
     } catch (err: any) {
-      console.log(err);
       alert(err.statusMessage || err.message || 'Failed to delete account');
     }
   }
