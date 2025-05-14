@@ -29,6 +29,7 @@ jobs:
           docker run \
             --name aurora \
             --env-file /home/ilija/.env \
+            --restart unless-stopped \
             -d \
             -p 3001:3000 \
             nuxt-app:latest
