@@ -48,6 +48,7 @@
         <option value="SansUndertale">Sans</option>
         <option value="LadyGaga">Lady Gaga</option>
         <option value="Laufey">Laufey</option>
+        <option value="Monday">Monday</option>
       </select>
 
       <p v-if="roastLoad">Generating roast…</p>
