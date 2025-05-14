@@ -4,7 +4,7 @@ import OpenAI from 'openai'
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
 export default defineEventHandler(async (event) => {
-  const { tracks = [], artists = [], prompt = 'Roast my Spotify Rewind.' } =
+  const { tracks = [], artists = [], character} =
     (await readBody(event)) || {}
 
   const trackLines  = tracks
@@ -16,6 +16,13 @@ export default defineEventHandler(async (event) => {
     .slice(0, 10)
     .map((a, i) => `${i + 1}. ${a.name}`)
     .join('\n')
+
+  let prompt: string
+  if(character === 'Default') {
+    prompt = 'Roast my Spotify Rewind. Don’t hold back.'
+  } else {
+    prompt = `Roast my Spotify Rewind like ${character}. Don’t hold back.`
+  }
 
   const system = `
     Given a listener’s Top‑10 tracks and Top‑10 artists,

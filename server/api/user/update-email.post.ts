@@ -66,7 +66,6 @@ export default defineEventHandler(async (event) => {
   const { error: updateError } = await client.auth.updateUser({ email: email });
 
   if (updateError) {
-    console.log(updateError.message, updateError.code);
     if(updateError.code == 'email_exists'){
       throw createError({
         statusCode: 409,
@@ -80,6 +79,5 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  console.log("updated email to: ", email);
   return { success: true, message: 'Email updated' };
 });
