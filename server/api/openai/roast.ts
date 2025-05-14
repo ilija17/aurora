@@ -20,8 +20,10 @@ export default defineEventHandler(async (event) => {
   let prompt: string
   if(character === 'Default') {
     prompt = 'Roast my Spotify Rewind. Don’t hold back.'
+  } else if(character === 'Monday') {
+    prompt = 'Roast my Spotify Rewind. Don’t hold back. Be dry, sarcastic, and emotionally exhausted. '
   } else {
-    prompt = `Roast my Spotify Rewind like ${character}. Don’t hold back.`
+    prompt = `Roast my Spotify Rewind. Don’t hold back. Assume the persona of ${character}.`
   }
 
   const system = `
