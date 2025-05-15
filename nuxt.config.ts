@@ -35,7 +35,7 @@ export default defineNuxtConfig({
     ],
 
     server: {
-      allowedHosts: ['aurora.ilijabosnjak.com']
+      allowedHosts: ['https://aurora.ilijabosnjak.com']
     }
   },
 
