@@ -35,60 +35,6 @@ export default defineLazyEventHandler(async () => {
             return { userData: data }
           },
         },
-
-        getUserSong: {
-          description: 'return random song name',
-          parameters: z.object({ city: z.string() }),
-          execute: async ({}: { city: string }) => {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            const weatherOptions = [
-              'Me and I - ABBA',
-              'HELP! - The Beatles',
-              'Billie Jean - Michael Jackson',
-              'Bohemian Rhapsody - Queen',
-              'Stairway to Heaven - Led Zeppelin',
-              'Hotel California - Eagles',
-            ];
-            return weatherOptions[
-              Math.floor(Math.random() * weatherOptions.length)
-            ];
-          },
-        },
-
-         getWeatherInformation: {
-          description: 'show the weather in a given city to the user',
-          parameters: z.object({ city: z.string() }),
-          execute: async ({}: { city: string }) => {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            const weatherOptions = [
-              'sunny',
-              'cloudy',
-              'rainy',
-              'snowy',
-              'windy',
-            ];
-            return weatherOptions[
-              Math.floor(Math.random() * weatherOptions.length)
-            ];
-          },
-        },
-
-        askForConfirmation: {
-          description: 'Ask the user for confirmation.',
-          parameters: z.object({
-            message: z
-              .string()
-              .describe('The message to ask for confirmation.'),
-          }),
-        },
-
-        getLocation: {
-          description:
-            'Get the user location. Always ask for confirmation before using this tool.',
-          parameters: z.object({}),
-        },
       },
     });
 
