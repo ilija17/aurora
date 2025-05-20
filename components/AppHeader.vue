@@ -36,7 +36,16 @@
       active-class="btn--active"
       exact-active-class="btn--active"
     >
-      mood-calendar-test
+      Mood calendar
+    </NuxtLink>
+
+    <NuxtLink
+      to="/llm"
+      class="btn"
+      active-class="btn--active"
+      exact-active-class="btn--active"
+    >
+      Pseudo-psychiatrist
     </NuxtLink>
   </nav>
 </template>

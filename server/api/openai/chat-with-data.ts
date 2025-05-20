@@ -2,6 +2,9 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { streamText } from 'ai';
 import { ref, watch, computed } from 'vue'
 import { z } from 'zod';
+import { serverSupabaseClient } from '#supabase/server';
+
+import { getUserData } from '@/server/utils/getUserData'
 
 export default defineLazyEventHandler(async () => {
   const openai = createOpenAI({
@@ -9,6 +12,12 @@ export default defineLazyEventHandler(async () => {
   });
 
   return defineEventHandler(async (event: any) => {
+    const supabase = await serverSupabaseClient(event)
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if(!user) {
+      throw createError({ statusCode: 401, statusMessage: 'Not authenticated' })
+    }
     const { messages } = await readBody(event);
 
     const result = streamText({
@@ -19,47 +28,16 @@ export default defineLazyEventHandler(async () => {
       tools: {
 
         getAllUserData: {
-          description: 'Get all existing user data about emotions and such',
-          parameters: z.object({ city: z.string() }),
-          execute: async ({}: { city: string }) => {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            const weatherOptions = [
-              'Me and I - ABBA',
-              'HELP! - The Beatles',
-              'Billie Jean - Michael Jackson',
-              'Bohemian Rhapsody - Queen',
-              'Stairway to Heaven - Led Zeppelin',
-              'Hotel California - Eagles',
-            ];
-            return weatherOptions[
-              Math.floor(Math.random() * weatherOptions.length)
-            ];
+          description: 'Return all mood-entry data for the signed-in user',
+          parameters: z.object({}),
+          execute: async () => {
+            const data = await getUserData(supabase, user.id)
+            return { userData: data }
           },
         },
 
         getUserSong: {
           description: 'return random song name',
-          parameters: z.object({ city: z.string() }),
-          execute: async ({}: { city: string }) => {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            const weatherOptions = [
-              'Me and I - ABBA',
-              'HELP! - The Beatles',
-              'Billie Jean - Michael Jackson',
-              'Bohemian Rhapsody - Queen',
-              'Stairway to Heaven - Led Zeppelin',
-              'Hotel California - Eagles',
-            ];
-            return weatherOptions[
-              Math.floor(Math.random() * weatherOptions.length)
-            ];
-          },
-        },
-
-        getAllUserData: {
-          description: 'Get all existing user data.',
           parameters: z.object({ city: z.string() }),
           execute: async ({}: { city: string }) => {
             await new Promise(resolve => setTimeout(resolve, 2000));
