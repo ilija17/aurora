@@ -49,6 +49,7 @@
         <option value="LadyGaga">Lady Gaga</option>
         <option value="Laufey">Laufey</option>
         <option value="Monday">Monday</option>
+        <option value="Satoru Gojo"> Satoru Gojo </option>
       </select>
 
       <p v-if="roastLoad">Generating roast…</p>

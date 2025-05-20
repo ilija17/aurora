@@ -1,15 +1,14 @@
 export default defineEventHandler(async (event) => {
-  let token = getCookie(event, 'spotify_access_token')
+  /* let token = getCookie(event, 'spotify_access_token')
   if (!token) {
     throw createError({ statusCode: 401, statusMessage: 'Not authenticated' })
   }
   
   const { id } = event.context.params as {
     id: string
-  }
-
-  return `Me and I - ABBA + ${id}`;
-
+  } */
+  return `Me and I - ABBA`;
+  /*
   const fetchData = () =>
     $fetch(`https://api.spotify.com/v1/tracks/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -32,5 +31,5 @@ export default defineEventHandler(async (event) => {
     }
     throw err
   }
-
+  */
 })

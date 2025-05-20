@@ -12,19 +12,69 @@ export default defineLazyEventHandler(async () => {
     const { messages } = await readBody(event);
 
     const result = streamText({
-      model: openai('gpt-4o'),
+      model: openai('gpt-4.1-nano'),
       messages,
       toolCallStreaming: true,
       maxSteps: 5,
       tools: {
 
-        // server-side tool with execute function
+        getAllUserData: {
+          description: 'Get all existing user data about emotions and such',
+          parameters: z.object({ city: z.string() }),
+          execute: async ({}: { city: string }) => {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            const weatherOptions = [
+              'Me and I - ABBA',
+              'HELP! - The Beatles',
+              'Billie Jean - Michael Jackson',
+              'Bohemian Rhapsody - Queen',
+              'Stairway to Heaven - Led Zeppelin',
+              'Hotel California - Eagles',
+            ];
+            return weatherOptions[
+              Math.floor(Math.random() * weatherOptions.length)
+            ];
+          },
+        },
+
         getUserSong: {
-          description: 'get the user song',
-          parameters: z.object({ id: z.string() }),
-          execute: async ({ id }: { id: string }) => {
-            const trackName = await $fetch<string>(`api/spotify/get-data/song/${id}.ts`)
-            return { trackName }
+          description: 'return random song name',
+          parameters: z.object({ city: z.string() }),
+          execute: async ({}: { city: string }) => {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            const weatherOptions = [
+              'Me and I - ABBA',
+              'HELP! - The Beatles',
+              'Billie Jean - Michael Jackson',
+              'Bohemian Rhapsody - Queen',
+              'Stairway to Heaven - Led Zeppelin',
+              'Hotel California - Eagles',
+            ];
+            return weatherOptions[
+              Math.floor(Math.random() * weatherOptions.length)
+            ];
+          },
+        },
+
+        getAllUserData: {
+          description: 'Get all existing user data.',
+          parameters: z.object({ city: z.string() }),
+          execute: async ({}: { city: string }) => {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            const weatherOptions = [
+              'Me and I - ABBA',
+              'HELP! - The Beatles',
+              'Billie Jean - Michael Jackson',
+              'Bohemian Rhapsody - Queen',
+              'Stairway to Heaven - Led Zeppelin',
+              'Hotel California - Eagles',
+            ];
+            return weatherOptions[
+              Math.floor(Math.random() * weatherOptions.length)
+            ];
           },
         },
 
