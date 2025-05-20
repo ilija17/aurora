@@ -4,14 +4,6 @@ import { useChat } from '@ai-sdk/vue';
 const { input, handleSubmit, messages, addToolResult } = useChat({
   api: '/api/openai/chat-with-data',
   maxSteps: 5,
-
-  // run client-side tools that are automatically executed:
-  async onToolCall({ toolCall }) {
-    if (toolCall.toolName === 'getLocation') {
-      const cities = ['New York', 'Los Angeles', 'Chicago', 'San Francisco'];
-      return cities[Math.floor(Math.random() * cities.length)];
-    }
-  },
 });
 
 const messageList = computed(() => messages.value); // computer property for type inference
