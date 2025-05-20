@@ -45,6 +45,8 @@ export default defineNuxtConfig({
     spotifyClientSecret: process.env.SPOTIFY_CLIENT_SECRET,
     spotifyRedirectUri: process.env.SPOTIFY_REDIRECT_URI,
 
+    openaiApiKey: process.env.OPENAI_API_KEY,
+
     public: {
       supabaseUrl: process.env.SUPABASE_URL!,
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL,
