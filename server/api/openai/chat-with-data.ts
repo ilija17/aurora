@@ -18,8 +18,48 @@ export default defineLazyEventHandler(async () => {
       maxSteps: 5,
       tools: {
 
+        getAllUserData: {
+          description: 'Get all existing user data about emotions and such',
+          parameters: z.object({ city: z.string() }),
+          execute: async ({}: { city: string }) => {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            const weatherOptions = [
+              'Me and I - ABBA',
+              'HELP! - The Beatles',
+              'Billie Jean - Michael Jackson',
+              'Bohemian Rhapsody - Queen',
+              'Stairway to Heaven - Led Zeppelin',
+              'Hotel California - Eagles',
+            ];
+            return weatherOptions[
+              Math.floor(Math.random() * weatherOptions.length)
+            ];
+          },
+        },
+
         getUserSong: {
           description: 'return random song name',
+          parameters: z.object({ city: z.string() }),
+          execute: async ({}: { city: string }) => {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            const weatherOptions = [
+              'Me and I - ABBA',
+              'HELP! - The Beatles',
+              'Billie Jean - Michael Jackson',
+              'Bohemian Rhapsody - Queen',
+              'Stairway to Heaven - Led Zeppelin',
+              'Hotel California - Eagles',
+            ];
+            return weatherOptions[
+              Math.floor(Math.random() * weatherOptions.length)
+            ];
+          },
+        },
+
+        getAllUserData: {
+          description: 'Get all existing user data.',
           parameters: z.object({ city: z.string() }),
           execute: async ({}: { city: string }) => {
             await new Promise(resolve => setTimeout(resolve, 2000));
