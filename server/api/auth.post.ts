@@ -1,3 +1,4 @@
+// server/api/auth.post.ts
 import {
   defineEventHandler,
   readBody,
@@ -7,13 +8,13 @@ import {
 import { createClient } from '@supabase/supabase-js'
 
 const usernamePattern = /^[A-Za-z0-9_-]{3,30}$/
-const ACCESS_COOKIE   = 'sb-access-token'
-const REFRESH_COOKIE  = 'sb-refresh-token'
+const ACCESS_COOKIE = 'sb-access-token'
+const REFRESH_COOKIE = 'sb-refresh-token'
 
 export default defineEventHandler(async (event) => {
   const {
     public: { supabaseUrl },
-    supabaseServiceRoleKey 
+    supabaseServiceRoleKey
   } = useRuntimeConfig()
 
   const supabase = createClient(
@@ -21,7 +22,6 @@ export default defineEventHandler(async (event) => {
     supabaseServiceRoleKey,
     {
       auth: {
-        // without this its schrodinger's login, maybe it works, maybe not
         persistSession: false,
         autoRefreshToken: false
       }
@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
   if (!isLogin) {
     if (!username || !usernamePattern.test(username)) {
       throw createError({
-        statusCode:    400,
+        statusCode: 400,
         statusMessage: 'Username must be 3–30 characters, letters, numbers, underscores or hyphens only.'
       })
     }
@@ -56,10 +56,16 @@ export default defineEventHandler(async (event) => {
     : await supabase.auth.signUp({
         email,
         password,
-        options: { data: { username } }
+        options: { 
+          data: { 
+            username: username || '',
+            full_name: username || '' // Use username as full_name for now
+          } 
+        }
       })
 
   if (error) {
+    console.error('Supabase auth error:', error)
     throw createError({ statusCode: 400, statusMessage: error.message })
   }
 
@@ -76,7 +82,7 @@ export default defineEventHandler(async (event) => {
       httpOnly: true,
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24 * 365 // 1 year, maybe
+      maxAge: 60 * 60 * 24 * 365 // 1 year
     })
   }
 
