@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
 
   // Delete note (only if it belongs to the current user)
   const { error } = await supabase
-    .from('notesenctest')
+    .from('notes_enc')
     .delete()
     .eq('id', noteId)
     .eq('user_id', userId)

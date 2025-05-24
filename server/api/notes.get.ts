@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
 
   // Get all notes for this user
   const { data, error } = await supabase
-    .from('notesenctest')
+    .from('notes_enc')
     .select('id, ciphertext, salt, iv, created_at')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })

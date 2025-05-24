@@ -47,5 +47,14 @@
     >
       Pseudo-psychiatrist
     </NuxtLink>
+
+    <NuxtLink
+      to="/notes"
+      class="btn"
+      active-class="btn--active"
+      exact-active-class="btn--active"
+    >
+      Encrypted notes
+    </NuxtLink>
   </nav>
 </template>
