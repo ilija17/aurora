@@ -21,6 +21,7 @@
     "cookie": "^0.7.2",
     "date-fns": "^4.1.0",
     "dompurify": "^3.2.5",
+    "jsonwebtoken": "^9.0.2",
     "markdown-it": "^14.1.0",
     "nuxt": "^3.16.2",
     "openai": "^4.98.0",
@@ -31,6 +32,7 @@
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/zxcvbn": "^4.4.5"
   }
 }
