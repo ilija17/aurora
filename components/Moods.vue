@@ -27,7 +27,7 @@
       </div>
 
       <!-- 4) Spotify search -->
-      <div class="flex-shrink-0 w-full p-4" v-if="isLoggedIn">
+      <div class="flex-shrink-0 w-full p-4" v-if="isAuthenticated">
         <SpotifySearch
           v-model:spotifySongId="songId"
         />
@@ -63,17 +63,18 @@
   import AdditionalContext from '~/components/AdditionalContext.vue'
   import SpotifySearch from '~/components/SpotifySearch.vue'
   import NoteConfirmation from '~/components/NoteConfirmation.vue'
-  import { useSpotifySession } from '~/composables/checkSpotifySession'
+  import { useSpotify } from '~/composables/useSpotify'
 
-  const { isLoggedIn, pending } = useSpotifySession()
+  const { isAuthenticated } = useSpotify()
 
   let slides = 5
 
   // ako nije logged in, spotify slide se ne prikazuje
   // i slides se smanjuje za 1
   // možda, al ovo radi pa ono
-  console.log('isLoggedIn', (isLoggedIn ? 1 : 0), 'slides', slides)
-  slides = slides - (isLoggedIn ? 1 : 0)
+  console.log('isAuthenticated', isAuthenticated.value)
+  console.log('isLoggedIn', (isAuthenticated.value ? 0 : 1), 'slides', slides)
+  slides = slides - (isAuthenticated.value ? 0 : 1)
   console.log('adjusted slides', slides)
   const current = ref(0)
 
