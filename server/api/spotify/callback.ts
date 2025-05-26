@@ -1,44 +1,62 @@
-import { defineEventHandler, getQuery, createError, sendRedirect, setCookie } from 'h3'
+import { defineEventHandler, getQuery, getCookie, setCookie, sendRedirect, createError } from 'h3'
 import { useRuntimeConfig } from '#imports'
-import { URLSearchParams } from 'url'
 
 export default defineEventHandler(async (event) => {
-  const { spotifyClientId, spotifyClientSecret, spotifyRedirectUri } = useRuntimeConfig()
+  const {
+    spotifyClientId,
+    spotifyClientSecret,
+    spotifyRedirectUri
+  } = useRuntimeConfig()
+
   const { code, state } = getQuery(event)
-
-  const storedState = event.node.req.headers.cookie
-    ?.split('; ')
-    .find(c => c.startsWith('spotify_state='))
-    ?.split('=')[1]
-
-  if (!state || state !== storedState) {
-    throw createError({ statusCode: 400, statusMessage: 'state_mismatch' })
+  if (!code || !state) {
+    throw createError({ statusCode: 400, statusMessage: 'Missing code or state' })
   }
 
-  const body = new URLSearchParams({
-    grant_type: 'authorization_code',
-    code: String(code),
-    redirect_uri: spotifyRedirectUri,
-  })
-  const basic = Buffer
-    .from(`${spotifyClientId}:${spotifyClientSecret}`)
-    .toString('base64')
+  const storedState = getCookie(event, 'spotify_state')
+  if (!storedState || storedState !== state) {
+    throw createError({ statusCode: 400, statusMessage: 'state_mismatch' })
+  }
+  setCookie(event, 'spotify_state', '', { maxAge: 0 })
 
   const tokenRes: any = await $fetch('https://accounts.spotify.com/api/token', {
-    method: 'POST',
+    method:  'POST',
     headers: {
-      Authorization: `Basic ${basic}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type':  'application/x-www-form-urlencoded',
+      Authorization:   `Basic ${Buffer.from(
+        `${spotifyClientId}:${spotifyClientSecret}`
+      ).toString('base64')}`
     },
-    body: body.toString(),
+    body: new URLSearchParams({
+      grant_type:   'authorization_code',
+      code:         String(code),
+      redirect_uri: spotifyRedirectUri
+    }).toString()
+  }).catch((err) => {
+    throw createError({ statusCode: 502, statusMessage: 'Spotify token error' })
   })
 
-  setCookie(event, 'spotify_access_token', tokenRes.access_token, {
+  const { access_token, refresh_token, expires_in } = tokenRes
+  const expiresAt = Date.now() + expires_in * 1000
+
+  setCookie(event, 'spotify_access', access_token, {
     httpOnly: true,
-    maxAge: tokenRes.expires_in,
+    sameSite: 'lax',
+    secure:   true,
+    maxAge:   expires_in // token vrijedi 1 sat, nakon toga ga browser ubije
   })
-  setCookie(event, 'spotify_refresh_token', tokenRes.refresh_token, {
+
+  setCookie(event, 'spotify_expires', String(expiresAt), {
     httpOnly: true,
+    sameSite: 'lax',
+    secure:   true,
+    maxAge:   expires_in
+  })
+
+  setCookie(event, 'spotify_refresh', refresh_token, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure:   true
   })
 
   sendRedirect(event, '/spotify')

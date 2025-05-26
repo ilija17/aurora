@@ -81,7 +81,6 @@ async function onNext() {
     }])
 
   if (error) {
-    console.error('failed to insert mood:', error)
   } else {
     emit('next')
   }

@@ -60,7 +60,6 @@ watch(
       .eq('type_id', newTypeId)
 
     if (error) {
-      console.error('error loading detailed moods:', error)
       detailedMoods.value = []
     } else {
       detailedMoods.value = data || []

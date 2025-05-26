@@ -93,7 +93,6 @@
 
     if (error) {
       alert("Failed to send password reset email.");
-      console.error(error.message);
       return;
     }
 

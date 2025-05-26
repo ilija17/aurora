@@ -68,7 +68,6 @@ onMounted(async () => {
     .from('location_context')
     .select('id, location_name')
   if (locErr) {
-    console.error(locErr)
   } else {
     locationDetails.value = locs || []
   }
@@ -77,7 +76,6 @@ onMounted(async () => {
     .from('social_context')
     .select('id, social_name')
   if (socErr) {
-    console.error(socErr)
   } else {
     socialContext.value = socials || []
   }

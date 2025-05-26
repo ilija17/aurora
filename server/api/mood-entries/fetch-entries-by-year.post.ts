@@ -32,7 +32,6 @@ export default defineEventHandler(async (event) => {
     .lt('entry_timestamp', toDate);
 
   if (error) {
-    console.error('Error fetching mood entries:', error);
     throw createError({ statusCode: 500, statusMessage: 'Database query failed' })
   }
 

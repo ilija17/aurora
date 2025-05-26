@@ -25,7 +25,6 @@ export default defineEventHandler(async (event) => {
     .eq('user_id', userId)
 
   if (entryError) {
-    console.error('Failed to fetch user mood entries:', entryError)
     return {
       statusCode: 500,
       body: { error: 'Error fetching user mood entries' },
@@ -42,7 +41,6 @@ export default defineEventHandler(async (event) => {
       .in('mood_entry_id', moodEntryIds)
 
     if (deleteJoinError) {
-      console.error('Error deleting from join table:', deleteJoinError)
       return {
         statusCode: 500,
         body: { error: 'Failed to delete from join table' },
@@ -57,7 +55,6 @@ export default defineEventHandler(async (event) => {
     .eq('user_id', userId)
 
   if (deleteEntriesError) {
-    console.error('Error deleting mood entries:', deleteEntriesError)
     return {
       statusCode: 500,
       body: { error: 'Failed to delete mood entries' },

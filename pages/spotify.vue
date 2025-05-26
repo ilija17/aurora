@@ -80,7 +80,6 @@ watch(timeframe, async () => {
     artists.value = ar
   } catch (e) {
     // ovo ne radi sigurno ali koda errore ikad riješavamo 🚢
-    console.error('Error fetching Spotify data:', e)
     tracksError.value = e
     artistsError.value = e
   }
@@ -115,7 +114,6 @@ async function fetchRoast() {
     const data = await response.json()
     roast.value = data.roast
   } catch (error) {
-    console.error('Error fetching roast:', error)
     roastErr.value = true
   } finally {
     roastLoad.value = false
