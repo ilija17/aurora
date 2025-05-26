@@ -72,7 +72,9 @@
   // ako nije logged in, spotify slide se ne prikazuje
   // i slides se smanjuje za 1
   // možda, al ovo radi pa ono
+  console.log('isLoggedIn', (isLoggedIn ? 1 : 0), 'slides', slides)
   slides = slides - (isLoggedIn ? 1 : 0)
+  console.log('adjusted slides', slides)
   const current = ref(0)
 
   const selectedMood      = ref(0)
