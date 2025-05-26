@@ -33,6 +33,7 @@
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
+    "@types/base-64": "^1.0.2",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/zxcvbn": "^4.4.5"
   }

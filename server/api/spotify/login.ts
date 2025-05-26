@@ -1,4 +1,4 @@
-import { defineEventHandler, sendRedirect, setCookie } from 'h3'
+import { defineEventHandler, setCookie, sendRedirect } from 'h3'
 import { useRuntimeConfig } from '#imports'
 import { randomBytes } from 'crypto'
 
@@ -15,7 +15,12 @@ export default defineEventHandler(event => {
   const params = new URLSearchParams({
     response_type: 'code',
     client_id:     spotifyClientId,
-    scope:         'user-read-private user-read-email user-top-read user-library-read',
+    scope:         [
+      'user-read-private',
+      'user-read-email',
+      'user-top-read',
+      'user-library-read'
+    ].join(' '),
     redirect_uri:  spotifyRedirectUri,
     state
   })
