@@ -2,12 +2,14 @@ import { defineEventHandler, sendRedirect, setCookie } from 'h3'
 import { useRuntimeConfig } from '#imports'
 import { randomBytes } from 'crypto'
 
-export default defineEventHandler((event) => {
+export default defineEventHandler(event => {
   const { spotifyClientId, spotifyRedirectUri } = useRuntimeConfig()
+
   const state = randomBytes(16).toString('hex')
   setCookie(event, 'spotify_state', state, {
     httpOnly: true,
-    sameSite: 'lax'
+    sameSite: 'lax',
+    secure:   process.env.NODE_ENV === 'production'
   })
 
   const params = new URLSearchParams({
