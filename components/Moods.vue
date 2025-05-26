@@ -27,7 +27,7 @@
       </div>
 
       <!-- 4) Spotify search -->
-      <div class="flex-shrink-0 w-full p-4">
+      <div class="flex-shrink-0 w-full p-4" v-if="isLoggedIn">
         <SpotifySearch
           v-model:spotifySongId="songId"
         />
@@ -63,8 +63,16 @@
   import AdditionalContext from '~/components/AdditionalContext.vue'
   import SpotifySearch from '~/components/SpotifySearch.vue'
   import NoteConfirmation from '~/components/NoteConfirmation.vue'
+  import { useSpotifySession } from '~/composables/checkSpotifySession'
 
-  const slides = 5
+  const { isLoggedIn, pending } = useSpotifySession()
+
+  let slides = 5
+
+  // ako nije logged in, spotify slide se ne prikazuje
+  // i slides se smanjuje za 1
+  // možda, al ovo radi pa ono
+  slides = slides - (isLoggedIn ? 1 : 0)
   const current = ref(0)
 
   const selectedMood      = ref(0)

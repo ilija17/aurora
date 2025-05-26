@@ -123,7 +123,14 @@ async function handleAuth () {
       })
     }
 
-    router.push('/logoutpage')
+    if(isLogin.value) {
+      await router.push('/welcome')
+    } else if(!isLogin.value) {
+      await router.push('/check-email')
+    } else {
+      await router.push('/')
+    }
+
   } catch (err: any) {
     errorMsg.value = err.message || 'Unexpected error'
   }

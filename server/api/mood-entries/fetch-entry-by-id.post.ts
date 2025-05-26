@@ -18,12 +18,10 @@ export default defineEventHandler(async (event) => {
     .rpc('fetch_mood_entry_by_id', { entry_id: entry_id })
 
 if (error) {
-  console.error('Error fetching mood entry:', error)
   throw createError({ statusCode: 500, statusMessage: 'Database query failed' })
 }
 
   if (error) {
-    console.error('Error fetching mood entry:', error);
     throw createError({ statusCode: 500, statusMessage: 'Database query failed' })
   }
   

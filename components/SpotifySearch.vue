@@ -72,7 +72,6 @@ async function doSearch() {
     if (err.statusCode === 401) {
       window.location.href = '/api/spotify/login'
     } else {
-      console.error('Search failed:', err)
     }
   }
 }

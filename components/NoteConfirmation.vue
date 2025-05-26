@@ -15,6 +15,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
 
 const props = defineProps<{
   selectedMood:         number
@@ -42,9 +46,10 @@ async function submit() {
       }
     })
   } catch (err: any) {
-    console.error('Insert failed:', err.statusMessage || err.message)
   } finally {
     isSubmitting.value = false
   }
+
+  await router.push('/mood-calendar-test')
 }
 </script>

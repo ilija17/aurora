@@ -295,7 +295,6 @@
 
     entryDetailsById.value = response.mood_entry;
   } catch (err) {
-    console.error("Error fetching mood data:", err);
     fetchError.value = err as Error;
   } finally {
     loadingEntryByYear.value = false;
@@ -359,7 +358,6 @@
 
       moodEntries.value = response.mood_entries;
     } catch (err) {
-      console.error("Error fetching mood data:", err);
       fetchError.value = err as Error;
     } finally {
       loadingEntriesByYear.value = false;

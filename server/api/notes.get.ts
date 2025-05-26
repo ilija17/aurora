@@ -24,7 +24,6 @@ export default defineEventHandler(async (event) => {
       throw new Error('No user ID in token')
     }
   } catch (error) {
-    console.error('Token decode error:', error)
     throw createError({ statusCode: 401, statusMessage: 'Invalid token' })
   }
 
@@ -36,7 +35,6 @@ export default defineEventHandler(async (event) => {
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('Supabase select error:', error)
     throw createError({ 
       statusCode: 500, 
       statusMessage: `Database error: ${error.message}` 

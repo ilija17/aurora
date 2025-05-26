@@ -10,6 +10,7 @@ import { createClient } from '@supabase/supabase-js'
 const usernamePattern = /^[A-Za-z0-9_-]{3,30}$/
 const ACCESS_COOKIE = 'sb-access-token'
 const REFRESH_COOKIE = 'sb-refresh-token'
+const { public: { siteUrl } } = useRuntimeConfig()
 
 export default defineEventHandler(async (event) => {
   const {
@@ -59,13 +60,13 @@ export default defineEventHandler(async (event) => {
         options: { 
           data: { 
             username: username || '',
-            full_name: username || '' // Use username as full_name for now
-          } 
+            full_name: username || ''
+          },
+          emailRedirectTo: siteUrl.replace(/\/+$/, '') + '/login'
         }
       })
 
   if (error) {
-    console.error('Supabase auth error:', error)
     throw createError({ statusCode: 400, statusMessage: error.message })
   }
 

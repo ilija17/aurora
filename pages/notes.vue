@@ -194,7 +194,6 @@ async function loadNotes() {
           decryptedNotes.value[index].decrypted = true
         }
       } catch (err) {
-        console.error('Failed to decrypt note:', err)
       }
     }
   } catch (err: any) {
