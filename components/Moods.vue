@@ -67,15 +67,11 @@
 
   const { isAuthenticated } = useSpotify()
 
-  let slides = 5
-
+  const baseSlides = 5  
   // ako nije logged in, spotify slide se ne prikazuje
   // i slides se smanjuje za 1
   // možda, al ovo radi pa ono
-  console.log('isAuthenticated', isAuthenticated.value)
-  console.log('isLoggedIn', (isAuthenticated.value ? 0 : 1), 'slides', slides)
-  slides = slides - (isAuthenticated.value ? 0 : 1)
-  console.log('adjusted slides', slides)
+  const slides = computed(() => baseSlides - (isAuthenticated.value ? 0 : 1))
   const current = ref(0)
 
   const selectedMood      = ref(0)
@@ -85,7 +81,7 @@
   const songId            = ref<string|null>(null)
 
   const isFirst = computed(() => current.value === 0)
-  const isLast  = computed(() => current.value === slides - 1)
+  const isLast  = computed(() => current.value === slides.value - 1)
   const nextDisabled = computed(() =>
     isLast.value || (isFirst.value && selectedMood.value === 0)
   )
