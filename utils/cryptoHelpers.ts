@@ -39,3 +39,24 @@ export const unwrapDek = (b64: string, kek: CryptoKey) =>
 
   export const makeSalt = () =>
   btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(16))))
+
+  export async function aesGcmEncrypt (plaintext: string, dek: CryptoKey) {
+  const iv = crypto.getRandomValues(new Uint8Array(12))
+  const cipherBuf = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    dek,
+    new TextEncoder().encode(plaintext)
+  )
+
+  return {
+    iv:  btoa(String.fromCharCode(...iv)),
+    blob: btoa(String.fromCharCode(...new Uint8Array(cipherBuf)))
+  }
+}
+
+export async function aesGcmDecrypt (b64Blob: string, b64Iv: string, dek: CryptoKey) {
+  const iv  = Uint8Array.from(atob(b64Iv),  c => c.charCodeAt(0))
+  const buf = Uint8Array.from(atob(b64Blob), c => c.charCodeAt(0))
+  const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, dek, buf)
+  return new TextDecoder().decode(plain)
+}
