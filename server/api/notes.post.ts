@@ -10,7 +10,6 @@ export default defineEventHandler(async (event) => {
 
   const supabase = createClient(supabaseUrl, supabaseServiceRoleKey)
 
-  // Get user from JWT token
   const accessToken = getCookie(event, 'sb-access-token')
   if (!accessToken) {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
@@ -37,7 +36,6 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Store encrypted note in database
   const { data, error } = await supabase
     .from('notesenctest')
     .insert({
