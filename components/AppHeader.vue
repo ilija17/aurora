@@ -49,7 +49,7 @@
     </NuxtLink>
 
     <NuxtLink
-      to="/notes"
+      to="/secrets"
       class="btn"
       active-class="btn--active"
       exact-active-class="btn--active"
