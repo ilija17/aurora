@@ -25,16 +25,22 @@ export default defineEventHandler(async (event) => {
     spotifySongId:        string|null
   }
 
-  const { data, error } = await supabase.rpc('create_mood_entry', {
-    p_user_id:          user.id,
-    p_general_mood:     selectedMood,
-    p_detailed_ids:     detailedMoodContext,
-    p_location_ids:     locationContext,
-    p_social_ids:       socialContext,
-    p_notes:            notes,
-    p_spotify_song_id:  spotifySongId
-  })
+  // build payload duh
+  const payload = {
+    general_mood:    selectedMood,
+    detailed_ids:    detailedMoodContext,
+    location_ids:    locationContext,
+    social_ids:      socialContext,
+    notes,
+    spotify_song_id: spotifySongId
+  }
 
+  const { data, error } = await supabase
+    .rpc('create_mood_entry', {
+      p_user_id: user.id,
+      p_payload: payload
+    })
+    
   if (error) {
     throw createError({ statusCode: 400, statusMessage: error.message })
   }
