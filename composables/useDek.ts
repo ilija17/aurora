@@ -28,10 +28,14 @@ export const useDek = () => {
     if (!kek.value) {
       if (!password) throw new Error('need password first time')
       const { key, salt } = await deriveKey(password)
-      password = undefined // mici je iz RAM
+      password = '' // mici je iz RAM
       kek.value = key
       await saveKek(kek.value)
-      await sb.from('profiles').update({ dek_salt: salt }).eq('id', user.value.id)
+      await sb.from('profiles')
+        .update({ dek_salt: salt })
+        .eq('id', user.value.id)
+        .single()
+        .throwOnError()
     }
     const { data: profile, error } = await sb
       .from('profiles')
