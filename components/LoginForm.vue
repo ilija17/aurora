@@ -78,6 +78,8 @@ import { useRouter } from 'vue-router'
 import { useSupabaseClient } from '#imports'
 import { usePasswordStrength } from '~/composables/usePasswordStrength'
 import { useUsernameValidator } from '~/composables/useUsernameValidator'
+import { useDek } from '~/composables/useDek'
+import { useDekRepair } from '~/composables/useDekRepair' //čisti brainrot
 
 const router       = useRouter()
 const supabase  = useSupabaseClient()
@@ -121,6 +123,18 @@ async function handleAuth () {
         access_token:  session.access_token,
         refresh_token: session.refresh_token
       })
+    }
+
+    const { repairIfMissing } = useDekRepair()
+    await repairIfMissing(password.value)
+
+    const { unlock } = useDek()
+    try {
+      //ovo bi trebalo kao raditi
+      await unlock(password.value)
+    } finally {
+      // password napusti ram nakon toga jer nije potrebna
+      password.value = ''
     }
 
     if(isLogin.value) {
