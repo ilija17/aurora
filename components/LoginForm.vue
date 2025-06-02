@@ -129,9 +129,12 @@ async function handleAuth () {
     await repairIfMissing(password.value)
 
     const { unlock } = useDek()
+    const { fetchContextData } = usePublicContextData()
     try {
       //ovo bi trebalo kao raditi
       await unlock(password.value)
+      //spremi sve moods i contexts u composable
+      await fetchContextData()
     } finally {
       // password napusti ram nakon toga jer nije potrebna
       password.value = ''

@@ -56,29 +56,34 @@
     class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
   >
     <div class="bg-[var(--secondary)] p-6 rounded-xl shadow-lg w-[90%] max-w-md text-[var(--fg)] flex flex-col min-h-[300px] h-[50vh]">
-      <div class="flex flex-col gap-2 overflow-y-auto mb-4">
+      <div v-if="selectedMoods.length" class="flex flex-col gap-2 overflow-y-auto mb-4">
         <div
           v-for="entry in selectedMoods"
           :key="entry.id"
           class="rounded-lg px-4 py-3 hover:bg-[var(--accent)] cursor-pointer transition"
           @click="openEntryModal(entry.id)"
         >
-          <div class="flex justify-between items-center">
-            <div>
-              <div class="text-sm font-semibold">
-                {{ format(parseISO(entry.entry_timestamp), 'HH:mm') }}
-              </div>
-              <div class="text-xs text-[var(--muted-foreground)]">
-                {{ format(parseISO(entry.entry_timestamp), 'dd.MM.yyyy') }}
-              </div>
+        <div class="flex justify-between items-center">
+          <div>
+            <div class="text-sm font-semibold">
+              {{ format(parseISO(entry.payload.entry_timestamp), 'HH:mm') }}
             </div>
-            <img
-              class="w-12 h-12 object-contain"
-              :src="moodImageMap.get(entry.general_mood) ?? defaultMoodUrl"
-              alt="Mood image"
-            />
+            <div class="text-xs text-[var(--muted-foreground)]">
+              {{ format(parseISO(entry.payload.entry_timestamp), 'dd.MM.yyyy') }}
+            </div>
           </div>
+          <img
+            class="w-12 h-12 object-contain"
+            :src="moodImageMap.get(entry.payload.general_mood.id) ?? defaultMoodUrl"
+            alt="Mood image"
+          />
         </div>
+      </div>
+    </div>
+
+
+      <div v-else class="flex items-center justify-center flex-grow text-[var(--muted)]">
+        Nothing to see here...
       </div>
 
       <div class="mt-auto">
@@ -94,7 +99,7 @@
 
   <!-- entry details modal -->
 <div
-  v-if="showEntryDetails"
+  v-if="showEntryDetails && entryDetailsById && entryDetailsById.payload"
   class="fixed inset-0 bg-transparent flex items-center justify-center z-50"
 >
   <div class="bg-[var(--secondary)] p-6 rounded-xl shadow-lg w-[90%] max-w-md text-[var(--fg)] flex flex-col min-h-[300px] h-[50vh]">
@@ -103,22 +108,22 @@
     <div class="flex flex-col gap-4 overflow-y-auto mb-4">
       <div class="flex w-full items-center">
         <img
-          :src="moodImageMap.get(entryDetailsById?.general_mood_id) ?? defaultMoodUrl"
+          :src="moodImageMap.get(entryDetailsById?.payload.general_mood.id) ?? defaultMoodUrl"
           alt="Mood image"
           class="w-12 h-12 object-cover mr-4"
         />
         <div class="flex flex-col justify-center">
           <div class="text-lg font-semibold">
-            {{ format(parseISO(entryDetailsById?.entry_timestamp), 'EEE') }},
-            {{ format(parseISO(entryDetailsById.entry_timestamp), 'h:mm a') }}
+            {{ format(parseISO(entryDetailsById.payload.entry_timestamp), 'EEE') }},
+            {{ format(parseISO(entryDetailsById.payload.entry_timestamp), 'h:mm a') }}
           </div>
         </div>
       </div>
 
       <!-- spotify widget -->
-      <div v-if="entryDetailsById?.spotify_song_id" class="mb-4 self-start w-full ">
+      <div v-if="entryDetailsById?.payload.spotify_song_id" class="mb-4 self-start w-full ">
         <iframe
-          :src="`https://open.spotify.com/embed/track/${entryDetailsById?.spotify_song_id}`"
+          :src="`https://open.spotify.com/embed/track/${entryDetailsById.payload.spotify_song_id}`"
           width="300"
           height="80"
           frameborder="0"
@@ -128,38 +133,38 @@
       </div>
 
       <!-- note -->
-      <div>
+      <div v-if="entryDetailsById?.payload.notes">
         <div class="text-sm font-medium text-[var(--muted-foreground)]">Notes:</div>
         <div class="border-2 border-transparent bg-[var(--input-bg)] rounded-md p-3 mt-2 w-full h-auto m-h-80 text-lg overflow-y-auto overflow-x-hidden break-words">
-          {{ entryDetailsById?.notes || "No notes for today" }}
+          {{ entryDetailsById.payload.notes || "No notes for today" }}
         </div>
       </div>
 
       <!-- detailed Moods -->
-      <div>
+      <div v-if="entryDetailsById.payload.detailed_moods.length">
         <div class="text-sm font-medium text-[var(--muted-foreground)]">Detailed Moods:</div>
         <ul class="list-disc pl-5">
-          <li v-for="mood in entryDetailsById?.detailed_moods" :key="mood.mood_name" class="text-lg">
+          <li v-for="mood in entryDetailsById.payload.detailed_moods" :key="mood.mood_name" class="text-lg">
             {{ mood.mood_name }}
           </li>
         </ul>
       </div>
 
       <!-- social Contexts -->
-      <div>
+      <div v-if="entryDetailsById?.payload.social_contexts.length">
         <div class="text-sm font-medium text-[var(--muted-foreground)]">Who you were with:</div>
         <ul class="list-disc pl-5">
-          <li v-for="context in entryDetailsById?.social_contexts" :key="context.social_name" class="text-lg">
+          <li v-for="context in entryDetailsById.payload.social_contexts" :key="context.social_name" class="text-lg">
             {{ context.social_name }}
           </li>
         </ul>
       </div>
 
       <!-- location Contexts -->
-      <div>
+      <div v-if="entryDetailsById?.payload.location_contexts.length">
         <div class="text-sm font-medium text-[var(--muted-foreground)]">Where you were:</div>
         <ul class="list-disc pl-5">
-          <li v-for="location in entryDetailsById?.location_contexts" :key="location.location_name" class="text-lg">
+          <li v-for="location in entryDetailsById.payload.location_contexts" :key="location.location_name" class="text-lg">
             {{ location.location_name }}
           </li>
         </ul>
@@ -179,6 +184,7 @@
 </div>
 </template>
 
+
 <script lang="ts" setup>
   //import musicalNoteUrl from '@assets/images/music_note.svg'; <-- ne znam zasto ne zeli importat ovaj, a moodove je normalno
   import mood1Url from '@/assets/images/1.svg';
@@ -187,6 +193,7 @@
   import mood4Url from '@/assets/images/4.svg';
   import mood5Url from '@/assets/images/5.svg';
   import { getDay, startOfMonth, endOfMonth, sub, add, format, parseISO, isToday } from 'date-fns';
+  import { useMoodEntries } from '~/composables/useMoodEntries';
 
   interface CalendarDay {
     date: Date;
@@ -213,8 +220,8 @@
   function hasSpotifySongOnDay(date: Date): boolean {
     const formattedDate = format(date, 'dd.MM.yyyy');
     return moodEntries.value.some(entry => 
-      format(parseISO(entry.entry_timestamp), 'dd.MM.yyyy') === formattedDate &&
-      entry.spotify_song_id
+      format(parseISO(entry.payload.entry_timestamp), 'dd.MM.yyyy') === formattedDate &&
+      entry.payload.spotify_song_id
     );
   }
 
@@ -244,7 +251,7 @@
     const formatted = format(day, 'dd.MM.yyyy');
     selectedDate.value = day;
     selectedMoods.value = moodEntries.value.filter(entry => {
-      const entryDate = format(parseISO(entry.entry_timestamp), 'dd.MM.yyyy');
+      const entryDate = format(parseISO(entry.payload.entry_timestamp), 'dd.MM.yyyy');
       return entryDate === formatted;
     });
   }
@@ -263,8 +270,6 @@
   const thisYear: Date = new Date().getFullYear();
   const inputYear = ref(thisYear);
   const formattedYear = ref(thisYear);
-  const currentDayRef = ref<HTMLElement | null>(null);
-
   const moodEntries = ref<MoodEntry[]>([]);
   const moodMap = computed<Map<string, number>>(() => mapMoodEntries(moodEntries.value));
   const moodImageMap: Map<string, string> = new Map([
@@ -275,31 +280,43 @@
     [5, mood5Url]
   ]);
   const entryDetailsById = ref<MoodEntry | null>(null);
+  const { finalizedEntries, fetchFinalizedMoodEntries, error: moodEntriesError, loading } = useMoodEntries()
 
+  // fetch moods when component is mounted 
+  // (otherwise entries doesn't render until the year changes in any way)
   onMounted(() => {
-    fetchEntriesByYear(); // fetch moods when component is mounted (otherwise calendar doesn't render until the year is changed)
+    fetchEntriesByYear(); 
   });
 
+
   async function fetchEntryById(id: number) {
-  try {
-    loadingEntryByYear.value = true;
+    try {
+      loadingEntryByYear.value = true;
+      fetchError.value = null;
 
-    const response = await $fetch<{ success: boolean; mood_entry: any }>('/api/mood-entries/fetch-entry-by-id', {
-      method: 'POST',
-      body: { entry_id: id }
-    });
+      // Ensure finalized entries are fetched/decrypted 
+      // before trying to filter for a specific one
+      await fetchFinalizedMoodEntries();
 
-    if (!response.success || !response.mood_entry) {
-      throw new Error("Invalid response from API");
+      if (moodEntriesError.value) {
+        throw new Error(moodEntriesError.value);
+      }
+
+      const entry = finalizedEntries.value.find(entry => entry.id === id);
+
+      if (!entry) {
+        throw new Error(`Entry with ID ${id} not found`);
+      }
+
+      entryDetailsById.value = entry;
+    } catch (err: any) {
+      fetchError.value = err;
+      console.error('[fetchEntryById]', err);
+    } finally {
+      loadingEntryByYear.value = false;
     }
-
-    entryDetailsById.value = response.mood_entry;
-  } catch (err) {
-    fetchError.value = err as Error;
-  } finally {
-    loadingEntryByYear.value = false;
-  }
 }
+
 
   function incrementYear(){
     if(inputYear.value > thisYear){
@@ -339,26 +356,32 @@
     }
 
     formattedYear.value = inputYear.value;
-    currentDayRef.value = null; // clear current day ref when the year changes and the current day is possibly out of view
+    currentDayRef.value = null; 
     fetchEntriesByYear();
   }
 
   async function fetchEntriesByYear(){
-    try {
+     try {
       loadingEntriesByYear.value = true;
+      fetchError.value = null;
 
-      const response = await $fetch<{ success: boolean; mood_entries: any[] }>('/api/mood-entries/fetch-entries-by-year', {
-        method: 'POST',
-        body: { year: formattedYear.value }
-      })
-
-      if (!response.success || !Array.isArray(response.mood_entries)) {
-        throw new Error("Invalid response from API");
+      await fetchFinalizedMoodEntries()
+      if (moodEntriesError.value) {
+        throw new Error(moodEntriesError.value);
       }
 
-      moodEntries.value = response.mood_entries;
-    } catch (err) {
-      fetchError.value = err as Error;
+      const year = formattedYear.value ;
+
+      const filtered = finalizedEntries.value.filter(entry => {
+        const date = parseISO(entry.payload.entry_timestamp);
+        return date.getFullYear() === year;
+      })
+
+      moodEntries.value = filtered;
+      scrollToCurrentDay();
+    } catch (err: any) {
+      fetchError.value = err;
+      console.error('[fetchEntriesByYear]', err);
     } finally {
       loadingEntriesByYear.value = false;
     }
@@ -366,11 +389,10 @@
 
   function mapMoodEntries(moodEntries: any[]) {
   const moodMapTemp: Map<string, number> = new Map();
-
   for (let i = 0; i < moodEntries.length; i++) {
-    const isoString = moodEntries[i].entry_timestamp;
+    const isoString = moodEntries[i].payload.entry_timestamp;
     const formattedDateString = format(parseISO(isoString), 'dd.MM.yyyy');
-    const moodValue = moodEntries[i].general_mood;
+    const moodValue = moodEntries[i].payload.general_mood.id;
 
     const existingValue = moodMapTemp.get(formattedDateString);
 
@@ -448,29 +470,29 @@
     position: relative;
     text-align: center;
     vertical-align: middle;
-    height: 100px; /* Adjust based on your design */
+    height: 100px;
   }
 
   .image-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 70%; /* Take most of the space above the number */
+    height: 70%;
   }
 
   .day-image {
-    max-width: 80%; /* Adjust the size of the image */
-    max-height: 70%; /* Adjust the height of the image */
+    max-width: 80%;
+    max-height: 70%;
     object-fit: fit;
   }
 
   .day-number {
     position: absolute;
-    bottom: 5px; /* This places the text at the bottom */
+    bottom: 5px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 12px; /* Small font size for the day number */
-    color: white; /* Optional: adjust the text color */
+    font-size: 12px; 
+    color: white; 
   }
 
   .day-number-sunday {
