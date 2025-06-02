@@ -2,8 +2,8 @@
   <div>
     <h1>All Mood Entries (Decrypted)</h1>
     <div v-if="errorMsg" class="error">{{ errorMsg }}</div>
-    <div v-else-if="decrypted.length">
-      <div v-for="e in decrypted" :key="e.id" class="entry">
+    <div v-else-if="finalizedEntries.length">
+      <div v-for="e in finalizedEntries" :key="e.id" class="entry">
         <h2>Entry {{ e.id }}</h2>
         <pre>{{ e.payload }}</pre>
       </div>
@@ -13,51 +13,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useSupabaseClient } from '#imports'
-import { useDek } from '~/composables/useDek'
+  import { ref, onMounted } from 'vue'
+  import { useMoodEntries } from '~/composables/useMoodEntries' 
 
-interface RawRow {
-  id:   number
-  iv:   string
-  data: string
-}
+  const errorMsg = ref('')
 
-const supabase = useSupabaseClient()
-const { unlock, open, unlocked } = useDek()
+  const {
+    finalizedEntries,         
+    fetchFinalizedMoodEntries,
+    error,
+  } = useMoodEntries()        
 
-const decrypted = ref<Array<{ id: number; payload: any }>>([])
-const errorMsg  = ref('')
-
-onMounted(async () => {
-  try {
-    await unlock()
-    if (!unlocked.value) throw new Error('Could not unlock encryption key')
-
-    const { data, error } = await supabase
-      .from<RawRow>('mood_entries')
-      .select('id, iv, data')
-
-    if (error) throw new Error(error.message)
-    if (!data || data.length === 0) {
-      decrypted.value = []
-      return
+  onMounted(async () => {
+    try {
+      await fetchFinalizedMoodEntries() 
+      if (error.value) throw new Error(error.value)
+    } catch (e: any) {
+      errorMsg.value = e.message || String(e)
+      console.error('[MoodCalendar]', e)
     }
-
-    decrypted.value = await Promise.all(
-      data.map(async row => {
-        const payload = await open({
-          enc_iv:   row.iv,
-          enc_blob: row.data
-        })
-        return { id: row.id, payload }
-      })
-    )
-  } catch (e: any) {
-    errorMsg.value = e.message || String(e)
-    console.error(e)
-  }
-})
+  })
 </script>
 
 <style scoped>

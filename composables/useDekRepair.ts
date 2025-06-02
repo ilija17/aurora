@@ -29,7 +29,6 @@ export const useDekRepair = () => {
       .throwOnError()
 
     await saveKek(key)
-    console.log('[useDekRepair] dek_salt repaired for user', user.value.id)
   }
 
   return { repairIfMissing }
