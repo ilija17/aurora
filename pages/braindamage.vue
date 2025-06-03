@@ -1,4 +1,5 @@
 <template>
+  <ClientOnly>
   <div class="min-h-screen p-6 space-y-8">
     <h1 class="text-2xl font-bold">Crypto Session Debug</h1>
 
@@ -44,6 +45,7 @@
 
     <p v-if="error" class="text-red-600 dark:text-red-400">{{ error }}</p>
   </div>
+</ClientOnly>
 </template>
 
 <script setup lang="ts">
