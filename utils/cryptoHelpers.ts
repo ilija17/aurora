@@ -1,5 +1,6 @@
 import { Base64 } from 'js-base64';
-import { scrypt } from 'scrypt-js';
+import scryptJs from 'scrypt-js';
+const { scrypt } = scryptJs as { scrypt: typeof import('scrypt-js').scrypt };
 
 const toB64 = (buf: ArrayBuffer | Uint8Array): string => {
   const bytes = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
