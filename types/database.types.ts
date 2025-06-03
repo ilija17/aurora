@@ -137,39 +137,33 @@ export type Database = {
       }
       mood_entries: {
         Row: {
-          entry_timestamp: string
-          general_mood: number
           id: number
-          notes: string | null
+          entry_timestamp: string
           user_id: string
+          iv: string
+          data: string
         }
         Insert: {
-          entry_timestamp?: string
-          general_mood: number
           id?: number
-          notes?: string | null
+          entry_timestamp?: string
           user_id: string
+          iv: string
+          data: string
         }
         Update: {
-          entry_timestamp?: string
-          general_mood?: number
           id?: number
-          notes?: string | null
+          entry_timestamp?: string
           user_id?: string
+          iv?: string
+          data?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "moodEntries_general_mood_fkey"
-            columns: ["general_mood"]
-            referencedRelation: "general_moods"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "moodEntries_user_id_fkey"
             columns: ["user_id"]
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
       mood_entries_detailed_moods: {
@@ -276,6 +270,8 @@ export type Database = {
           avatar_url: string | null
           full_name: string | null
           id: string
+          dek_salt: string | null
+          wrapped_dek: string | null
           updated_at: string | null
           username: string | null
           website: string | null
@@ -284,6 +280,8 @@ export type Database = {
           avatar_url?: string | null
           full_name?: string | null
           id: string
+          dek_salt?: string | null
+          wrapped_dek?: string | null
           updated_at?: string | null
           username?: string | null
           website?: string | null
@@ -292,6 +290,8 @@ export type Database = {
           avatar_url?: string | null
           full_name?: string | null
           id?: string
+          dek_salt?: string | null
+          wrapped_dek?: string | null
           updated_at?: string | null
           username?: string | null
           website?: string | null
