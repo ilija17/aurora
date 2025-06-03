@@ -1,26 +1,29 @@
 <template>
-  <div>
-    <h1>All Mood Entries (Decrypted)</h1>
-    
-    <!-- Debug info -->
-    <div class="debug-info">
-      <p>Has KEK: {{ hasKek }}</p>
-      <p>Unlocked: {{ unlocked }}</p>
-      <button @click="forceUnlock">Force Unlock with Password</button>
+  <div class="min-h-screen p-4">
+    <h1 class="text-2xl font-bold mb-6">Decrypted Mood Entries</h1>
+
+    <!-- error banner -->
+    <div
+      v-if="error"
+      class="mb-4 rounded-md bg-red-100 p-3 text-red-700 dark:bg-red-900 dark:text-red-200"
+    >
+      {{ error }}
     </div>
-    
-    <div v-if="errorMsg" class="error">{{ errorMsg }}</div>
-    <div v-else-if="decrypted.length">
-      <div v-for="e in decrypted" :key="e.id" class="entry">
-        <h2>Entry {{ e.id }}</h2>
-        <div v-if="e.error" class="decrypt-error">
-          <strong>Decryption failed:</strong> {{ e.error }}
-        </div>
-        <pre v-else>{{ e.payload }}</pre>
-      </div>
-    </div>
-    <div v-else-if="loading">Loading…</div>
-    <div v-else>No mood entries found</div>
+
+    <!-- loading indicator -->
+    <div v-if="loading" class="text-gray-500 dark:text-gray-400">Loading…</div>
+
+    <!-- list of plaintext entries -->
+    <ul v-else>
+      <li
+        v-for="e in entries"
+        :key="e.id"
+        class="mb-4 rounded-lg bg-white p-4 shadow dark:bg-zinc-800"
+      >
+        <h2 class="mb-2 font-semibold">Entry #{{ e.id }}</h2>
+        <pre class="whitespace-pre-wrap break-all">{{ e.pretty }}</pre>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -29,121 +32,87 @@ import { ref, onMounted } from 'vue'
 import { useSupabaseClient } from '#imports'
 import { useDek } from '~/composables/useDek'
 
+/** DB row reflects exact column names: id, iv, data */
 interface RawRow {
   id: number
   iv: string
   data: string
 }
 
-const supabase = useSupabaseClient()
-const { open, unlock, hasKek, unlocked } = useDek()
-
-const decrypted = ref<Array<{ id: number; payload?: any; error?: string }>>([])
-const errorMsg = ref('')
-const loading = ref(true)
-
-async function forceUnlock() {
-  const pwd = prompt('Enter your password:')
-  if (pwd) {
-    try {
-      await unlock(pwd)
-      loadEntries()
-    } catch (e: any) {
-      errorMsg.value = `Unlock failed: ${e.message}`
-    }
-  }
+interface PlainRow {
+  id: number
+  data: any
+  pretty: string
 }
 
-async function loadEntries() {
+const sb = useSupabaseClient()
+const {
+  unlocked,
+  unlock,
+  quickUnlock,
+  open: openRow
+} = useDek()
+
+const entries = ref<PlainRow[]>([])
+const loading = ref(true)
+const error   = ref('')
+
+async function ensureDek() {
+  if (unlocked.value) return
+
   try {
-    loading.value = true
-    errorMsg.value = ''
-
-    const { data, error } = await supabase
-      .from('mood_entries')
-      .select('id, iv, data')
-      .order('id', { ascending: false })
-
-    if (error) throw new Error(error.message)
-
-    if (!data || data.length === 0) {
-      decrypted.value = []
-      return
+    await quickUnlock()
+  } catch (err: any) {
+    if (err?.message?.includes('No cached KEK')) {
+      const pwd = prompt('Enter password to decrypt your entries:')
+      if (!pwd) throw new Error('Password is required to decrypt entries')
+      await unlock(pwd)
+    } else {
+      throw err
     }
+  }
 
-    console.log(`[DEBUG] Found ${data.length} entries to decrypt`)
-    console.log('[DEBUG] Sample entry:', data[0])
+  if (!unlocked.value) throw new Error('Failed to unlock DEK')
+}
 
-    decrypted.value = await Promise.all(
-      data.map(async (row: RawRow) => {
-        try {
-          console.log(`[DEBUG] Decrypting entry ${row.id}`)
-          console.log(`[DEBUG] IV: ${row.iv?.slice(0, 16)}...`)
-          console.log(`[DEBUG] Data: ${row.data?.slice(0, 32)}...`)
-          
-          const payload = await open({
-            enc_iv: row.iv,
-            enc_blob: row.data
-          })
-          
-          console.log(`[DEBUG] Successfully decrypted entry ${row.id}`)
-          return { id: row.id, payload }
-        } catch (decryptError: any) {
-          console.error(`[DEBUG] Failed to decrypt entry ${row.id}:`, decryptError)
-          return { 
-            id: row.id, 
-            error: `Decryption failed: ${decryptError.message}` 
-          }
+async function fetchEncrypted(): Promise<RawRow[]> {
+  const { data, error } = await sb
+    .from('mood_entries')
+    .select('id, iv, data')
+    .order('id', { ascending: false })
+
+  if (error) throw error
+  return data as RawRow[]
+}
+
+onMounted(async () => {
+  try {
+    await ensureDek()
+
+    const rows = await fetchEncrypted()
+
+    entries.value = await Promise.all(
+      rows.map(async r => {
+        // adapt to useDek.open expected shape { enc_iv, enc_blob }
+        const payload = await openRow<any>({
+          enc_iv: r.iv,
+          enc_blob: r.data
+        })
+
+        return {
+          id: r.id,
+          data: payload,
+          pretty: typeof payload === 'string'
+            ? payload
+            : JSON.stringify(payload, null, 2)
         }
       })
     )
-
   } catch (e: any) {
-    console.error('Failed to load entries:', e)
-    errorMsg.value = e.message || String(e)
+    console.error('[Decrypt] failed', e)
+    error.value = e.message ?? 'Unknown error'
   } finally {
     loading.value = false
   }
-}
-
-onMounted(() => {
-  loadEntries()
 })
 </script>
-
-<style scoped>
-.error {
-  color: red;
-  margin: 1em 0;
-}
-
-.decrypt-error {
-  color: orange;
-  background: black;
-  border: 1px solid #ffeaa7;
-  padding: 0.5em;
-  border-radius: 4px;
-}
-
-.debug-info {
-  background: black;
-  padding: 1em;
-  margin-bottom: 1em;
-  border-radius: 4px;
-}
-
-.entry {
-  border: 1px solid #ccc;
-  padding: 1em;
-  margin-bottom: 1em;
-  border-radius: 4px;
-}
-
-pre {
-  background: #f5f5f5;
-  color: #333;
-  padding: 0.5em;
-  overflow-x: auto;
-  border-radius: 4px;
-}
-</style>
