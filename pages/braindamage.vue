@@ -52,15 +52,16 @@ import { useSupabaseClient } from '#imports'
 import { useDek } from '~/composables/useDek'
 
 const sb = useSupabaseClient()
-const { dek, unlocked, hasKek, quickUnlock, open: openRow } = useDek()
+const { dek, kek, unlocked, quickUnlock, open: openRow } = useDek()
 
 const loading = ref(true)
 const loadingEntries = ref(false)
 const kekHex = ref<string | null>(null)
 const dekHex = ref<string | null>(null)
 const entries = ref<{ id: number; pretty: string }[]>([])
-const error = ref<string>('')
+const error = ref('')
 
+const hasKek = computed(() => !!kek.value)
 const hasDek = computed(() => unlocked.value)
 
 function bufToHex(buf: ArrayBuffer, bytes = 8) {
@@ -78,10 +79,10 @@ async function exportKeys() {
   loading.value = true
   kekHex.value = dekHex.value = null
   try {
-    if (!dek.value && hasKek.value) {
+    if (!dek.value && kek.value) {
       await quickUnlock().catch(err => console.warn('[DBG] quickUnlock failed:', err))
     }
-    if (hasKek.value) kekHex.value = await exportKeyHex(hasKek.value)
+    if (kek.value) kekHex.value = await exportKeyHex(kek.value)
     if (dek.value) dekHex.value = await exportKeyHex(dek.value)
   } finally {
     loading.value = false
@@ -90,38 +91,28 @@ async function exportKeys() {
 
 interface Row { id: number; iv: string; data: string }
 
-async function loadEntries () {
+async function loadEntries() {
   if (!dek.value) return
   loadingEntries.value = true
   error.value = ''
-
   try {
     const { data, error: dbErr } = await sb
       .from('mood_entries')
       .select('id, iv, data')
       .order('id', { ascending: false })
       .limit(20)
-
     if (dbErr) throw dbErr
     const raw = data as Row[]
     const ok: { id: number; pretty: string }[] = []
     const bad: number[] = []
-
     for (const r of raw) {
       try {
         const payload = await openRow<any>({ enc_iv: r.iv, enc_blob: r.data })
-        ok.push({
-          id: r.id,
-          pretty: typeof payload === 'string'
-            ? payload
-            : JSON.stringify(payload, null, 2)
-        })
-      } catch (e) {
-        console.warn('Row', r.id, 'failed:', e)
+        ok.push({ id: r.id, pretty: typeof payload === 'string' ? payload : JSON.stringify(payload, null, 2) })
+      } catch {
         bad.push(r.id)
       }
     }
-
     entries.value = ok
     if (bad.length) error.value = `Failed rows: ${bad.join(', ')}`
   } catch (e: any) {
@@ -131,7 +122,6 @@ async function loadEntries () {
     loadingEntries.value = false
   }
 }
-
 
 onMounted(exportKeys)
 </script>

@@ -187,7 +187,8 @@ export const useDek = () => {
   }
 
   return { 
-    dek, 
+    dek,
+    kek,
     unlocked, 
     hasKek,
     unlock, 
