@@ -1,12 +1,25 @@
 import { openDB } from 'idb';
+import { scrypt } from 'scrypt-js';
 
 const toB64 = (buf: ArrayBuffer | Uint8Array): string => {
   const bytes = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
-  return btoa(String.fromCharCode(...bytes));
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(bytes).toString('base64');
+  }
+  let binary = '';
+  for (const b of bytes) binary += String.fromCharCode(b);
+  return btoa(binary);
 };
 
-const fromB64 = (b64: string): Uint8Array =>
-  Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+const fromB64 = (b64: string): Uint8Array => {
+  if (typeof Buffer !== 'undefined') {
+    return new Uint8Array(Buffer.from(b64, 'base64'));
+  }
+  const binary = atob(b64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+};
 
 // samo pri registraciji
 export const makeSalt = (): string => {
@@ -16,27 +29,22 @@ export const makeSalt = (): string => {
 
 export async function deriveKey(password: string, saltB64: string) {
   if (!saltB64) {
-    throw new Error('Missing PBKDF2 salt – cannot derive key');
+    throw new Error('Missing salt – cannot derive key');
   }
 
   const salt = fromB64(saltB64);
+  const passBytes = new TextEncoder().encode(password);
 
-  const keyMaterial = await crypto.subtle.importKey(
+  // scrypt parameters: N=2^15, r=8, p=1
+  const N = 1 << 15;
+  const r = 8;
+  const p = 1;
+  const dkLen = 32;
+  const derived = await scrypt(passBytes, salt, N, r, p, dkLen);
+
+  const key = await crypto.subtle.importKey(
     'raw',
-    new TextEncoder().encode(password),
-    { name: 'PBKDF2' },
-    false,
-    ['deriveKey'],
-  );
-
-  const key = await crypto.subtle.deriveKey(
-    {
-      name: 'PBKDF2',
-      salt,
-      iterations: 200_000,
-      hash: 'SHA-256',
-    },
-    keyMaterial,
+    derived,
     { name: 'AES-KW', length: 256 },
     true,
     ['wrapKey', 'unwrapKey'],
