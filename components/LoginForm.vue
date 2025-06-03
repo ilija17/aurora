@@ -46,7 +46,7 @@
 
         <button
           type="submit"
-          :disabled="!email || !password || (!isLogin && passwordScore < 3)"
+          :disabled="submitting || !email || !password || (!isLogin && passwordScore < 3)"
           class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
         >
           {{ isLogin ? 'Login' : 'Register' }}
@@ -91,12 +91,15 @@ const email      = ref('');
 const password   = ref('');
 const username   = ref('');
 const errorMsg   = ref('');
+const submitting = ref(false);
 
 const { score: passwordScore, text: strengthText, feedback: strengthFeedback } =
   usePasswordStrength(password);
 
 const { error: usernameError, sanitized: sanitizeUsername } =
   useUsernameValidator(username);
+
+const { unlock, storeKek, clearSession } = useDek();
 
 function toggleMode() {
   isLogin.value = !isLogin.value;
@@ -109,37 +112,47 @@ function goToResetPage() {
 
 async function handleAuth() {
   errorMsg.value = '';
+  submitting.value = true;
+
+  //ovo je doslovni brainrot al budemo kasnije popravili
+  const userPassword = password.value;
 
   try {
     const { session, salt, wrappedDek } = await $fetch('/api/auth', {
       method: 'POST',
       body: {
-        email:    email.value,
-        password: password.value,
-        isLogin:  isLogin.value,
+        email: email.value,
+        password: userPassword,
+        isLogin: isLogin.value,
         ...(isLogin.value ? {} : { username: sanitizeUsername() }),
       },
+    });
+    
+    console.log('[AUTH] Server returned', { 
+      salt, 
+      wrappedDek: wrappedDek?.slice(0,16)+'…' 
     });
 
     if (session) {
       await supabase.auth.setSession({
-        access_token:  session.access_token,
+        access_token: session.access_token,
         refresh_token: session.refresh_token,
       });
     }
 
-    if (salt) {
-      await saveSalt(salt);
-    } else {
-      // ovo se nebi trebalo dogoditi ali KAO moglo bi pa eto type shit
-      await clearSalt();
-    }
+    await unlock(userPassword);
 
     const { repairIfMissing } = useDekRepair();
-    await repairIfMissing(password.value, salt, wrappedDek);
+    await repairIfMissing(userPassword, salt, wrappedDek);
 
-    const { unlock } = useDek();
-    await unlock(password.value);
+    // spremi KEK NAVODNO, kek nestane brže nego Amelia Earhart
+    if (salt) {
+      await storeKek(userPassword, salt);
+      await saveSalt(salt);
+      console.log('[CACHE] KEK cached for session');
+    } else {
+      console.warn('[AUTH] No salt returned from server');
+    }
 
     const { fetchContextData } = usePublicContextData();
     await fetchContextData();
@@ -152,8 +165,10 @@ async function handleAuth() {
 
   } catch (err: any) {
     errorMsg.value = err.message ?? 'Unexpected error';
+    clearSession();
   } finally {
     password.value = '';
+    submitting.value = false;
   }
 }
 </script>

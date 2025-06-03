@@ -57,18 +57,13 @@ export default defineEventHandler(async (event) => {
     : await supabase.auth.signUp({
         email,
         password,
-        options: { 
-          data: { 
-            username: username || '',
-            full_name: username || ''
-          },
+        options: {
+          data: { username: username ?? '', full_name: username ?? '' },
           emailRedirectTo: siteUrl.replace(/\/+$/, '') + '/login'
         }
-      })
+      });
 
-  if (error) {
-    throw createError({ statusCode: 400, statusMessage: error.message })
-  }
+  if (error) throw createError({ statusCode: 400, statusMessage: error.message });
 
   const session = data.session
   if (session) {
@@ -87,5 +82,22 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  return { user: data.user, session: data.session }
+let salt: string | null        = null;
+let wrappedDek: string | null  = null;
+
+if (data.user) {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('dek_salt, wrapped_dek')
+    .eq('id', data.user.id)
+    .maybeSingle();
+
+  if (profile) {
+    salt       = profile.dek_salt;
+    wrappedDek = profile.wrapped_dek;
+  }
+}
+
+
+  return { user: data.user, session: data.session, salt, wrappedDek };
 })

@@ -11,6 +11,10 @@
 </template>
 
 <script setup lang="ts">
+import { useDek } from '~/composables/useDek'
+import { useSupabaseClient } from '#imports'
+import { clearSalt } from '~/utils/cryptoHelpers'
+
 definePageMeta({
   requiresAuth: true
 })
@@ -24,6 +28,7 @@ watch(user, val => {
 
 const logout = async () => {
   await supabase.auth.signOut()
+  clearSession()
   navigateTo('/login')
 }
 </script>

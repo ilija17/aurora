@@ -1,35 +1,40 @@
-import { useSupabaseClient, useSupabaseUser } from '#imports'
-import { deriveKey } from '~/utils/cryptoHelpers'
-import { saveKek } from '~/utils/keyStore'
+// composables/useDekRepair.ts
+import { useSupabaseClient } from '#imports';
+import {
+  makeSalt, deriveKey, generateDek, wrapDek, saveSalt
+} from '~/utils/cryptoHelpers';
 
-export const useDekRepair = () => {
-  const sb   = useSupabaseClient()
-  const user = useSupabaseUser()
+export function useDekRepair() {
+  const supabase = useSupabaseClient();
 
-  async function repairIfMissing (password: string): Promise<void> {
-    if (!user.value) throw new Error('no session')
+  async function repairIfMissing(
+    password: string,
+    saltB64: string | null,
+    wrappedDekB64: string | null
+  ) {
+    if (saltB64 && wrappedDekB64) {
+      await saveSalt(saltB64);
+      return;
+    }
 
-    //ako postoji ništa ne napravit
-    const { data: profile, error } = await sb
-      .from('profiles')
-      .select('dek_salt')
-      .eq('id', user.value.id)
-      .single()
+    const salt = makeSalt();
+    const { key: kek } = await deriveKey(password, salt);
+    const dek          = await generateDek();
+    const wrappedDek   = await wrapDek(dek, kek);
 
-    if (error) throw error
-    if (profile.dek_salt) return
+    const user = (await supabase.auth.getUser()).data.user;
+    if (!user) throw new Error('No signed-in user');
 
-    // ako ne postoji derivirat od lozinke
-    const { key, salt } = await deriveKey(password)
+    await supabase.from('profiles').update({
+      dek_salt:    salt,
+      wrapped_dek: wrappedDek,
+      dek_wrap_algo: 'AES-KW'      // optional
+    })
+    .eq('id', user.id);
 
-    await sb.from('profiles')
-      .update({ dek_salt: salt })
-      .eq('id', user.value.id)
-      .single()
-      .throwOnError()
 
-    await saveKek(key)
+    await saveSalt(salt);
   }
 
-  return { repairIfMissing }
+  return { repairIfMissing };
 }
