@@ -7,37 +7,45 @@
     font-style: normal;
     font-display: swap;
 }
+
+@font-face {
+    font-family: 'Inter';
+    src: url('/fonts/Inter-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
   
 * {
-    font-family: 'ComicSansCustom', cursive;
+    font-family: 'Inter', 'ComicSansCustom', sans-serif;
 }
 
 /* Theme: DARK */
 html[data-theme='dark'] {
-    --bg: #1A1D25;
-    --fg: #ebf4f1;
-    --primary: #64548E;
-    --secondary: #292F3F;
-    --tertiary: #2A2A3B;
-    --accent: #2ECFCF;
-    --border: #444;
-    --input-bg: #1a2b3c;
-    --input-color: #ebf4f1;
-    --input-border: #444;
-    --muted: #8a8fa3;
+    --bg: #1a1b22;
+    --fg: #f3f4f6;
+    --primary: #4f46e5;
+    --secondary: #1f2937;
+    --tertiary: #374151;
+    --accent: #22d3ee;
+    --border: #4b5563;
+    --input-bg: #111827;
+    --input-color: #f3f4f6;
+    --input-border: #4b5563;
+    --muted: #9ca3af;
   }
   
   /* Theme: LIGHT */
   html[data-theme='light'] {
     --bg: #ffffff;
-    --fg: #1A1D25;
-    --primary: #4B3C8E;
-    --secondary: #E2E8F0;
-    --accent: #0D9BAA;
-    --border: #ccc;
+    --fg: #111827;
+    --primary: #6366f1;
+    --secondary: #e5e7eb;
+    --accent: #06b6d4;
+    --border: #d1d5db;
     --input-bg: #f9fafb;
     --input-color: #111827;
-    --input-border: #ccc;
+    --input-border: #d1d5db;
     --muted: #6b7280;
   }
   
@@ -45,7 +53,7 @@ html[data-theme='dark'] {
   body {
     background-color: var(--bg);
     color: var(--fg);
-    font-family: 'ComicSansCustom', cursive;
+    font-family: 'Inter', 'ComicSansCustom', sans-serif;
   }
   
   /* Common elements */

@@ -1,11 +1,12 @@
 <!-- ovo je takav brainrot al uglavom router skuži na kojoj se stranici i stavi ovaj drugi css -->
 <template>
-  <ThemeSwitcher/>
-  
-  <nav class="nav" aria-label="Main menu">    
-    <NuxtLink
-      to="/spotify"
-      class="btn"
+  <header class="header">
+    <ThemeSwitcher />
+
+    <nav class="nav" aria-label="Main menu">
+      <NuxtLink
+        to="/spotify"
+        class="btn"
       active-class="btn--active"
       exact-active-class="btn--active"
     >
@@ -56,5 +57,13 @@
     >
       Encrypted notes
     </NuxtLink>
-  </nav>
+    </nav>
+  </header>
 </template>
+
+<style scoped>
+.header {
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  padding: 1rem 0.5rem;
+}
+</style>
