@@ -1,12 +1,14 @@
-import { openDB } from 'idb';
+import { Base64 } from 'js-base64';
+import { scrypt } from 'scrypt-js';
 
 const toB64 = (buf: ArrayBuffer | Uint8Array): string => {
   const bytes = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
-  return btoa(String.fromCharCode(...bytes));
+  return Base64.fromUint8Array(bytes);
 };
 
-const fromB64 = (b64: string): Uint8Array =>
-  Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+const fromB64 = (b64: string): Uint8Array => {
+  return Base64.toUint8Array(b64);
+};
 
 // samo pri registraciji
 export const makeSalt = (): string => {
@@ -16,27 +18,22 @@ export const makeSalt = (): string => {
 
 export async function deriveKey(password: string, saltB64: string) {
   if (!saltB64) {
-    throw new Error('Missing PBKDF2 salt – cannot derive key');
+    throw new Error('Missing salt – cannot derive key');
   }
 
   const salt = fromB64(saltB64);
+  const passBytes = new TextEncoder().encode(password);
 
-  const keyMaterial = await crypto.subtle.importKey(
+  // scrypt parameters: N=2^15, r=8, p=1
+  const N = 1 << 15;
+  const r = 8;
+  const p = 1;
+  const dkLen = 32;
+  const derived = await scrypt(passBytes, salt, N, r, p, dkLen);
+
+  const key = await crypto.subtle.importKey(
     'raw',
-    new TextEncoder().encode(password),
-    { name: 'PBKDF2' },
-    false,
-    ['deriveKey'],
-  );
-
-  const key = await crypto.subtle.deriveKey(
-    {
-      name: 'PBKDF2',
-      salt,
-      iterations: 200_000,
-      hash: 'SHA-256',
-    },
-    keyMaterial,
+    derived,
     { name: 'AES-KW', length: 256 },
     true,
     ['wrapKey', 'unwrapKey'],
@@ -99,39 +96,21 @@ export async function aesGcmDecrypt(
   return new TextDecoder().decode(plain);
 }
 
-// ipak samo SALT, demo je bilo privremeno ime al se bojim promijeniti
-const DB    = 'e2ee-demo';
-const STORE = 'keys';
-const KEY   = 'salt';
-
-async function getDB() {
-  return openDB(DB, 1, {
-    upgrade(db) {
-      if (!db.objectStoreNames.contains(STORE)) {
-        db.createObjectStore(STORE);
-      }
-    },
-  });
-}
+const SALT_KEY = 'e2ee-salt';
 
 export async function saveSalt(saltB64: string) {
-  const db = await getDB();
-  const tx = db.transaction(STORE, 'readwrite');
-  await tx.store.put(saltB64, KEY);
-  await tx.done;
+  if (typeof sessionStorage !== 'undefined') {
+    sessionStorage.setItem(SALT_KEY, saltB64);
+  }
 }
 
 export async function loadSalt(): Promise<string | null> {
-  const db = await getDB();
-  const tx = db.transaction(STORE, 'readonly');
-  const salt = await tx.store.get(KEY);
-  await tx.done;
-  return salt ?? null;
+  if (typeof sessionStorage === 'undefined') return null;
+  return sessionStorage.getItem(SALT_KEY);
 }
 
 export async function clearSalt() {
-  const db = await getDB();
-  const tx = db.transaction(STORE, 'readwrite');
-  await tx.store.delete(KEY);
-  await tx.done;
+  if (typeof sessionStorage !== 'undefined') {
+    sessionStorage.removeItem(SALT_KEY);
+  }
 }

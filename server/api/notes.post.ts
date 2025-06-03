@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const { data, error } = await supabase
-    .from('notesenctest')
+    .from('notes_enc')
     .insert({
       user_id: userId,
       ciphertext: ciphertext,

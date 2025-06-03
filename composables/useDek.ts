@@ -23,13 +23,13 @@ const currentSalt = ref<string | null>(null);
   const cachedKek = await loadKek()
   if (cachedKek) {
     kek.value = cachedKek
-    console.log('[DEK] KEK restored from IndexedDB')
+    console.log('[DEK] KEK restored from memory store')
   }
 
   const cachedDek = await loadDek()
   if (cachedDek) {
     dek.value = cachedDek
-    console.log('[DEK] DEK restored from IndexedDB')
+    console.log('[DEK] DEK restored from memory store')
   }
 })()
 
