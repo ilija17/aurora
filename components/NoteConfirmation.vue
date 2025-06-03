@@ -32,15 +32,11 @@ const props = defineProps<{
 const notes = ref('')
 const isSubmitting = ref(false)
 
-const { unlock, seal, unlocked } = useDek()
+const { seal, hasKek, unlock } = useDek()
 
 async function submit() {
   isSubmitting.value = true
-
   try {
-    await unlock()
-    if (!unlocked.value) throw new Error('Could not unlock encryption key')
-
     const payload = {
       general_mood: props.selectedMood,
       detailed_ids: props.detailedMoodContext,
@@ -54,15 +50,33 @@ async function submit() {
 
     await $fetch('/api/mood-entry', {
       method: 'POST',
-      body: { 
+      body: {
         ciphertext: enc_blob,
         iv: enc_iv
       }
     })
 
+    // 700 hydradtion errora za sekundu
     await router.push('/mood-calendar-test')
   } catch (err: any) {
     console.error('Failed to submit:', err)
+    
+    // ako fali kek dobij password
+    if (err.message.includes('No cached KEK')) {
+      const pwd = prompt('Please enter your password to encrypt this entry:')
+      if (pwd) {
+        try {
+          await unlock(pwd)
+          return submit()
+        } catch (unlockErr: any) {
+          alert(`Failed to unlock: ${unlockErr.message}`)
+        }
+      } else {
+        alert('Password is required to encrypt the entry')
+      }
+    } else {
+      alert(`Failed to submit entry: ${err.message}`)
+    }
   } finally {
     isSubmitting.value = false
   }
