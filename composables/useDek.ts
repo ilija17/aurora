@@ -101,15 +101,16 @@ export const useDek = () => {
 
     if (kek.value && currentSalt.value === salt) {
       console.log('[DEK] Using cached KEK');
-      
       if (!wrappedDek) {
         dek.value = await generateDek();
         wrappedDek = await wrapDek(dek.value, kek.value);
         await sb.from('profiles')
           .update({ wrapped_dek: wrappedDek })
           .eq('id', user.value.id);
+        await saveDek(dek.value);
       } else {
         dek.value = await unwrapDek(wrappedDek, kek.value);
+        await saveDek(dek.value);
       }
       return;
     }
@@ -126,12 +127,13 @@ export const useDek = () => {
     if (!wrappedDek) {
       dek.value = await generateDek();
       wrappedDek = await wrapDek(dek.value, kek.value);
-      await saveDek(dek.value)
+      await saveDek(dek.value);
       await sb.from('profiles')
         .update({ wrapped_dek: wrappedDek })
         .eq('id', user.value.id);
     } else {
-      dek.value = await unwrapDek(wrappedDek, kek.value);
+      dek.value = await unwrapDek(wrappedDek, kek.value)
+      await saveDek(dek.value);
     }
     
     console.log('[DEK] Unlocked with password');
