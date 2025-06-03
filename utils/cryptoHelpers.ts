@@ -1,24 +1,13 @@
-import { openDB } from 'idb';
+import { Base64 } from 'js-base64';
 import { scrypt } from 'scrypt-js';
 
 const toB64 = (buf: ArrayBuffer | Uint8Array): string => {
   const bytes = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
-  if (typeof Buffer !== 'undefined') {
-    return Buffer.from(bytes).toString('base64');
-  }
-  let binary = '';
-  for (const b of bytes) binary += String.fromCharCode(b);
-  return btoa(binary);
+  return Base64.fromUint8Array(bytes);
 };
 
 const fromB64 = (b64: string): Uint8Array => {
-  if (typeof Buffer !== 'undefined') {
-    return new Uint8Array(Buffer.from(b64, 'base64'));
-  }
-  const binary = atob(b64);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-  return bytes;
+  return Base64.toUint8Array(b64);
 };
 
 // samo pri registraciji
@@ -107,39 +96,21 @@ export async function aesGcmDecrypt(
   return new TextDecoder().decode(plain);
 }
 
-// ipak samo SALT, demo je bilo privremeno ime al se bojim promijeniti
-const DB    = 'e2ee-demo';
-const STORE = 'keys';
-const KEY   = 'salt';
-
-async function getDB() {
-  return openDB(DB, 1, {
-    upgrade(db) {
-      if (!db.objectStoreNames.contains(STORE)) {
-        db.createObjectStore(STORE);
-      }
-    },
-  });
-}
+const SALT_KEY = 'e2ee-salt';
 
 export async function saveSalt(saltB64: string) {
-  const db = await getDB();
-  const tx = db.transaction(STORE, 'readwrite');
-  await tx.store.put(saltB64, KEY);
-  await tx.done;
+  if (typeof sessionStorage !== 'undefined') {
+    sessionStorage.setItem(SALT_KEY, saltB64);
+  }
 }
 
 export async function loadSalt(): Promise<string | null> {
-  const db = await getDB();
-  const tx = db.transaction(STORE, 'readonly');
-  const salt = await tx.store.get(KEY);
-  await tx.done;
-  return salt ?? null;
+  if (typeof sessionStorage === 'undefined') return null;
+  return sessionStorage.getItem(SALT_KEY);
 }
 
 export async function clearSalt() {
-  const db = await getDB();
-  const tx = db.transaction(STORE, 'readwrite');
-  await tx.store.delete(KEY);
-  await tx.done;
+  if (typeof sessionStorage !== 'undefined') {
+    sessionStorage.removeItem(SALT_KEY);
+  }
 }

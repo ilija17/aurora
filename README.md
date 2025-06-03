@@ -82,9 +82,9 @@ This app encrypts all user content in the browser before it is sent to the serve
   kept in memory during the session.
 - The DEK is wrapped with a key derived from the user's password using the
   memory-hard `scrypt` algorithm. Both the key encryption key (KEK) and DEK are
-  stored in an in-memory keystore rather than persistent storage.
-- Base64 helpers work in both Node and browser contexts, enabling universal
-  rendering without polyfills.
+  stored in an in-memory keystore, while the salt is cached in `sessionStorage`.
+- Base64 helpers rely on the `js-base64` library to work in both Node and browser
+  contexts without polyfills.
 - Only the ciphertext, IV and salt are stored remotely, ensuring the server never
   sees plaintext or keys.
 
