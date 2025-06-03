@@ -1,7 +1,7 @@
 <template>
-  <div class="grid place-items-center h-screen">
-    <div>
-      <h2>Set a new password</h2>
+  <div class="grid place-items-center min-h-screen p-4">
+    <div class="page-container space-y-4">
+      <h2 class="text-xl font-semibold">Set a new password</h2>
       <FormInput
             id="password"
             label="Password"
@@ -15,7 +15,7 @@
         <p v-if="strengthFeedback" class="mt-1">{{ strengthFeedback }}</p>
       </div>
       <p v-if="errorMsg" class="mt-2 text-red-600">{{ errorMsg }}</p>
-      <button @click="updatePassword">Update password</button>
+      <button @click="updatePassword" class="btn">Update password</button>
       <p v-if="message">{{ message }}</p>
     </div>
   </div>
@@ -72,3 +72,4 @@ const updatePassword = async () => {
   }
 }
 </script>
+

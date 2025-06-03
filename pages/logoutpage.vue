@@ -1,11 +1,9 @@
 <template>
-  <div v-if="user">
+  <div class="page-container text-center" v-if="user">
     <HelloUser />
-    <button @click="logout">
-      Logout
-    </button>
+    <button @click="logout" class="btn mt-4">Logout</button>
   </div>
-  <div v-else>
+  <div class="page-container text-center" v-else>
     <p>Redirecting to login…</p>
   </div>
 </template>

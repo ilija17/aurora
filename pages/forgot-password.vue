@@ -1,9 +1,9 @@
 <template>
-  <div class="grid place-items-center h-screen">
-    <div>
-      <h2>Reset your password</h2><br>
-      <input v-model="email" type="email" placeholder="Your email" /><br><br>
-      <button @click="sendResetEmail">Send reset link</button><br>
+  <div class="grid place-items-center min-h-screen p-4">
+    <div class="page-container text-center space-y-4">
+      <h2 class="text-xl font-semibold">Reset your password</h2>
+      <input v-model="email" type="email" placeholder="Your email" />
+      <button @click="sendResetEmail" class="btn">Send reset link</button>
       <p v-if="message">{{ message }}</p>
     </div>
   </div>
@@ -33,3 +33,4 @@ const sendResetEmail = async () => {
     : 'Check your inbox for a reset link!'
 }
 </script>
+

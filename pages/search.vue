@@ -1,5 +1,7 @@
 <template>
-  <SpotifySearch />
+  <div class="page-container">
+    <SpotifySearch />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -7,3 +9,4 @@
 
 <style scoped>
 </style>
+

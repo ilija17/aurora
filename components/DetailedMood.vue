@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-xl p-6 max-w-xs" style="background-color: var(--secondary)">
     <ul v-if="detailedMoods.length">
-      <!-- ok znači, ovo tu provjeri u array dali je id tamo true ili false i tak promjeni boju, klik samo togglea id -->
+      <!-- highlight selected items -->
       <button 
         @click="toggleDetail(opt.id)"
         style="margin: 5px; padding: 10px;"

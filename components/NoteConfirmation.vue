@@ -56,12 +56,12 @@ async function submit() {
       }
     })
 
-    // 700 hydradtion errora za sekundu
+    // Workaround for hydration errors
     await router.push('/mood-calendar-test')
   } catch (err: any) {
     console.error('Failed to submit:', err)
     
-    // ako fali kek dobij password
+    // if KEK is missing, prompt for password
     if (err.message.includes('No cached KEK')) {
       const pwd = prompt('Please enter your password to encrypt this entry:')
       if (pwd) {

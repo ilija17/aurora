@@ -2,7 +2,7 @@
   <div class="rounded-xl p-6 max-w-xs" style="background-color: var(--secondary)">
     <p> Where were you today? </p><br>
     <ul v-if="locationDetails.length">
-      <!-- ok znači, ovo tu provjeri u array dali je id tamo true ili false i tak promjeni boju, klik samo togglea id -->
+      <!-- highlight selected items -->
       <button 
         @click="toggleDetailLocation(opt.id)"
         style="margin: 5px; padding: 10px;"
@@ -20,7 +20,7 @@
 
     <p> Who were you around today? </p><br>
     <ul v-if="locationDetails.length">
-      <!-- ok znači, ovo tu provjeri u array dali je id tamo true ili false i tak promjeni boju, klik samo togglea id -->
+      <!-- highlight selected items -->
       <button 
         @click="toggleDetailSocial(opt.id)"
         style="margin: 5px; padding: 10px;"

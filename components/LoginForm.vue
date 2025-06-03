@@ -114,9 +114,9 @@ async function handleAuth() {
   errorMsg.value = '';
   submitting.value = true;
 
-  //ovo je doslovni brainrot al budemo kasnije popravili
-  const userPassword = password.value;
+  // TODO: Refactor password handling logic
 
+  const userPassword = password.value;
   try {
     const { session, salt, wrappedDek } = await $fetch('/api/auth', {
       method: 'POST',
@@ -144,8 +144,7 @@ async function handleAuth() {
 
     const { repairIfMissing } = useDekRepair();
     await repairIfMissing(userPassword, salt, wrappedDek);
-
-    // spremi KEK NAVODNO, kek nestane brže nego Amelia Earhart
+    // Cache KEK for the session
     if (salt) {
       await storeKek(userPassword, salt);
       await saveSalt(salt);
