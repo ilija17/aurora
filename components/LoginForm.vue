@@ -165,7 +165,6 @@ async function handleAuth() {
 
   } catch (err: any) {
     errorMsg.value = err.message ?? 'Unexpected error';
-    clearSession();
   } finally {
     password.value = '';
     submitting.value = false;

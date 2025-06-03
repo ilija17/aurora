@@ -28,7 +28,6 @@ watch(user, val => {
 
 const logout = async () => {
   await supabase.auth.signOut()
-  clearSession()
   navigateTo('/login')
 }
 </script>

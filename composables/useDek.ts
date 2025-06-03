@@ -9,9 +9,29 @@ import {
   loadSalt, saveSalt
 } from '~/utils/cryptoHelpers';
 
+import {
+  saveKek, loadKek, clearKek,
+  saveDek, loadDek, clearDek
+} from '~/utils/keyStore'
+
+
 const kek = ref<CryptoKey | null>(null);
 const dek = ref<CryptoKey | null>(null);
 const currentSalt = ref<string | null>(null);
+
+;(async () => {
+  const cachedKek = await loadKek()
+  if (cachedKek) {
+    kek.value = cachedKek
+    console.log('[DEK] KEK restored from IndexedDB')
+  }
+
+  const cachedDek = await loadDek()
+  if (cachedDek) {
+    dek.value = cachedDek
+    console.log('[DEK] DEK restored from IndexedDB')
+  }
+})()
 
 export const useDek = () => {
   const sb   = useSupabaseClient();
@@ -23,6 +43,7 @@ export const useDek = () => {
   async function storeKek(password: string, salt: string) {
     const { key } = await deriveKey(password, salt);
     kek.value = key;
+    await saveKek(kek.value)
     currentSalt.value = salt;
     console.log('[DEK] KEK stored in memory for session');
   }
@@ -100,10 +121,12 @@ export const useDek = () => {
     await saveSalt(salt);
     kek.value = derivedKek;
     currentSalt.value = salt;
+    await saveKek(derivedKek) 
 
     if (!wrappedDek) {
       dek.value = await generateDek();
       wrappedDek = await wrapDek(dek.value, kek.value);
+      await saveDek(dek.value)
       await sb.from('profiles')
         .update({ wrapped_dek: wrappedDek })
         .eq('id', user.value.id);
