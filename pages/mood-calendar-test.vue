@@ -1,5 +1,7 @@
 <template>
-  <MoodCalendar/>
+  <div class="container py-12">
+    <MoodCalendar />
+  </div>
 </template>
 
 <script lang="ts" setup>

@@ -1,6 +1,6 @@
 <!-- pages/index.vue -->
 <template>
-  <div class="mx-auto p-6 max-w-md">
+  <div class="container py-12 max-w-md space-y-6">
     <SpotifySignIn />
     <Moods />
   </div>

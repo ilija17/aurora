@@ -1,8 +1,7 @@
 <template>
-<a href="/api/spotify/login" class="login-btn">
-  Connect with Spotify
-</a>
-
+  <div class="container py-24 text-center">
+    <a href="/api/spotify/login" class="btn-primary">Connect with Spotify</a>
+  </div>
 </template>
 
 <script setup lang="ts">

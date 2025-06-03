@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-[var(--bg)] min-h-screen flex justify-center px-8 py-12 gap-8">
+  <div class="container bg-[var(--bg)] min-h-screen flex justify-center px-8 py-12 gap-8">
     <aside class="w-64 bg-[var(--secondary)] rounded-2xl shadow-lg p-4 h-fit">
       <h2 class="text-xl text-[var(--fg)] mb-4">Settings</h2>
       <nav class="space-y-2">

@@ -1,12 +1,12 @@
 <template>
-  <div v-if="user">
-    <HelloUser />
-    <button @click="logout">
-      Logout
-    </button>
-  </div>
-  <div v-else>
-    <p>Redirecting to login…</p>
+  <div class="container py-24 text-center">
+    <div v-if="user" class="space-y-4">
+      <HelloUser />
+      <button class="btn-primary" @click="logout">Logout</button>
+    </div>
+    <div v-else>
+      <p>Redirecting to login…</p>
+    </div>
   </div>
 </template>
 

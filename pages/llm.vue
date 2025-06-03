@@ -10,7 +10,7 @@ const messageList = computed(() => messages.value); // computer property for typ
 </script>
 
 <template>
-  <div class="flex flex-col w-full max-w-md py-24 mx-auto stretch">
+  <div class="container flex flex-col max-w-md py-24 stretch">
     <div
       v-for="message in messageList"
       :key="message.id"

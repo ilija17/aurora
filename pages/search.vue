@@ -1,5 +1,7 @@
 <template>
-  <SpotifySearch />
+  <div class="container py-12">
+    <SpotifySearch />
+  </div>
 </template>
 
 <script setup lang="ts">

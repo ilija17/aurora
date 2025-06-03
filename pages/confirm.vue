@@ -15,5 +15,7 @@ watch(user, () => {
 </script>
 
 <template>
-  <div>Waiting for login...</div>
+  <div class="container py-24 text-center">
+    Waiting for login...
+  </div>
 </template>

@@ -39,13 +39,13 @@ onMounted(loadAll)
 </script>
 
 <template>
-  <div class="max-w-lg mx-auto pt-10 space-y-4">
+  <div class="container max-w-lg pt-10 space-y-4">
     <h1 class="text-xl font-semibold">🔐 All My Secrets</h1>
 
     <button
       @click="loadAll"
       :disabled="busy"
-      class="bg-blue-600 text-white px-3 py-1 rounded disabled:opacity-50"
+      class="btn-primary disabled:opacity-50"
     >
       Reload
     </button>

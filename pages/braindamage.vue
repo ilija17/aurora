@@ -1,6 +1,6 @@
 <template>
   <ClientOnly>
-  <div class="min-h-screen p-6 space-y-8">
+  <div class="container min-h-screen p-6 space-y-8">
     <h1 class="text-2xl font-bold">Crypto Session Debug</h1>
 
     <div class="rounded-lg bg-gray-50 p-4 shadow dark:bg-zinc-800">

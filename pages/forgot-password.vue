@@ -1,11 +1,9 @@
 <template>
-  <div class="grid place-items-center h-screen">
-    <div>
-      <h2>Reset your password</h2><br>
-      <input v-model="email" type="email" placeholder="Your email" /><br><br>
-      <button @click="sendResetEmail">Send reset link</button><br>
-      <p v-if="message">{{ message }}</p>
-    </div>
+  <div class="container py-24 text-center space-y-4">
+    <h2 class="text-2xl font-bold">Reset your password</h2>
+    <input v-model="email" type="email" placeholder="Your email" />
+    <button class="btn-primary" @click="sendResetEmail">Send reset link</button>
+    <p v-if="message">{{ message }}</p>
   </div>
 </template>
 

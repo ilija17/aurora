@@ -1,6 +1,6 @@
 <template>
   <!-- dizajn je ass, ovo bi trebalo ići negdje drugdje -->
-  <div class="dashboard">
+  <div class="container dashboard">
     <select name="timeframe" id="timeframe" v-model="timeframe" @change="" v-if="tracksError?.statusCode !== 401">
       <option value="short_term">Last 4 weeks</option>
       <option value="medium_term">Last 6 months</option>

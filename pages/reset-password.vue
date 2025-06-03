@@ -1,23 +1,21 @@
 <template>
-  <div class="grid place-items-center h-screen">
-    <div>
-      <h2>Set a new password</h2>
-      <FormInput
-            id="password"
-            label="Password"
-            type="password"
-            v-model="password"
-            placeholder="••••••••"
-          />
+  <div class="container py-24 max-w-md space-y-4">
+    <h2 class="text-2xl font-bold text-center">Set a new password</h2>
+    <FormInput
+      id="password"
+      label="Password"
+      type="password"
+      v-model="password"
+      placeholder="••••••••"
+    />
 
-      <div class="text-sm">
-        <p>Strength: {{ strengthText }}</p>
-        <p v-if="strengthFeedback" class="mt-1">{{ strengthFeedback }}</p>
-      </div>
-      <p v-if="errorMsg" class="mt-2 text-red-600">{{ errorMsg }}</p>
-      <button @click="updatePassword">Update password</button>
-      <p v-if="message">{{ message }}</p>
+    <div class="text-sm">
+      <p>Strength: {{ strengthText }}</p>
+      <p v-if="strengthFeedback" class="mt-1">{{ strengthFeedback }}</p>
     </div>
+    <p v-if="errorMsg" class="mt-2 text-red-600">{{ errorMsg }}</p>
+    <button class="btn-primary" @click="updatePassword">Update password</button>
+    <p v-if="message">{{ message }}</p>
   </div>
 </template>
 

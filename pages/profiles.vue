@@ -57,7 +57,7 @@ if (user.value) readLatest()
 </script>
 
 <template>
-  <div class="max-w-lg mx-auto pt-10 space-y-4">
+  <div class="container max-w-lg pt-10 space-y-4">
     <h1 class="text-xl font-semibold">🔐 End-to-End Encrypted Secrets</h1>
 
     <div class="flex gap-2">
@@ -69,7 +69,7 @@ if (user.value) readLatest()
       <button
         @click="saveSecret"
         :disabled="busy"
-        class="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+        class="btn-primary disabled:opacity-50"
       >
         Save
       </button>
