@@ -31,7 +31,7 @@
     </NuxtLink>
 
     <NuxtLink
-      to="/mood-calendar-test"
+      to="/calendar"
       class="btn"
       active-class="btn--active"
       exact-active-class="btn--active"
@@ -49,12 +49,12 @@
     </NuxtLink>
 
     <NuxtLink
-      to="/secrets"
+      to="/diary"
       class="btn"
       active-class="btn--active"
       exact-active-class="btn--active"
     >
-      Encrypted notes
+      Encrypted diary
     </NuxtLink>
   </nav>
 </template>
