@@ -60,26 +60,31 @@
         <div
           v-for="entry in selectedMoods"
           :key="entry.id"
-          class="rounded-lg px-4 py-3 hover:bg-[var(--accent)] cursor-pointer transition"
+          class="rounded-lg px-4 py-3 hover:bg-[var(--accent)] cursor-pointer transition relative"
           @click="openEntryModal(entry.id)"
         >
-        <div class="flex justify-between items-center">
-          <div>
-            <div class="text-sm font-semibold">
-              {{ format(parseISO(entry.payload.entry_timestamp), 'HH:mm') }}
-            </div>
-            <div class="text-xs text-[var(--muted-foreground)]">
-              {{ format(parseISO(entry.payload.entry_timestamp), 'dd.MM.yyyy') }}
-            </div>
+          <div v-if="entry.payload.spotify_song_id" class="absolute top-2 right-5 w-2 h-1">
+            <svg width="20" height="20" viewBox="0 0 26 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12.4084 19.0666C11.1444 19.0666 10.0623 18.6166 9.16221 17.7164C8.26208 16.8163 7.81201 15.7342 7.81201 14.4702C7.81201 13.2062 8.26208 12.1241 9.16221 11.224C10.0623 10.3239 11.1444 9.87382 12.4084 9.87382C12.8489 9.87382 13.2511 9.93127 13.615 10.0462C13.998 10.1419 14.3619 10.2952 14.7066 10.5058V-1.61719H21.6012V2.97921H17.0048V14.4702C17.0048 15.7342 16.5547 16.8163 15.6546 17.7164C14.7545 18.6166 13.6724 19.0666 12.4084 19.0666Z" fill="#FEF7FF"/>
+            </svg>
           </div>
-          <img
-            class="w-12 h-12 object-contain"
-            :src="moodImageMap.get(entry.payload.general_mood.id) ?? defaultMoodUrl"
-            alt="Mood image"
-          />
+          <div class="flex justify-between items-center">
+            <div>
+              <div class="text-sm font-semibold">
+                {{ format(parseISO(entry.payload.entry_timestamp), 'HH:mm') }}
+              </div>
+              <div class="text-xs text-[var(--muted-foreground)]">
+                {{ format(parseISO(entry.payload.entry_timestamp), 'dd.MM.yyyy') }}
+              </div>
+            </div>
+            <img
+              class="w-12 h-12 object-contain"
+              :src="moodImageMap.get(entry.payload.general_mood.id) ?? defaultMoodUrl"
+              alt="Mood image"
+            />
+          </div>
         </div>
       </div>
-    </div>
 
 
       <div v-else class="flex items-center justify-center flex-grow text-[var(--muted)]">
