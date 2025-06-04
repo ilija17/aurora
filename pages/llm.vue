@@ -1,12 +1,26 @@
 <script setup lang="ts">
 import { useChat } from '@ai-sdk/vue';
+import { onMounted, computed } from 'vue';
+import { useMoodEntries } from '~/composables/useMoodEntries';
+
+const { finalizedEntries, fetchFinalizedMoodEntries } = useMoodEntries();
 
 const { input, handleSubmit, messages, addToolResult } = useChat({
   api: '/api/openai/chat-with-data',
   maxSteps: 5,
+  experimental_prepareRequestBody: ({ id, messages, requestBody }) => ({
+    id,
+    messages,
+    ...requestBody,
+    data: { userData: finalizedEntries.value },
+  }),
 });
 
-const messageList = computed(() => messages.value); // computer property for type inference
+onMounted(async () => {
+  await fetchFinalizedMoodEntries();
+});
+
+const messageList = computed(() => messages.value); // computed property for type inference
 </script>
 
 <template>

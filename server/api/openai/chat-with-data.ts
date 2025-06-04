@@ -18,7 +18,7 @@ export default defineLazyEventHandler(async () => {
     if(!user) {
       throw createError({ statusCode: 401, statusMessage: 'Not authenticated' })
     }
-    const { messages } = await readBody(event);
+    const { messages, data } = await readBody(event);
 
     const result = streamText({
       model: openai('gpt-4.1'),
@@ -31,8 +31,8 @@ export default defineLazyEventHandler(async () => {
           description: 'Return all mood-entry data for the signed-in user',
           parameters: z.object({}),
           execute: async () => {
-            const data = await getUserData(supabase, user.id)
-            return { userData: data }
+            const decrypted = data?.userData ?? await getUserData(supabase, user.id)
+            return { userData: decrypted }
           },
         },
       },
