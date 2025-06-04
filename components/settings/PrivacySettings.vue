@@ -7,15 +7,24 @@
       <div class="bg-[var(--secondary)] p-4 rounded-lg flex-col w-2/3">
         <div>
           <h3 class="text-lg font-semibold text-[var(--fg)]">Change password</h3>
-          <p class="text-sm text-[var(--muted)]">Send a password reset link to your e-mail</p>
+          <p class="text-sm text-[var(--muted)]">Update your login password and re-encrypt your data</p>
         </div>
       </div>
-      <button
-        class="m-4 p-2 rounded transition text-white disabled:opacity-50"
-        @click="handleChangePassword"
-      >
-        Change
-      </button>
+      <div class="flex items-center gap-2 m-4">
+        <input
+          v-model="newPassword"
+          type="password"
+          placeholder="New password"
+          class="p-2 rounded bg-[var(--border)]"
+        />
+        <button
+          class="p-2 rounded transition text-white disabled:opacity-50"
+          @click="handleChangePassword"
+          :disabled="!newPassword"
+        >
+          Change
+        </button>
+      </div>
     </div>
 
     <!-- Delete account -->
@@ -79,24 +88,29 @@
   const config = useRuntimeConfig()
   const supabase = useSupabaseClient();
   const user     = useSupabaseUser();
+  const { updateDekPassword } = useDek();
+  const newPassword = ref('');
 
   async function handleChangePassword(){
-    if (!user.value?.email) {
-      alert("No email found. Are you logged in?");
+    if (!newPassword.value) {
+      alert('Please enter a new password');
       return;
     }
 
-    const redirectTo = `${config.public.siteUrl}/reset-password`
-    const { error } = await supabase.auth.resetPasswordForEmail(user.value.email, {
-      redirectTo: `${siteUrl}/reset-password`,
-    })
+    const { error } = await supabase.auth.updateUser({ password: newPassword.value })
 
     if (error) {
-      alert("Failed to send password reset email.");
+      alert(error.message);
       return;
     }
 
-    alert("Password reset email sent.");
+    try {
+      await updateDekPassword(newPassword.value)
+      alert('Password updated and data re-encrypted');
+      newPassword.value = ''
+    } catch (e: any) {
+      alert('Password changed but failed to re-encrypt data: ' + (e.message || e))
+    }
   }
 
   // logika za potvrdu brisanja accounta

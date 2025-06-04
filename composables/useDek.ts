@@ -188,6 +188,36 @@ export const useDek = () => {
     return JSON.parse(json) as T;
   }
 
+  async function updateDekPassword(newPassword: string) {
+    if (!user.value) throw new Error('no session');
+
+    if (!dek.value) {
+      if (kek.value) {
+        await quickUnlock();
+      } else {
+        throw new Error('unlock first');
+      }
+    }
+
+    if (!currentSalt.value) {
+      throw new Error('Missing salt');
+    }
+
+    const { key: newKek } = await deriveKey(newPassword, currentSalt.value);
+    const wrappedDek      = await wrapDek(dek.value!, newKek);
+
+    const { error } = await sb
+      .from('profiles')
+      .update({ wrapped_dek: wrappedDek })
+      .eq('id', user.value.id);
+
+    if (error) throw error;
+
+    kek.value = newKek;
+    await saveKek(newKek);
+    console.log('[DEK] Wrapped DEK with new password');
+  }
+
   return { 
     dek,
     kek,
@@ -199,6 +229,7 @@ export const useDek = () => {
     seal, 
     open, 
     storeKek,
-    clearSession
+    clearSession,
+    updateDekPassword
   };
 };
