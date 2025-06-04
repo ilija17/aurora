@@ -1,10 +1,15 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { streamText } from 'ai';
-import { ref, watch, computed } from 'vue'
 import { z } from 'zod';
-import { serverSupabaseClient } from '#supabase/server';
+import { serverSupabaseClient } from '#supabase/server'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { getUserData } from '@/server/utils/getUserData'
+
+async function getAllUserData(supabase: SupabaseClient, userId: string) {
+  const data = await getUserData(supabase, userId)
+  return { userData: data }
+}
 
 export default defineLazyEventHandler(async () => {
   const openai = createOpenAI({
@@ -30,10 +35,7 @@ export default defineLazyEventHandler(async () => {
         getAllUserData: {
           description: 'Return all mood-entry data for the signed-in user',
           parameters: z.object({}),
-          execute: async () => {
-            const data = await getUserData(supabase, user.id)
-            return { userData: data }
-          },
+          execute: async () => getAllUserData(supabase, user.id),
         },
       },
     });
