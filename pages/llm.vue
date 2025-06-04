@@ -8,7 +8,10 @@ const { finalizedEntries, fetchFinalizedMoodEntries } = useMoodEntries();
 const { input, handleSubmit, messages, addToolResult } = useChat({
   api: '/api/openai/chat-with-data',
   maxSteps: 5,
-  experimental_prepareRequestBody: () => ({
+  experimental_prepareRequestBody: ({ id, messages, requestBody }) => ({
+    id,
+    messages,
+    ...requestBody,
     data: { userData: finalizedEntries.value },
   }),
 });
