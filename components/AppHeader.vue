@@ -1,6 +1,5 @@
 <!-- ovo je takav brainrot al uglavom router skuži na kojoj se stranici i stavi ovaj drugi css -->
 <template>
-  <ThemeSwitcher/>
   
   <nav class="nav" aria-label="Main menu">    
     <NuxtLink

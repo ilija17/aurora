@@ -7,6 +7,23 @@
     font-style: normal;
     font-display: swap;
 }
+
+/* ljepsi scrollbars za chrome */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.3);
+  border-radius: 9999px;
+}
+
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
   
 * {
     font-family: 'ComicSansCustom', cursive;
@@ -18,7 +35,7 @@ html[data-theme='dark'] {
     --fg: #ebf4f1;
     --primary: #64548E;
     --secondary: #292F3F;
-    --tertiary: #3d465d;
+    --highlighted: #3d465d;
     --accent: #2ECFCF;
     --border: #444;
     --input-bg: #1a2b3c;
