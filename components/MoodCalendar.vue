@@ -1,44 +1,61 @@
 <template>
-  <div class="flex flex-col items-center justify-center w-full h-screen">
-    <div class="flex p-5">
-      <button @click="decrementYear">
-        <
+  <div class="flex flex-col items-center justify-center w-full h-full overflow-x-hidden">
+    <div class="flex p-3 sm:p-5">
+      <button @click="decrementYear" class="p-2 sm:p-0 touch-manipulation">
+        &lt;
       </button>
-      <input class="min-w-[6ch] w-[6ch] ml-2 mr-2" v-model.number="inputYear" @blur="formatInputYear" @keyup.enter="formatInputYear" />
-      <button @click="incrementYear">
-        >
+      <input class="min-w-[4ch] w-[4ch] sm:min-w-[6ch] sm:w-[6ch] ml-2 mr-2 text-center text-sm sm:text-base" 
+             v-model.number="inputYear" 
+             @blur="formatInputYear" 
+             @keyup.enter="formatInputYear" />
+      <button @click="incrementYear" class="p-2 sm:p-0 touch-manipulation">
+        &gt;
       </button>
     </div>
   
-    <div class="min-h-[600px] h-[800px] bg-[var(--secondary)] rounded-4xl pt-10 pb-10 pl-5 pr-5 overflow-y-auto scroll-smooth">
-      <div v-for="month in monthsArray" :key="month.month" class="mb-20">
-        <div class="month-name relative top-0 left-0 px-4 py-2 text-lg font-semibold">{{ month.month }}</div>
-        <table>
+    <div class="min-h-[60vh] max-h-[70vh] sm:min-h-[800px] sm:max-h-[900px] bg-[var(--secondary)] rounded-2xl sm:rounded-4xl pt-2 pb-2 px-1 sm:pt-10 sm:pb-10 sm:pl-5 sm:pr-5 overflow-y-scroll overflow-x-hidden scroll-smooth w-full sm:w-auto max-w-full ">
+      <div v-for="month in monthsArray" :key="month.month" class="mb-8 sm:mb-20">
+        <div class="month-name relative top-0 left-0 px-2 sm:px-4 py-1 sm:py-2 text-base sm:text-lg font-semibold text-center sm:text-left">
+          {{ month.month }}
+        </div>
+        
+        <table class="w-full table-fixed border-collapse min-w-0">
           <tbody>
             <tr v-for="(week, weekIndex) in month.calendarMonth" :key="weekIndex">
-              <td v-for="day in week" :key="format(day.date, 'dd-MM-yyyy')" class="day-cell">
+              <td v-for="day in week " 
+                  :key="day.date.toISOString()"
+                  class="day-cell w-[13.5%] h-10 sm:h-16 md:h-20 p-0 sm:p-1 align-top min-w-0 sm:w-[12%]">
                 <div
-                  class="w-full h-full cursor-pointer border-2 rounded-2xl border-transparent hover:border-[var(--accent)] transition-colors ease-in-out"
+                  class="w-full h-full cursor-pointer border-2 rounded-lg sm:rounded-2xl border-transparent hover:border-[var(--accent)] transition-colors ease-in-out relative touch-manipulation"
                   :class="{
                     'invisible': day.day === 0,
                     //'bg-[var(--primary)]/50': isToday(day.date) odkomentirat po zelji
                   }"
                   @click="openDayModal(day.date);"
                 >
-                  <div v-if="isToday(day.date)" class="rounded-full w-2 h-2 bg-[var(--accent)] absolute top-2 left-2"></div>
-                  <div v-if="hasSpotifySongOnDay(day.date)" class="absolute top-1 right-3 w-2 h-1">
-                    <svg width="26" height="23" viewBox="0 0 26 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <div v-if="isToday(day.date)" 
+                       class="rounded-full w-1 h-1 sm:w-2 sm:h-2 bg-[var(--accent)] absolute top-0.5 sm:top-2 left-0.5 sm:left-2"></div>
+                  
+                  <div v-if="hasSpotifySongOnDay(day.date)" 
+                       class="absolute top-0 sm:top-1 right-0.5 sm:right-3">
+                    <svg class="w-2 h-2 sm:w-4 sm:h-4" viewBox="0 0 26 23" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M12.4084 19.0666C11.1444 19.0666 10.0623 18.6166 9.16221 17.7164C8.26208 16.8163 7.81201 15.7342 7.81201 14.4702C7.81201 13.2062 8.26208 12.1241 9.16221 11.224C10.0623 10.3239 11.1444 9.87382 12.4084 9.87382C12.8489 9.87382 13.2511 9.93127 13.615 10.0462C13.998 10.1419 14.3619 10.2952 14.7066 10.5058V-1.61719H21.6012V2.97921H17.0048V14.4702C17.0048 15.7342 16.5547 16.8163 15.6546 17.7164C14.7545 18.6166 13.6724 19.0666 12.4084 19.0666Z" fill="#FEF7FF"/>
                     </svg>
                   </div>
-                  <div v-if="!loadingEntriesByYear" class="image-container">
+                  
+                  <div v-if="!loadingEntriesByYear" class="image-container flex items-center justify-center h-full">
                     <img
                       :src="moodImageMap.get(moodMap?.get(format(day.date, 'dd.MM.yyyy'))) ?? defaultMoodUrl"
                       :class="{ 'invisible': !moodMap?.get(format(day.date, 'dd.MM.yyyy')) }"
                       alt="Mood image"
+                      class="w-8 h-8 sm:w-12 sm:h-12 object-contain"
                     />
                   </div>
-                  <div :class="{ 'day-number': getDay(day.date) != 0, 'day-number-sunday': getDay(day.date) == 0 }">
+                  
+                  <div :class="{ 
+                    'day-number text-xs sm:text-sm absolute bottom-0 sm:bottom-1 right-0.5 sm:right-1 leading-none': getDay(day.date) != 0, 
+                    'day-number-sunday text-xs sm:text-sm absolute bottom-0 sm:bottom-1 right-0.5 sm:right-1 leading-none': getDay(day.date) == 0 
+                  }">
                     {{ day.day }}
                   </div>
                 </div>
@@ -50,21 +67,20 @@
     </div>
   </div>
 
-<!-- day details modal -->
-  <div
+<div
     v-if="showDayDetails"
-    class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+    class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
   >
-    <div class="bg-[var(--secondary)] p-6 rounded-xl shadow-lg w-[90%] max-w-md text-[var(--fg)] flex flex-col min-h-[300px] h-[50vh]">
-      <div v-if="selectedMoods.length" class="flex flex-col gap-2 overflow-y-auto mb-4">
+    <div class="bg-[var(--secondary)] p-4 sm:p-6 rounded-xl shadow-lg w-full max-w-sm sm:max-w-md text-[var(--fg)] flex flex-col min-h-[50vh] max-h-[80vh] sm:min-h-[300px] sm:h-[50vh]">
+      <div v-if="selectedMoods.length" class="flex flex-col gap-2 overflow-y-auto mb-4 flex-grow">
         <div
           v-for="entry in selectedMoods"
           :key="entry.id"
-          class="rounded-lg px-4 py-3 hover:bg-[var(--accent)] cursor-pointer transition relative"
+          class="rounded-lg px-3 sm:px-4 py-2 sm:py-3 hover:bg-[var(--accent)] cursor-pointer transition relative touch-manipulation"
           @click="openEntryModal(entry.id)"
         >
-          <div v-if="entry.payload.spotify_song_id" class="absolute top-2 right-5 w-2 h-1">
-            <svg width="20" height="20" viewBox="0 0 26 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div v-if="entry.payload.spotify_song_id" class="absolute top-1 sm:top-2 right-3 sm:right-5 w-1.5 h-1 sm:w-2 sm:h-1">
+            <svg width="16" height="16" sm:width="20" sm:height="20" viewBox="0 0 26 23" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 sm:w-5 sm:h-5">
               <path d="M12.4084 19.0666C11.1444 19.0666 10.0623 18.6166 9.16221 17.7164C8.26208 16.8163 7.81201 15.7342 7.81201 14.4702C7.81201 13.2062 8.26208 12.1241 9.16221 11.224C10.0623 10.3239 11.1444 9.87382 12.4084 9.87382C12.8489 9.87382 13.2511 9.93127 13.615 10.0462C13.998 10.1419 14.3619 10.2952 14.7066 10.5058V-1.61719H21.6012V2.97921H17.0048V14.4702C17.0048 15.7342 16.5547 16.8163 15.6546 17.7164C14.7545 18.6166 13.6724 19.0666 12.4084 19.0666Z" fill="#FEF7FF"/>
             </svg>
           </div>
@@ -78,7 +94,7 @@
               </div>
             </div>
             <img
-              class="w-12 h-12 object-contain"
+              class="w-10 h-10 sm:w-12 sm:h-12 object-contain"
               :src="moodImageMap.get(entry.payload.general_mood.id) ?? defaultMoodUrl"
               alt="Mood image"
             />
@@ -86,15 +102,14 @@
         </div>
       </div>
 
-
-      <div v-else class="flex items-center justify-center flex-grow text-[var(--muted)]">
+      <div v-else class="flex items-center justify-center flex-grow text-[var(--muted)] text-sm sm:text-base">
         Nothing to see here...
       </div>
 
-      <div class="mt-auto">
+      <div class="mt-auto pt-4 border-t border-[var(--border)]">
         <button
           @click="closeDayModal"
-          class="px-4 py-2 rounded bg-[var(--border)] hover:bg-[var(--muted)] text-[var(--fg)] transition"
+          class="w-full sm:w-auto px-4 py-2 rounded bg-[var(--border)] hover:bg-[var(--muted)] text-[var(--fg)] transition touch-manipulation"
         >
           Cancel
         </button>
@@ -102,85 +117,78 @@
     </div>
   </div>
 
-  <!-- entry details modal -->
-<div
+  <div
   v-if="showEntryDetails && entryDetailsById && entryDetailsById.payload"
-  class="fixed inset-0 bg-transparent flex items-center justify-center z-50"
+  class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
 >
-  <div class="bg-[var(--secondary)] p-6 rounded-xl shadow-lg w-[90%] max-w-md text-[var(--fg)] flex flex-col min-h-[300px] h-[50vh]">
+  <div class="bg-[var(--secondary)] p-4 sm:p-6 rounded-xl shadow-lg w-full max-w-sm sm:max-w-md text-[var(--fg)] flex flex-col min-h-[60vh] max-h-[85vh] sm:min-h-[300px] sm:h-[50vh]">
 
-    <!-- scrollable content section -->
-    <div class="flex flex-col gap-4 overflow-y-auto mb-4">
+    <div class="flex flex-col gap-3 sm:gap-4 overflow-y-auto mb-4 flex-grow">
       <div class="flex w-full items-center">
         <img
           :src="moodImageMap.get(entryDetailsById?.payload.general_mood.id) ?? defaultMoodUrl"
           alt="Mood image"
-          class="w-12 h-12 object-cover mr-4"
+          class="w-10 h-10 sm:w-12 sm:h-12 object-cover mr-3 sm:mr-4"
         />
         <div class="flex flex-col justify-center">
-          <div class="text-lg font-semibold">
+          <div class="text-base sm:text-lg font-semibold">
             {{ format(parseISO(entryDetailsById.payload.entry_timestamp), 'EEE') }},
             {{ format(parseISO(entryDetailsById.payload.entry_timestamp), 'h:mm a') }}
           </div>
         </div>
       </div>
 
-      <!-- spotify widget -->
-      <div v-if="entryDetailsById?.payload.spotify_song_id" class="mb-4 self-start w-full ">
+      <div v-if="entryDetailsById?.payload.spotify_song_id" class="mb-3 sm:mb-4 self-start w-full">
         <iframe
           :src="`https://open.spotify.com/embed/track/${entryDetailsById.payload.spotify_song_id}`"
-          width="300"
-          height="80"
+          :width="'100%'"
+          :height="80"
           frameborder="0"
           allowtransparency="true"
           allow="encrypted-media"
+          class="max-w-full rounded-lg"
         ></iframe>
       </div>
 
-      <!-- note -->
       <div v-if="entryDetailsById?.payload.notes">
         <div class="text-sm font-medium text-[var(--muted-foreground)]">Notes:</div>
-        <div class="border-2 border-transparent bg-[var(--input-bg)] rounded-md p-3 mt-2 w-full h-auto m-h-80 text-lg overflow-y-auto overflow-x-hidden break-words">
+        <div class="border-2 border-transparent bg-[var(--input-bg)] rounded-md p-2 sm:p-3 mt-2 w-full h-auto max-h-32 sm:max-h-80 text-sm sm:text-lg overflow-y-auto overflow-x-hidden break-words">
           {{ entryDetailsById.payload.notes || "No notes for today" }}
         </div>
       </div>
 
-      <!-- detailed Moods -->
       <div v-if="entryDetailsById.payload.detailed_moods.length">
         <div class="text-sm font-medium text-[var(--muted-foreground)]">Detailed Moods:</div>
-        <ul class="list-disc pl-5">
-          <li v-for="mood in entryDetailsById.payload.detailed_moods" :key="mood.mood_name" class="text-lg">
+        <ul class="list-disc pl-4 sm:pl-5">
+          <li v-for="mood in entryDetailsById.payload.detailed_moods" :key="mood.mood_name" class="text-sm sm:text-lg">
             {{ mood.mood_name }}
           </li>
         </ul>
       </div>
 
-      <!-- social Contexts -->
       <div v-if="entryDetailsById?.payload.social_contexts.length">
         <div class="text-sm font-medium text-[var(--muted-foreground)]">Who you were with:</div>
-        <ul class="list-disc pl-5">
-          <li v-for="context in entryDetailsById.payload.social_contexts" :key="context.social_name" class="text-lg">
+        <ul class="list-disc pl-4 sm:pl-5">
+          <li v-for="context in entryDetailsById.payload.social_contexts" :key="context.social_name" class="text-sm sm:text-lg">
             {{ context.social_name }}
           </li>
         </ul>
       </div>
 
-      <!-- location Contexts -->
       <div v-if="entryDetailsById?.payload.location_contexts.length">
         <div class="text-sm font-medium text-[var(--muted-foreground)]">Where you were:</div>
-        <ul class="list-disc pl-5">
-          <li v-for="location in entryDetailsById.payload.location_contexts" :key="location.location_name" class="text-lg">
+        <ul class="list-disc pl-4 sm:pl-5">
+          <li v-for="location in entryDetailsById.payload.location_contexts" :key="location.location_name" class="text-sm sm:text-lg">
             {{ location.location_name }}
           </li>
         </ul>
       </div>
     </div>
 
-    <!-- Cancel button at the bottom -->
-    <div class="mt-auto">
+    <div class="mt-auto pt-4 border-t border-[var(--border)]">
       <button
         @click="closeEntryModal"
-        class="px-4 py-2 rounded bg-[var(--border)] hover:bg-[var(--muted)] text-[var(--fg)] transition"
+        class="w-full sm:w-auto px-4 py-2 rounded bg-[var(--border)] hover:bg-[var(--muted)] text-[var(--fg)] transition touch-manipulation"
       >
         Close
       </button>
@@ -189,14 +197,15 @@
 </div>
 </template>
 
-
 <script lang="ts" setup>
   //import musicalNoteUrl from '@assets/images/music_note.svg'; <-- ne znam zasto ne zeli importat ovaj, a moodove je normalno
+
   import mood1Url from '@/assets/images/1.svg';
   import mood2Url from '@/assets/images/2.svg';
   import mood3Url from '@/assets/images/3.svg';
   import mood4Url from '@/assets/images/4.svg';
   import mood5Url from '@/assets/images/5.svg';
+  import defaultMoodUrl from '@/assets/images/default-mood.svg';
   import { getDay, startOfMonth, endOfMonth, sub, add, format, parseISO, isToday } from 'date-fns';
   import { useMoodEntries } from '~/composables/useMoodEntries';
 
@@ -288,7 +297,7 @@
   const { finalizedEntries, fetchFinalizedMoodEntries, error: moodEntriesError, loading } = useMoodEntries()
 
   // fetch moods when component is mounted 
-  // (otherwise entries doesn't render until the year changes in any way)
+  // (otherwise entries dont render until the year changes in any way)
   onMounted(() => {
     fetchEntriesByYear(); 
   });
@@ -361,7 +370,6 @@
     }
 
     formattedYear.value = inputYear.value;
-    currentDayRef.value = null; 
     fetchEntriesByYear();
   }
 
@@ -383,7 +391,6 @@
       })
 
       moodEntries.value = filtered;
-      scrollToCurrentDay();
     } catch (err: any) {
       fetchError.value = err;
       console.error('[fetchEntriesByYear]', err);

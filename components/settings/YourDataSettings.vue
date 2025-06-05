@@ -1,12 +1,11 @@
 <template>
   <div class="space-y-8">
-    <!-- Local LLM only toggle -->
-    <div class="bg-[var(--secondary)] p-4 rounded-lg">
-      <div class="flex items-center justify-between">
-        <div>
+    <div class="bg-[var(--secondary)] p-3 sm:p-4 rounded-lg">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div class="mb-2 sm:mb-0">
           <h3 class="text-lg font-semibold text-[var(--fg)]">Local LLM only</h3>
           <p class="text-sm text-[var(--muted)] mt-1">
-            Use only AI available on your device, no data gets sent to servers, performance may degrade
+            Use only AI available on your device, no data gets sent to servers, performance may degrade.
           </p>
         </div>
         <label class="inline-flex items-center cursor-pointer">
@@ -23,23 +22,27 @@
       </div>
     </div>
 
-    <!-- Export data -->
-    <div class="bg-[var(--secondary)] p-4 rounded-lg flex justify-between items-center">
-      <div>
+    <div class="bg-[var(--secondary)] p-3 sm:p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center text-center sm:text-left">
+      <div class="mb-3 sm:mb-0">
         <h3 class="text-lg font-semibold text-[var(--fg)]">Export data</h3>
         <p class="text-sm text-[var(--muted)]">Download your account data</p>
       </div>
       <button
-        class="px-4 py-2 rounded text-[var(--fg)] bg-[var(--primary)] hover:bg-[var(--accent)] transition"
+        @click="handleExportData"
+        class="px-4 py-2 rounded text-[var(--fg)] bg-[var(--primary)] hover:bg-[var(--accent)] transition w-full sm:w-auto"
       >
         Export data
       </button>
     </div>
-</div>
-
+  </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
+
 const localLLM = ref(true);
 
+function handleExportData() {
+  alert('TODO');
+}
 </script>
