@@ -123,25 +123,35 @@ export const useDek = () => {
     }
     
     const { key: derivedKek } = await deriveKey(password, salt);
-    
-    await saveSalt(salt);
-    kek.value = derivedKek;
-    currentSalt.value = salt;
-    await saveKek(derivedKek) 
 
-    if (!wrappedDek) {
-      dek.value = await generateDek();
-      wrappedDek = await wrapDek(dek.value, kek.value);
-      await saveDek(dek.value);
-      await sb.from('profiles')
-        .update({ wrapped_dek: wrappedDek })
-        .eq('id', user.value.id);
-    } else {
-      dek.value = await unwrapDek(wrappedDek, kek.value)
-      await saveDek(dek.value);
+    await saveSalt(salt);
+
+    try {
+      if (!wrappedDek) {
+        dek.value = await generateDek();
+        wrappedDek = await wrapDek(dek.value, derivedKek);
+        await saveDek(dek.value);
+        await sb.from('profiles')
+          .update({ wrapped_dek: wrappedDek })
+          .eq('id', user.value.id);
+      } else {
+        dek.value = await unwrapDek(wrappedDek, derivedKek)
+        await saveDek(dek.value);
+      }
+
+      kek.value = derivedKek;
+      currentSalt.value = salt;
+      await saveKek(derivedKek)
+
+      console.log('[DEK] Unlocked with password');
+    } catch (err) {
+      await clearKek();
+      kek.value = null;
+      dek.value = null;
+      currentSalt.value = null;
+      console.warn('[DEK] Unlock failed', err);
+      throw new Error('Incorrect password');
     }
-    
-    console.log('[DEK] Unlocked with password');
   }
 
   function lock() {
