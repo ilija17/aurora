@@ -30,6 +30,8 @@
       <div class="flex-shrink-0 w-full p-4" v-if="isAuthenticated">
         <SpotifySearch
           v-model:spotifySongId="songId"
+          v-model:spotifySongName="songName"
+          v-model:spotifySongArtist="songArtist"
         />
       </div>
 
@@ -41,6 +43,8 @@
           :locationContext="selectedLocations"
           :socialContext="selectedSocials"
           :spotifySongId="songId"
+          :spotifySongName="songName"
+          :spotifySongArtist="songArtist"
         />
       </div>
     </div>
@@ -92,6 +96,8 @@
   const selectedLocations = ref<number[]>([])
   const selectedSocials   = ref<number[]>([])
   const songId            = ref<string|null>(null)
+  const songName          = ref<string|null>(null)
+  const songArtist        = ref<string|null>(null)
 
   const isFirst = computed(() => current.value === 0)
   const isLast  = computed(() => current.value === slides.value - 1)

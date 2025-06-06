@@ -31,6 +31,8 @@ const props = defineProps<{
   locationContext: number[]
   socialContext: number[]
   spotifySongId: string | null
+  spotifySongName: string | null
+  spotifySongArtist: string | null
 }>()
 
 const notes = ref('')
@@ -47,7 +49,9 @@ async function submit() {
       location_ids: props.locationContext,
       social_ids: props.socialContext,
       notes: notes.value,
-      spotify_song_id: props.spotifySongId
+      spotify_song_id: props.spotifySongId,
+      spotify_song_name: props.spotifySongName,
+      spotify_song_artist: props.spotifySongArtist
     }
 
     const { enc_iv, enc_blob } = await seal(payload)
