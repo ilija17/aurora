@@ -28,7 +28,7 @@
           class="flex-shrink-0 mr-3 p-2 rounded-full border-2 emoji-circle"
           :class="{ 'selected-circle': selected === opt.value }"
         >
-          <span>{{ opt.emoji }}</span>
+          <img :src="opt.icon" alt="mood" class="w-6 h-6" />
         </div>
 
         <span style="color: var(--fg)">{{ opt.label }}</span>
@@ -40,6 +40,11 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { useSupabaseClient, useSupabaseUser } from '#imports'
+import mood1Url from '@/assets/images/1.svg'
+import mood2Url from '@/assets/images/2.svg'
+import mood3Url from '@/assets/images/3.svg'
+import mood4Url from '@/assets/images/4.svg'
+import mood5Url from '@/assets/images/5.svg'
 
 const props = defineProps({
   modelValue: { type: Number, default: 0 }
@@ -57,11 +62,11 @@ watch(localValue, v => {
 
 // mood options
 const options = [
-  { value: 1, label: 'Great', emoji: '😃' },
-  { value: 2, label: 'Good',  emoji: '🙂' },
-  { value: 3, label: 'Fine',  emoji: '😐' },
-  { value: 4, label: 'Bad',   emoji: '☹️' },
-  { value: 5, label: 'Awful', emoji: '😫' },
+  { value: 1, label: 'Great', icon: mood1Url },
+  { value: 2, label: 'Good',  icon: mood2Url },
+  { value: 3, label: 'Fine',  icon: mood3Url },
+  { value: 4, label: 'Bad',   icon: mood4Url },
+  { value: 5, label: 'Awful', icon: mood5Url },
 ]
 
 const selected = computed(() => localValue.value)
