@@ -25,12 +25,13 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useDek } from '~/composables/useDek';
 
 definePageMeta({ requiresAuth: true });
 
 const router = useRouter();
+const route = useRoute();
 const { unlock } = useDek();
 
 const password = ref('');
@@ -42,7 +43,8 @@ async function handleUnlock() {
   submitting.value = true;
   try {
     await unlock(password.value);
-    await router.push('/welcome');
+    const redirectTo = route.query.redirect as string | undefined;
+    await router.push(redirectTo ?? '/welcome');
   } catch (err: any) {
     errorMsg.value = err.message ?? 'Failed to unlock';
   } finally {

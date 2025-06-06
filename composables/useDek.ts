@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue';
-import { useSupabaseClient, useSupabaseUser, useRouter } from '#imports';
+import { useSupabaseClient, useSupabaseUser, useRouter, useRoute } from '#imports';
 import {
   makeSalt,
   deriveKey,
@@ -37,6 +37,7 @@ export const useDek = () => {
   const sb   = useSupabaseClient();
   const user = useSupabaseUser();
   const router = useRouter();
+  const route = useRoute();
   
   const unlocked = computed(() => dek.value !== null);
   const hasKek = computed(() => kek.value !== null);
@@ -117,7 +118,7 @@ export const useDek = () => {
     }
 
     if (!password) {
-      router.push('/unlock');
+      router.push({ path: '/unlock', query: { redirect: route.fullPath } });
       throw new Error('Password required to unlock');
     }
     
@@ -171,7 +172,7 @@ export const useDek = () => {
       if (kek.value) {
         await quickUnlock();
       } else {
-        router.push('/unlock');
+        router.push({ path: '/unlock', query: { redirect: route.fullPath } });
         throw new Error('unlock first');
       }
     }
@@ -185,7 +186,7 @@ export const useDek = () => {
       if (kek.value) {
         await quickUnlock();
       } else {
-        router.push('/unlock');
+        router.push({ path: '/unlock', query: { redirect: route.fullPath } });
         throw new Error('unlock first');
       }
     }
@@ -201,7 +202,7 @@ export const useDek = () => {
       if (kek.value) {
         await quickUnlock();
       } else {
-        router.push('/unlock');
+        router.push({ path: '/unlock', query: { redirect: route.fullPath } });
         throw new Error('unlock first');
       }
     }
