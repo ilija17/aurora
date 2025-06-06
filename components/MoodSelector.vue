@@ -28,7 +28,7 @@
           class="flex-shrink-0 mr-3 p-2 rounded-full border-2 emoji-circle"
           :class="{ 'selected-circle': selected === opt.value }"
         >
-          <img :src="opt.icon" alt="mood" class="w-6 h-6" />
+          <img :src="opt.icon" alt="mood" class="w-12 h-12" />
         </div>
 
         <span style="color: var(--fg)">{{ opt.label }}</span>
