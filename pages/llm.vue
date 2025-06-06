@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { useChat } from '@ai-sdk/vue';
 import { onMounted, computed } from 'vue';
+import MarkdownIt from 'markdown-it'
 import { useMoodEntries } from '~/composables/useMoodEntries';
 
 const { finalizedEntries, fetchFinalizedMoodEntries } = useMoodEntries();
+
+const md = new MarkdownIt()
+const renderMarkdown = (text: string) => md.render(text)
 
 const { input, handleSubmit, messages, addToolResult } = useChat({
   api: '/api/openai/chat-with-data',
@@ -39,7 +43,7 @@ const messageList = computed(() => messages.value); // computed property for typ
         >
           <template v-for="part in message.parts">
             <template v-if="part.type === 'text'">
-              {{ part.text }}
+              <span v-html="renderMarkdown(part.text)" />
             </template>
             <template v-else-if="part.type === 'tool-invocation'">
               <template
