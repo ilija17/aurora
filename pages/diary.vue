@@ -358,7 +358,6 @@ async function autoLoadIfUnlocked() {
       await fetchFinalizedDiaryEntries()
       masterPassword.value = 'cached' // Set a flag to indicate we're using cached DEK
     } catch (e: any) {
-      console.log('Auto-load failed, password may be required:', e.message)
     }
   }
 }

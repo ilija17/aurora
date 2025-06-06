@@ -128,7 +128,6 @@ async function handleAuth() {
       },
     });
     
-    console.log('[AUTH] Server returned', { 
       salt, 
       wrappedDek: wrappedDek?.slice(0,16)+'…' 
     });
@@ -148,12 +147,9 @@ async function handleAuth() {
       if (salt) {
         await storeKek(userPassword, salt);
         await saveSalt(salt);
-        console.log('[CACHE] KEK cached for session');
       } else {
-        console.warn('[AUTH] No salt returned from server');
       }
     } else {
-      console.log('[AUTH] Sign-up complete, awaiting email confirmation');
       await clearSalt();
       clearSession();
     }
