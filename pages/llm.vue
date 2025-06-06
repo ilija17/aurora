@@ -24,7 +24,7 @@ const messageList = computed(() => messages.value); // computed property for typ
 </script>
 
 <template>
-  <div class="relative max-w-xl mx-auto p-4">
+  <div class="relative max-w-xl mx-auto p-4 sm:p-6">
     <h1 class="text-center text-2xl font-bold mb-4">Pseudo-psychiatrist</h1>
     <div class="space-y-4 pb-24">
       <div
@@ -34,7 +34,7 @@ const messageList = computed(() => messages.value); // computed property for typ
         :class="message.role === 'user' ? 'justify-end' : 'justify-start'"
       >
         <div
-          class="max-w-xs px-4 py-2 rounded-lg whitespace-pre-wrap"
+          class="max-w-[75%] sm:max-w-md px-4 py-2 rounded-lg whitespace-pre-wrap"
           :class="message.role === 'user' ? 'bg-[var(--primary)] text-white' : 'bg-[var(--secondary)] text-[var(--fg)]'"
         >
           <template v-for="part in message.parts">

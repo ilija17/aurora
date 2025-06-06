@@ -1,5 +1,5 @@
 <template>
-  <div class="relative w-full max-w-md mx-auto overflow-hidden">
+  <div class="relative w-full max-w-md mx-auto overflow-hidden pb-16">
     <!-- Slides wrapper -->
     <div
       class="flex transition-transform duration-500 ease-in-out"
@@ -46,11 +46,11 @@
     </div>
 
     <!-- navigation -->
-    <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-6">
+    <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-6 pointer-events-none">
       <button
         @click="prev"
         :disabled="current === 0"
-        class="p-2 rounded-full bg-[var(--secondary)] text-[var(--fg)] shadow disabled:opacity-50"
+        class="p-2 rounded-full bg-[var(--secondary)] text-[var(--fg)] shadow disabled:opacity-50 pointer-events-auto"
       >
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M15 19l-7-7 7-7" />
@@ -59,7 +59,7 @@
       <button
         @click="next"
         :disabled="nextDisabled"
-        class="p-2 rounded-full bg-[var(--secondary)] text-[var(--fg)] shadow disabled:opacity-50"
+        class="p-2 rounded-full bg-[var(--secondary)] text-[var(--fg)] shadow disabled:opacity-50 pointer-events-auto"
       >
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 5l7 7-7 7" />
