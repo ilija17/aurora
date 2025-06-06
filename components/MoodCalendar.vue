@@ -13,7 +13,7 @@
       </button>
     </div>
   
-    <div class="min-h-[60vh] max-h-[70vh] sm:min-h-[800px] sm:max-h-[900px] bg-[var(--secondary)] rounded-2xl sm:rounded-4xl pt-2 pb-2 px-2 sm:pt-10 sm:pb-10 sm:pl-4 sm:pr-4 overflow-y-scroll scroll-smooth w-full max-w-full">
+    <div class="relative min-h-[60vh] sm:min-h-[800px] sm:max-h-[900px] bg-[var(--secondary)] rounded-2xl sm:rounded-4xl pt-2 pb-2 px-4 sm:pt-10 sm:pb-10 sm:pl-4 sm:pr-4 overflow-y-scroll scroll-smooth max-h-[900px] lg:max-h-[900px] lg:h-[900px] lg:w-[600px] w-[90vw] lg:max-w-[600px] sm:w-full md:w-full">
       <div v-for="month in monthsArray" :key="month.month" class="mb-8 sm:mb-20">
         <div class="month-name relative top-0 left-0 px-2 sm:px-4 py-1 sm:py-2 text-base sm:text-lg font-semibold text-center sm:text-left">
           {{ month.month }}
@@ -28,16 +28,18 @@
                 class="w-full h-full cursor-pointer border-2 rounded-lg sm:rounded-2xl border-transparent hover:border-[var(--accent)] transition-colors ease-in-out relative touch-manipulation flex flex-col items-center justify-center"
                 :class="{
                   'invisible': day.day === 0,
-                  //'bg-[var(--primary)]/50': isToday(day.date) odkomentirat po zelji
+                  'bg-[var(--highlighted)]/50': isToday(day.date)
                 }"
                 @click="openDayModal(day.date);"
               >
                 <div v-if="isToday(day.date)" 
-                     class="rounded-full w-1 h-1 sm:w-2 sm:h-2 bg-[var(--accent)] absolute top-0.5 sm:top-1 left-0.5 sm:left-1"></div>
+                    class="scroll-mt-[250px] rounded-full w-1 h-1 sm:w-2 sm:h-2 bg-[var(--accent)] absolute top-0.5 sm:top-1 left-0.5 sm:left-1"
+                    id="today">
+                </div>
                 
                 <div v-if="hasSpotifySongOnDay(day.date)" 
-                     class="absolute top-0.5 sm:top-1 right-0.5 sm:right-1">
-                  <svg class="w-4 h-4 sm:w-3 sm:h-3" viewBox="0 0 26 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    class="absolute top-0.5 sm:top-1 right-0.5 sm:right-1">
+                  <svg class="w-3 h-3 lg:w-6 lg:h-6 sm:w-6 sm:h-6 md:w-6 md:h-6" viewBox="0 0 26 23" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12.4084 19.0666C11.1444 19.0666 10.0623 18.6166 9.16221 17.7164C8.26208 16.8163 7.81201 15.7342 7.81201 14.4702C7.81201 13.2062 8.26208 12.1241 9.16221 11.224C10.0623 10.3239 11.1444 9.87382 12.4084 9.87382C12.8489 9.87382 13.2511 9.93127 13.615 10.0462C13.998 10.1419 14.3619 10.2952 14.7066 10.5058V-1.61719H21.6012V2.97921H17.0048V14.4702C17.0048 15.7342 16.5547 16.8163 15.6546 17.7164C14.7545 18.6166 13.6724 19.0666 12.4084 19.0666Z" fill="#FEF7FF"/>
                   </svg>
                 </div>
@@ -47,7 +49,7 @@
                     :src="moodImageMap.get(moodMap?.get(format(day.date, 'dd.MM.yyyy'))) ?? defaultMoodUrl"
                     :class="{ 'invisible': !moodMap?.get(format(day.date, 'dd.MM.yyyy')) }"
                     alt="Mood image"
-                    class="w-8 h-8 sm:w-8 sm:h-8 md:w-10 md:h-10 object-contain"
+                    class="lg:w-12 lg:h-12 sm:w-8 sm:h-8 md:w-14 md:h-14 object-contain"
                   />
                 </div>
                 
@@ -61,6 +63,7 @@
             </div>
           </div>
         </div>
+        
       </div>
     </div>
   </div>
@@ -68,7 +71,7 @@
 <div
     v-if="showDayDetails"
     class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-  >
+  > 
     <div class="bg-[var(--secondary)] p-4 sm:p-6 rounded-xl shadow-lg w-full max-w-sm sm:max-w-md text-[var(--fg)] flex flex-col min-h-[50vh] max-h-[80vh] sm:min-h-[300px] sm:h-[50vh]">
       <div v-if="selectedMoods.length" class="flex flex-col gap-2 overflow-y-auto mb-4 flex-grow">
         <div
@@ -298,6 +301,7 @@
   // (otherwise entries dont render until the year changes in any way)
   onMounted(() => {
     fetchEntriesByYear(); 
+    location.hash = '#today';
   });
 
 
