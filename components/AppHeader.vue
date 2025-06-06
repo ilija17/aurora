@@ -1,7 +1,8 @@
 <template>
-<nav class="bg-transparent text-white px-6 py-4 flex items-center justify-between" aria-label="Main menu">
-  <!-- Mobile Layout -->
-  <div class="flex md:hidden items-center justify-between w-full">
+<nav class="bg-transparent text-white px-6 py-4" aria-label="Main menu">
+  <div class="max-w-screen-xl mx-auto flex items-center justify-between">
+    <!-- Mobile Layout -->
+    <div class="flex md:hidden items-center justify-between w-full">
     <!-- Left: Logo + Hamburger -->
     <div class="flex items-center space-x-3">
       <!-- Hamburger Menu -->
@@ -193,6 +194,7 @@
         </div>
       </div>
     </div>
+  </div>
   </div>
 </nav>
 </template>
