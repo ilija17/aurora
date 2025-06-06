@@ -1,68 +1,66 @@
 <template>
-  <div class="flex flex-col items-center justify-center w-full h-full overflow-x-hidden">
-    <div class="flex p-3 sm:p-5">
-      <button @click="decrementYear" class="p-2 sm:p-0 touch-manipulation">
+  <div class="flex flex-col items-center justify-center w-full h-full overflow-x-hidden px-2 sm:px-4">
+    <div class="flex items-center justify-center p-3 sm:p-5 w-full">
+      <button @click="decrementYear" class="flex-shrink-0 p-2 sm:p-3 touch-manipulation text-lg sm:text-xl font-bold">
         &lt;
       </button>
-      <input class="min-w-[4ch] w-[4ch] sm:min-w-[6ch] sm:w-[6ch] ml-2 mr-2 text-center text-sm sm:text-base" 
+      <input class="flex-shrink-0 min-w-[6ch] w-[6ch] sm:min-w-[7ch] sm:w-[7ch] mx-2 sm:mx-3 text-center text-base sm:text-lg font-semibold bg-transparent border-b-2 border-[var(--accent)] focus:outline-none focus:border-[var(--primary)]" 
              v-model.number="inputYear" 
              @blur="formatInputYear" 
              @keyup.enter="formatInputYear" />
-      <button @click="incrementYear" class="p-2 sm:p-0 touch-manipulation">
+      <button @click="incrementYear" class="flex-shrink-0 p-2 sm:p-3 touch-manipulation text-lg sm:text-xl font-bold">
         &gt;
       </button>
     </div>
   
-    <div class="min-h-[60vh] max-h-[70vh] sm:min-h-[800px] sm:max-h-[900px] bg-[var(--secondary)] rounded-2xl sm:rounded-4xl pt-2 pb-2 px-1 sm:pt-10 sm:pb-10 sm:pl-5 sm:pr-5 overflow-y-scroll overflow-x-hidden scroll-smooth w-full sm:w-auto max-w-full ">
+    <div class="min-h-[60vh] max-h-[70vh] sm:min-h-[800px] sm:max-h-[900px] bg-[var(--secondary)] rounded-2xl sm:rounded-4xl pt-2 pb-2 px-2 sm:pt-10 sm:pb-10 sm:pl-4 sm:pr-4 overflow-y-scroll scroll-smooth w-full max-w-full">
       <div v-for="month in monthsArray" :key="month.month" class="mb-8 sm:mb-20">
         <div class="month-name relative top-0 left-0 px-2 sm:px-4 py-1 sm:py-2 text-base sm:text-lg font-semibold text-center sm:text-left">
           {{ month.month }}
         </div>
         
-        <table class="w-full table-fixed border-collapse min-w-0">
-          <tbody>
-            <tr v-for="(week, weekIndex) in month.calendarMonth" :key="weekIndex">
-              <td v-for="day in week " 
-                  :key="day.date.toISOString()"
-                  class="day-cell w-[13.5%] h-10 sm:h-16 md:h-20 p-0 sm:p-1 align-top min-w-0 sm:w-[12%]">
-                <div
-                  class="w-full h-full cursor-pointer border-2 rounded-lg sm:rounded-2xl border-transparent hover:border-[var(--accent)] transition-colors ease-in-out relative touch-manipulation"
-                  :class="{
-                    'invisible': day.day === 0,
-                    //'bg-[var(--primary)]/50': isToday(day.date) odkomentirat po zelji
-                  }"
-                  @click="openDayModal(day.date);"
-                >
-                  <div v-if="isToday(day.date)" 
-                       class="rounded-full w-1 h-1 sm:w-2 sm:h-2 bg-[var(--accent)] absolute top-0.5 sm:top-2 left-0.5 sm:left-2"></div>
-                  
-                  <div v-if="hasSpotifySongOnDay(day.date)" 
-                       class="absolute top-0 sm:top-1 right-0.5 sm:right-3">
-                    <svg class="w-2 h-2 sm:w-4 sm:h-4" viewBox="0 0 26 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12.4084 19.0666C11.1444 19.0666 10.0623 18.6166 9.16221 17.7164C8.26208 16.8163 7.81201 15.7342 7.81201 14.4702C7.81201 13.2062 8.26208 12.1241 9.16221 11.224C10.0623 10.3239 11.1444 9.87382 12.4084 9.87382C12.8489 9.87382 13.2511 9.93127 13.615 10.0462C13.998 10.1419 14.3619 10.2952 14.7066 10.5058V-1.61719H21.6012V2.97921H17.0048V14.4702C17.0048 15.7342 16.5547 16.8163 15.6546 17.7164C14.7545 18.6166 13.6724 19.0666 12.4084 19.0666Z" fill="#FEF7FF"/>
-                    </svg>
-                  </div>
-                  
-                  <div v-if="!loadingEntriesByYear" class="image-container flex items-center justify-center h-full">
-                    <img
-                      :src="moodImageMap.get(moodMap?.get(format(day.date, 'dd.MM.yyyy'))) ?? defaultMoodUrl"
-                      :class="{ 'invisible': !moodMap?.get(format(day.date, 'dd.MM.yyyy')) }"
-                      alt="Mood image"
-                      class="w-8 h-8 sm:w-12 sm:h-12 object-contain"
-                    />
-                  </div>
-                  
-                  <div :class="{ 
-                    'day-number text-xs sm:text-sm absolute bottom-0 sm:bottom-1 right-0.5 sm:right-1 leading-none': getDay(day.date) != 0, 
-                    'day-number-sunday text-xs sm:text-sm absolute bottom-0 sm:bottom-1 right-0.5 sm:right-1 leading-none': getDay(day.date) == 0 
-                  }">
-                    {{ day.day }}
-                  </div>
+        <div class="w-full overflow-hidden">
+          <div v-for="(week, weekIndex) in month.calendarMonth" :key="weekIndex" class="grid grid-cols-7 gap-0.5 sm:gap-1 w-full mb-0.5 sm:mb-1">
+            <div v-for="day in week " 
+                 :key="day.date.toISOString()"
+                 class="aspect-square w-full">
+              <div
+                class="w-full h-full cursor-pointer border-2 rounded-lg sm:rounded-2xl border-transparent hover:border-[var(--accent)] transition-colors ease-in-out relative touch-manipulation flex flex-col items-center justify-center"
+                :class="{
+                  'invisible': day.day === 0,
+                  //'bg-[var(--primary)]/50': isToday(day.date) odkomentirat po zelji
+                }"
+                @click="openDayModal(day.date);"
+              >
+                <div v-if="isToday(day.date)" 
+                     class="rounded-full w-1 h-1 sm:w-2 sm:h-2 bg-[var(--accent)] absolute top-0.5 sm:top-1 left-0.5 sm:left-1"></div>
+                
+                <div v-if="hasSpotifySongOnDay(day.date)" 
+                     class="absolute top-0.5 sm:top-1 right-0.5 sm:right-1">
+                  <svg class="w-4 h-4 sm:w-3 sm:h-3" viewBox="0 0 26 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.4084 19.0666C11.1444 19.0666 10.0623 18.6166 9.16221 17.7164C8.26208 16.8163 7.81201 15.7342 7.81201 14.4702C7.81201 13.2062 8.26208 12.1241 9.16221 11.224C10.0623 10.3239 11.1444 9.87382 12.4084 9.87382C12.8489 9.87382 13.2511 9.93127 13.615 10.0462C13.998 10.1419 14.3619 10.2952 14.7066 10.5058V-1.61719H21.6012V2.97921H17.0048V14.4702C17.0048 15.7342 16.5547 16.8163 15.6546 17.7164C14.7545 18.6166 13.6724 19.0666 12.4084 19.0666Z" fill="#FEF7FF"/>
+                  </svg>
                 </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                
+                <div v-if="!loadingEntriesByYear" class="flex items-center justify-center flex-grow">
+                  <img
+                    :src="moodImageMap.get(moodMap?.get(format(day.date, 'dd.MM.yyyy'))) ?? defaultMoodUrl"
+                    :class="{ 'invisible': !moodMap?.get(format(day.date, 'dd.MM.yyyy')) }"
+                    alt="Mood image"
+                    class="w-8 h-8 sm:w-8 sm:h-8 md:w-10 md:h-10 object-contain"
+                  />
+                </div>
+                
+                <div :class="{ 
+                  'text-xs sm:text-sm absolute bottom-0.5 sm:bottom-1 right-0.5 sm:right-1 leading-none': getDay(day.date) != 0, 
+                  'text-xs sm:text-sm absolute bottom-0.5 sm:bottom-1 right-0.5 sm:right-1 leading-none text-red-500': getDay(day.date) == 0 
+                }">
+                  {{ day.day }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
