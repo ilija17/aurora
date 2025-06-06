@@ -116,6 +116,6 @@ nav > button.active {
 
 nav > button:not(.active):hover {
   background-color: var(--highlighted);
-  color: var(--accent);
+  color: var(--white);
 }
 </style>
