@@ -42,7 +42,20 @@ import { ref } from 'vue';
 
 const localLLM = ref(true);
 
-function handleExportData() {
-  alert('TODO');
+async function handleExportData() {
+  try {
+    const data = await $fetch('/api/user/export-data');
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: 'application/json'
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'aurora-data.json';
+    link.click();
+    URL.revokeObjectURL(url);
+  } catch (err: any) {
+    alert(err?.statusMessage || err.message || 'Failed to export data');
+  }
 }
 </script>
