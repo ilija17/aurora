@@ -127,31 +127,26 @@ async function handleAuth() {
         ...(isLogin.value ? {} : { username: sanitizeUsername() }),
       },
     });
-    
-      salt, 
-      wrappedDek: wrappedDek?.slice(0,16)+'…' 
-    });
 
     if (session) {
       await supabase.auth.setSession({
         access_token: session.access_token,
         refresh_token: session.refresh_token,
       });
+    }
 
-      await unlock(userPassword);
+    await unlock(userPassword);
 
-      const { repairIfMissing } = useDekRepair();
-      await repairIfMissing(userPassword, salt, wrappedDek);
+    const { repairIfMissing } = useDekRepair();
+    await repairIfMissing(userPassword, salt, wrappedDek);
 
-      // spremi KEK NAVODNO, kek nestane brže nego Amelia Earhart
-      if (salt) {
-        await storeKek(userPassword, salt);
-        await saveSalt(salt);
-      } else {
-      }
+    // spremi KEK NAVODNO, kek nestane brže nego Amelia Earhart
+    if (salt) {
+      await storeKek(userPassword, salt);
+      await saveSalt(salt);
+      console.log('[CACHE] KEK cached for session');
     } else {
-      await clearSalt();
-      clearSession();
+      console.warn('[AUTH] No salt returned from server');
     }
 
     const { fetchContextData } = usePublicContextData();
