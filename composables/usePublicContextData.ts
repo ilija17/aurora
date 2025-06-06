@@ -55,6 +55,8 @@ export function usePublicContextData() {
             general_mood: generalMap[p.general_mood] || null,
             notes: p.notes,
             spotify_song_id: p.spotify_song_id ?? null,
+            spotify_song_name: p.spotify_song_name ?? null,
+            spotify_song_artist: p.spotify_song_artist ?? null,
             detailed_moods: (p.detailed_ids ?? []).map(id => detailedMap[id]).filter(Boolean),
             location_contexts: (p.location_ids ?? []).map(id => locationMap[id]).filter(Boolean),
             social_contexts: (p.social_ids ?? []).map(id => socialMap[id]).filter(Boolean)
