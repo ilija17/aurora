@@ -39,10 +39,35 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useDiaryEntries } from '~/composables/useDiaryEntries';
+import { useMoodEntries } from '~/composables/useMoodEntries';
+
+const { finalizedEntries: diaryEntries, fetchFinalizedDiaryEntries } = useDiaryEntries();
+const { finalizedEntries: moodEntries, fetchFinalizedMoodEntries } = useMoodEntries();
 
 const localLLM = ref(true);
 
-function handleExportData() {
-  alert('TODO');
+async function handleExportData() {
+  try {
+    await fetchFinalizedDiaryEntries();
+    await fetchFinalizedMoodEntries();
+
+    const data = {
+      diaryEntries: diaryEntries.value,
+      moodEntries: moodEntries.value
+    };
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: 'application/json'
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'aurora-data.json';
+    link.click();
+    URL.revokeObjectURL(url);
+  } catch (err: any) {
+    alert(err?.statusMessage || err.message || 'Failed to export data');
+  }
 }
 </script>
