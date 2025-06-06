@@ -201,10 +201,6 @@
 import { ref } from 'vue'
 import { useSupabaseClient } from '#imports'
 
-definePageMeta({
-  requiresAuth: true
-})
-
 const supabase = useSupabaseClient()
 
 const logout = async () => {
