@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue';
-import { useSupabaseClient, useSupabaseUser } from '#imports';
+import { useSupabaseClient, useSupabaseUser, useRouter } from '#imports';
 import {
   makeSalt,
   deriveKey,
@@ -36,6 +36,7 @@ const currentSalt = ref<string | null>(null);
 export const useDek = () => {
   const sb   = useSupabaseClient();
   const user = useSupabaseUser();
+  const router = useRouter();
   
   const unlocked = computed(() => dek.value !== null);
   const hasKek = computed(() => kek.value !== null);
@@ -115,7 +116,10 @@ export const useDek = () => {
       return;
     }
 
-    if (!password) throw new Error('Password required to unlock');
+    if (!password) {
+      router.push('/unlock');
+      throw new Error('Password required to unlock');
+    }
     
     const { key: derivedKek } = await deriveKey(password, salt);
     
@@ -167,6 +171,7 @@ export const useDek = () => {
       if (kek.value) {
         await quickUnlock();
       } else {
+        router.push('/unlock');
         throw new Error('unlock first');
       }
     }
@@ -180,6 +185,7 @@ export const useDek = () => {
       if (kek.value) {
         await quickUnlock();
       } else {
+        router.push('/unlock');
         throw new Error('unlock first');
       }
     }
@@ -195,6 +201,7 @@ export const useDek = () => {
       if (kek.value) {
         await quickUnlock();
       } else {
+        router.push('/unlock');
         throw new Error('unlock first');
       }
     }
