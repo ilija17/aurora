@@ -6,7 +6,7 @@ export default defineNuxtRouteMiddleware((to) => {
   if (to.path === '/unlock' || to.path === '/spotify') return;
 
   const { dek, kek } = useDek();
-  if (!dek.value && !kek.value) {
+  if (!dek.value || !kek.value) {
     return navigateTo({ path: '/unlock', query: { redirect: to.fullPath } });
   }
 });

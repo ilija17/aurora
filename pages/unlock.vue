@@ -8,7 +8,8 @@
           label="Password"
           type="password"
           v-model="password"
-          placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
+          placeholder="Enter your password"
+          required
         />
         <button
           type="submit"

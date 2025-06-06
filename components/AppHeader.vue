@@ -55,14 +55,5 @@
     >
       Encrypted diary
     </NuxtLink>
-
-    <NuxtLink
-      to="/unlock"
-      class="btn"
-      active-class="btn--active"
-      exact-active-class="btn--active"
-    >
-      Unlock keys
-    </NuxtLink>
   </nav>
 </template>
