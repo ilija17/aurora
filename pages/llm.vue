@@ -24,117 +24,127 @@ const messageList = computed(() => messages.value); // computed property for typ
 </script>
 
 <template>
-  <div class="flex flex-col w-full max-w-md py-24 mx-auto stretch">
-    <div
-      v-for="message in messageList"
-      :key="message.id"
-      class="whitespace-pre-wrap"
-    >
-      <strong>{{ `${message.role}: ` }}</strong>
-      <template v-for="part in message.parts">
-        <template v-if="part.type === 'text'">
-          {{ part.text }}
-        </template>
-        <template v-else-if="part.type === 'tool-invocation'">
-          <template
-            v-if="part.toolInvocation.toolName === 'askForConfirmation'"
-          >
-            <template v-if="part.toolInvocation.state === 'call'">
-              <div
-                :key="part.toolInvocation.toolCallId"
-                className="text-gray-500"
+  <div class="relative max-w-xl mx-auto p-4 sm:p-6">
+    <h1 class="text-center text-2xl font-bold mb-4">Pseudo-psychiatrist</h1>
+    <div class="space-y-4 pb-24">
+      <div
+        v-for="message in messageList"
+        :key="message.id"
+        class="flex"
+        :class="message.role === 'user' ? 'justify-end' : 'justify-start'"
+      >
+        <div
+          class="max-w-[75%] sm:max-w-md px-4 py-2 rounded-lg whitespace-pre-wrap"
+          :class="message.role === 'user' ? 'bg-[var(--primary)] text-white' : 'bg-[var(--secondary)] text-[var(--fg)]'"
+        >
+          <template v-for="part in message.parts">
+            <template v-if="part.type === 'text'">
+              {{ part.text }}
+            </template>
+            <template v-else-if="part.type === 'tool-invocation'">
+              <template
+                v-if="part.toolInvocation.toolName === 'askForConfirmation'"
               >
-                {{ part.toolInvocation.args.message }}
-                <div className="flex gap-2">
-                  <button
-                    class="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
-                    @click="
-                      addToolResult({
-                        toolCallId: part.toolInvocation.toolCallId,
-                        result: 'Yes, confirmed.',
-                      })
-                    "
+                <template v-if="part.toolInvocation.state === 'call'">
+                  <div
+                    :key="part.toolInvocation.toolCallId"
+                    class="text-gray-500"
                   >
-                    Yes
-                  </button>
-                  <button
-                    class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700"
-                    @click="
-                      addToolResult({
-                        toolCallId: part.toolInvocation.toolCallId,
-                        result: 'No, denied',
-                      })
-                    "
+                    {{ part.toolInvocation.args.message }}
+                    <div class="flex gap-2">
+                      <button
+                        class="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
+                        @click="
+                          addToolResult({
+                            toolCallId: part.toolInvocation.toolCallId,
+                            result: 'Yes, confirmed.',
+                          })
+                        "
+                      >
+                        Yes
+                      </button>
+                      <button
+                        class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700"
+                        @click="
+                          addToolResult({
+                            toolCallId: part.toolInvocation.toolCallId,
+                            result: 'No, denied',
+                          })
+                        "
+                      >
+                        No
+                      </button>
+                    </div>
+                  </div>
+                </template>
+                <template v-if="part.toolInvocation.state === 'result'">
+                  <div
+                    :key="part.toolInvocation.toolCallId"
+                    class="text-gray-500"
                   >
-                    No
-                  </button>
-                </div>
-              </div>
-            </template>
-            <template v-if="part.toolInvocation.state === 'result'">
-              <div
-                :key="part.toolInvocation.toolCallId"
-                className="text-gray-500"
-              >
-                Location access allowed: {{ part.toolInvocation.result }}
-              </div>
-            </template>
-          </template>
+                    Location access allowed: {{ part.toolInvocation.result }}
+                  </div>
+                </template>
+              </template>
 
-          <template v-if="part.toolInvocation.toolName === 'getLocation'">
-            <template v-if="part.toolInvocation.state === 'call'">
-              <div
-                :key="part.toolInvocation.toolCallId"
-                className="text-gray-500"
-              >
-                Getting location...
-              </div>
-            </template>
-            <template v-if="part.toolInvocation.state === 'result'">
-              <div
-                :key="part.toolInvocation.toolCallId"
-                className="text-gray-500"
-              >
-                Location: {{ part.toolInvocation.result }}
-              </div>
-            </template>
-          </template>
+              <template v-if="part.toolInvocation.toolName === 'getLocation'">
+                <template v-if="part.toolInvocation.state === 'call'">
+                  <div
+                    :key="part.toolInvocation.toolCallId"
+                    class="text-gray-500"
+                  >
+                    Getting location...
+                  </div>
+                </template>
+                <template v-if="part.toolInvocation.state === 'result'">
+                  <div
+                    :key="part.toolInvocation.toolCallId"
+                    class="text-gray-500"
+                  >
+                    Location: {{ part.toolInvocation.result }}
+                  </div>
+                </template>
+              </template>
 
-          <template
-            v-if="part.toolInvocation.toolName === 'getWeatherInformation'"
-          >
-            <template v-if="part.toolInvocation.state === 'partial-call'">
-              <pre :key="part.toolInvocation.toolCallId">
-                {{ JSON.stringify(part.toolInvocation, null, 2) }}
-              </pre>
-            </template>
-            <template v-if="part.toolInvocation.state === 'call'">
-              <div
-                :key="part.toolInvocation.toolCallId"
-                className="text-gray-500"
+              <template
+                v-if="part.toolInvocation.toolName === 'getWeatherInformation'"
               >
-                Getting weather information for
-                {{ part.toolInvocation.args.city }}...
-              </div>
-            </template>
-            <template v-if="part.toolInvocation.state === 'result'">
-              <div
-                :key="part.toolInvocation.toolCallId"
-                className="text-gray-500"
-              >
-                Weather in {{ part.toolInvocation.args.city }}:
-                {{ part.toolInvocation.result }}
-              </div>
+                <template v-if="part.toolInvocation.state === 'partial-call'">
+                  <pre :key="part.toolInvocation.toolCallId">
+                    {{ JSON.stringify(part.toolInvocation, null, 2) }}
+                  </pre>
+                </template>
+                <template v-if="part.toolInvocation.state === 'call'">
+                  <div
+                    :key="part.toolInvocation.toolCallId"
+                    class="text-gray-500"
+                  >
+                    Getting weather information for
+                    {{ part.toolInvocation.args.city }}...
+                  </div>
+                </template>
+                <template v-if="part.toolInvocation.state === 'result'">
+                  <div
+                    :key="part.toolInvocation.toolCallId"
+                    class="text-gray-500"
+                  >
+                    Weather in {{ part.toolInvocation.args.city }}:
+                    {{ part.toolInvocation.result }}
+                  </div>
+                </template>
+              </template>
             </template>
           </template>
-        </template>
-        <br />
-      </template>
+        </div>
+      </div>
     </div>
 
-    <form @submit="handleSubmit">
+    <form
+      @submit="handleSubmit"
+      class="fixed bottom-0 left-0 right-0 max-w-xl mx-auto p-4 bg-[var(--bg)] border-t border-[var(--border)]"
+    >
       <input
-        class="fixed bottom-0 w-full max-w-md p-2 mb-8 border border-gray-300 rounded shadow-xl"
+        class="w-full p-3 rounded-lg bg-[var(--input-bg)] text-[var(--input-color)] border border-[var(--input-border)]"
         v-model="input"
         placeholder="Say something..."
       />

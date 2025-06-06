@@ -1,12 +1,16 @@
 <template>
-  <div>
+  <div class="space-y-4">
     <textarea
       rows="5"
-      cols="80"
       v-model="notes"
       placeholder="Enter some notes…"
+      class="w-full p-3 rounded-lg resize-y bg-[var(--input-bg)] text-[var(--input-color)] border border-[var(--input-border)]"
     ></textarea>
-    <button :disabled="isSubmitting" @click="submit">
+    <button
+      :disabled="isSubmitting"
+      @click="submit"
+      class="px-4 py-2 rounded-lg bg-[var(--primary)] text-white disabled:opacity-50"
+    >
       {{ isSubmitting ? 'Submitting…' : 'Submit' }}
     </button>
   </div>
@@ -27,6 +31,8 @@ const props = defineProps<{
   locationContext: number[]
   socialContext: number[]
   spotifySongId: string | null
+  spotifySongName: string | null
+  spotifySongArtist: string | null
 }>()
 
 const notes = ref('')
@@ -43,7 +49,9 @@ async function submit() {
       location_ids: props.locationContext,
       social_ids: props.socialContext,
       notes: notes.value,
-      spotify_song_id: props.spotifySongId
+      spotify_song_id: props.spotifySongId,
+      spotify_song_name: props.spotifySongName,
+      spotify_song_artist: props.spotifySongArtist
     }
 
     const { enc_iv, enc_blob } = await seal(payload)

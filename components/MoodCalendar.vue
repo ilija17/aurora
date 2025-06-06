@@ -225,6 +225,8 @@
   entry_timestamp: string;
   general_mood: number;
   spotify_song_id?: string;
+  spotify_song_name?: string;
+  spotify_song_artist?: string;
   notes?: string;
   detailed_moods?: { mood_name: string }[];
   social_contexts?: { social_name: string }[];

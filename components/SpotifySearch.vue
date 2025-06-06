@@ -40,19 +40,31 @@ import { ref, watch } from 'vue'
 
 const props = defineProps<{
   spotifySongId: string | null
+  spotifySongName: string | null
+  spotifySongArtist: string | null
 }>()
 
 const emit = defineEmits<{
   (e: 'update:spotifySongId', value: string | null): void
+  (e: 'update:spotifySongName', value: string | null): void
+  (e: 'update:spotifySongArtist', value: string | null): void
 }>()
 
 const q               = ref('')
 const tracks          = ref<any[]>([])
 const localSelectedId = ref<string | null>(props.spotifySongId)
+const localSelectedName = ref<string | null>(props.spotifySongName)
+const localSelectedArtist = ref<string | null>(props.spotifySongArtist)
 const displayedId     = ref<string | null>(null)
 
 watch(() => props.spotifySongId, v => {
   localSelectedId.value = v
+})
+watch(() => props.spotifySongName, v => {
+  localSelectedName.value = v
+})
+watch(() => props.spotifySongArtist, v => {
+  localSelectedArtist.value = v
 })
 
 async function doSearch() {
@@ -79,12 +91,16 @@ async function doSearch() {
 
 function onTrackClick(track: any) {
   localSelectedId.value = track.id
+  localSelectedName.value = track.name
+  localSelectedArtist.value = track.artists.map((a: any) => a.name).join(', ')
   displayedId.value     = null
 }
 
 function onContinue() {
   displayedId.value = localSelectedId.value
   emit('update:spotifySongId', localSelectedId.value)
+  emit('update:spotifySongName', localSelectedName.value)
+  emit('update:spotifySongArtist', localSelectedArtist.value)
 }
 </script>
 
