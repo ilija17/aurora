@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, watch } from 'vue'
 import { Line } from 'vue-chartjs'
 import {
   Chart,
@@ -32,6 +32,8 @@ const chartOptions = {
   }
 }
 
+const selectedRange = ref<'day' | 'week' | 'month' | 'year'>('month')
+
 const { messages, input, handleSubmit } = useChat({
   api: '/api/openai/chat-with-data',
   experimental_prepareRequestBody: ({ id, messages, requestBody }) => ({
@@ -47,23 +49,43 @@ onMounted(async () => {
   updateChart()
 })
 
+watch(selectedRange, updateChart)
+watch(finalizedEntries, updateChart)
+
 function updateChart () {
   const entries = finalizedEntries.value
-  if (!entries.length) return
+  if (!entries.length) {
+    chartData.value = { labels: [], datasets: [] }
+    return
+  }
 
-  const monthly: Record<string, number[]> = {}
+  const grouped: Record<string, number[]> = {}
   for (const entry of entries) {
     const date = parseISO(entry.payload.entry_timestamp)
-    const key = format(date, 'yyyy-MM')
-    monthly[key] = monthly[key] || []
-    monthly[key].push(entry.payload.general_mood.id)
+    let key = ''
+    switch (selectedRange.value) {
+      case 'day':
+        key = format(date, 'yyyy-MM-dd')
+        break
+      case 'week':
+        key = format(date, "yyyy-'W'II")
+        break
+      case 'year':
+        key = format(date, 'yyyy')
+        break
+      case 'month':
+      default:
+        key = format(date, 'yyyy-MM')
+    }
+    grouped[key] = grouped[key] || []
+    grouped[key].push(entry.payload.general_mood.id)
   }
 
   const labels: string[] = []
   const data: number[] = []
-  Object.keys(monthly).sort().forEach(k => {
+  Object.keys(grouped).sort().forEach(k => {
     labels.push(k)
-    const arr = monthly[k]
+    const arr = grouped[k]
     data.push(arr.reduce((a, b) => a + b, 0) / arr.length)
   })
 
@@ -97,6 +119,14 @@ const summaryHtml = computed(() => {
 <template>
   <div class="max-w-2xl mx-auto p-4 space-y-6">
     <h1 class="text-center text-2xl font-bold mb-4">Mood Analytics</h1>
+    <div class="flex justify-end mb-2">
+      <select v-model="selectedRange" class="p-1 rounded bg-[var(--secondary)] text-white">
+        <option value="day">Day</option>
+        <option value="week">Week</option>
+        <option value="month">Month</option>
+        <option value="year">Year</option>
+      </select>
+    </div>
     <div class="bg-[var(--secondary)] p-4 rounded-xl">
       <Line :data="chartData" :options="chartOptions" />
     </div>
