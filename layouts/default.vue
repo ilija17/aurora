@@ -5,12 +5,16 @@
       <slot />
     </main>
     <AppFooter />
+    <ThreeBodyAnimation
+      v-if="decrypting"
+      class="fixed inset-0 z-50 pointer-events-none opacity-80"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-// import AppHeader from '~/components/AppHeader.vue'
-// import AppFooter from '~/components/AppFooter.vue'
+import ThreeBodyAnimation from '~/components/ThreeBodyAnimation.vue'
+import { decrypting } from '~/composables/useCryptoAnimation'
 </script>
 
 <style scoped>

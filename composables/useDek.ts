@@ -14,6 +14,8 @@ import {
   saveDek, loadDek, clearDek
 } from '~/utils/keyStore'
 
+import { startDecryptAnimation, stopDecryptAnimation } from '~/composables/useCryptoAnimation'
+
 
 const kek = ref<CryptoKey | null>(null);
 const dek = ref<CryptoKey | null>(null);
@@ -54,8 +56,10 @@ export const useDek = () => {
   }
 
   async function unlock(password?: string) {
-    if (!user.value) throw new Error('no session');
-    if (dek.value) return;
+    startDecryptAnimation()
+    try {
+      if (!user.value) throw new Error('no session')
+      if (dek.value) return
 
     const { data: profile, error } = await sb
       .from('profiles')
@@ -144,6 +148,9 @@ export const useDek = () => {
       currentSalt.value = null;
       throw new Error('Incorrect password');
     }
+  } finally {
+    stopDecryptAnimation()
+  }
   }
 
   function lock() {
@@ -151,20 +158,25 @@ export const useDek = () => {
   }
 
   async function quickUnlock() {
-    if (!user.value) throw new Error('no session');
-    if (dek.value) return;
-    if (!kek.value) throw new Error('No cached KEK - full unlock required');
+    startDecryptAnimation()
+    try {
+      if (!user.value) throw new Error('no session');
+      if (dek.value) return;
+      if (!kek.value) throw new Error('No cached KEK - full unlock required');
 
-    const { data: profile, error } = await sb
-      .from('profiles')
-      .select('wrapped_dek')
-      .eq('id', user.value.id)
-      .single();
-    
-    if (error) throw error;
-    if (!profile.wrapped_dek) throw new Error('No wrapped DEK found');
+      const { data: profile, error } = await sb
+        .from('profiles')
+        .select('wrapped_dek')
+        .eq('id', user.value.id)
+        .single();
 
-    dek.value = await unwrapDek(profile.wrapped_dek, kek.value);
+      if (error) throw error;
+      if (!profile.wrapped_dek) throw new Error('No wrapped DEK found');
+
+      dek.value = await unwrapDek(profile.wrapped_dek, kek.value);
+    } finally {
+      stopDecryptAnimation()
+    }
   }
 
   async function seal<T>(payload: T) {
@@ -184,19 +196,24 @@ export const useDek = () => {
   }
 
   async function open<T>(row: { enc_iv: string; enc_blob: string }): Promise<T> {
-    if (!dek.value) {
-      if (kek.value) {
-        await quickUnlock();
-      } else {
-        if (!opts.suppressRedirect) {
-          router.push({ path: '/unlock', query: { redirect: route.fullPath } });
+    startDecryptAnimation()
+    try {
+      if (!dek.value) {
+        if (kek.value) {
+          await quickUnlock();
+        } else {
+          if (!opts.suppressRedirect) {
+            router.push({ path: '/unlock', query: { redirect: route.fullPath } });
+          }
+          throw new Error('unlock first');
         }
-        throw new Error('unlock first');
       }
+
+      const json = await aesGcmDecrypt(row.enc_blob, row.enc_iv, dek.value);
+      return JSON.parse(json) as T;
+    } finally {
+      stopDecryptAnimation()
     }
-    
-    const json = await aesGcmDecrypt(row.enc_blob, row.enc_iv, dek.value);
-    return JSON.parse(json) as T;
   }
 
   async function updateDekPassword(
