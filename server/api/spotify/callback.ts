@@ -36,9 +36,15 @@ export default defineEventHandler(async (event) => {
   setCookie(event, 'spotify_access_token', tokenRes.access_token, {
     httpOnly: true,
     maxAge: tokenRes.expires_in,
+    sameSite: 'lax',
+    secure: true,
+    path: '/api/spotify'
   })
   setCookie(event, 'spotify_refresh_token', tokenRes.refresh_token, {
     httpOnly: true,
+    sameSite: 'lax',
+    secure: true,
+    path: '/api/spotify'
   })
 
   sendRedirect(event, '/spotify')
