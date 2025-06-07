@@ -12,5 +12,10 @@ export default defineEventHandler(async (event) => {
 
   const { userUuid } = event.context.params as { userUuid: string }
 
+  //"imamo rls kuci, rls kuci"
+  if (userUuid !== user.id) {
+    throw createError({ statusCode: 403, statusMessage: 'Forbidden' })
+  }
+
   return getUserData(supabase, userUuid)
 })
