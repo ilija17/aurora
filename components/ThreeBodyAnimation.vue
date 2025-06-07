@@ -14,11 +14,13 @@ onMounted(() => {
   if (!cvs.value) return
   const ctx = cvs.value.getContext('2d', { alpha: true })!
 
+  let scale = 180
   const resize = () => {
     const dpr = window.devicePixelRatio || 1
     cvs.value!.width  = cvs.value!.clientWidth  * dpr
     cvs.value!.height = cvs.value!.clientHeight * dpr
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    scale = Math.min(cvs.value!.width, cvs.value!.height) * 0.25
   }
   resize()
   window.addEventListener('resize', resize)
@@ -68,7 +70,6 @@ onMounted(() => {
     }
   }
 
-  const scale  = 180
   const radius = 6
   const colours = ['#e44', '#4e4', '#44e']
 
@@ -110,6 +111,8 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
   display:flex;
   justify-content:center;
   align-items:center;
+  min-height:100vh;
+  overflow:hidden;
 }
 
 canvas{
