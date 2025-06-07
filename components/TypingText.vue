@@ -1,8 +1,15 @@
 <template>
-  <span
-    class="whitespace-pre-wrap"
-    v-html="done ? renderMarkdown(display) : display"
-  />
+  <span class="relative block">
+    <span
+      v-html="rendered"
+      :class="['whitespace-pre-wrap', done ? '' : 'invisible']"
+    />
+    <span
+      v-if="!done"
+      class="absolute inset-0 whitespace-pre-wrap"
+      >{{ display }}</span
+    >
+  </span>
 </template>
 
 <script setup lang="ts">
@@ -18,7 +25,7 @@ const done = ref(false)
 let timer: ReturnType<typeof setTimeout> | null = null
 
 const md = new MarkdownIt()
-const renderMarkdown = (t: string) => md.render(t)
+const rendered = ref(md.render(fullText.value))
 
 function tick () {
   const step = speed ?? 20
@@ -34,7 +41,11 @@ function tick () {
 watch(
   () => props.text,
   (val) => {
+    if (!val.startsWith(display.value)) {
+      display.value = ''
+    }
     fullText.value = val
+    rendered.value = md.render(val)
     done.value = false
     if (!timer) tick()
   },
