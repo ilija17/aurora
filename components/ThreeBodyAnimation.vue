@@ -70,7 +70,8 @@ onMounted(() => {
   const colours = ['#f44', '#4f4', '#44f']
 
   function draw() {
-    ctx.fillStyle = '#000'
+    ctx.clearRect(0, 0, cvs.value!.width, cvs.value!.height)
+    ctx.fillStyle = 'rgba(0,0,0,0.5)'
     ctx.fillRect(0, 0, cvs.value!.width, cvs.value!.height)
 
     const camX = posX[2], camY = posY[2]

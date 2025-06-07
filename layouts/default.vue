@@ -7,7 +7,7 @@
     <AppFooter />
     <ThreeBodyAnimation
       v-if="decrypting"
-      class="fixed inset-0 z-50 pointer-events-none opacity-80"
+      class="fixed inset-0 z-50 pointer-events-none"
     />
   </div>
 </template>
