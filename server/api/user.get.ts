@@ -12,8 +12,7 @@ export default defineEventHandler(async (event) => {
 
   const { userUuid } = event.context.params as { userUuid: string }
 
-  // Allow users to fetch only their own data unless further role checks are added
-  // (e.g. admin users accessing others' data)
+  //"imamo rls kuci, rls kuci"
   if (userUuid !== user.id) {
     throw createError({ statusCode: 403, statusMessage: 'Forbidden' })
   }
