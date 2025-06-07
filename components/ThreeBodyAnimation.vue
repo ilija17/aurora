@@ -71,21 +71,22 @@ onMounted(() => {
   const colours = ['#e44','#4e4','#44e']
 
   const draw = () => {
-    ctx.save()
-    ctx.globalCompositeOperation = 'destination-out'
-    ctx.fillStyle = 'rgba(0,0,0,5.2)'
-    ctx.fillRect(0,0,cvs.value!.width,cvs.value!.height)
-    ctx.restore()
+  ctx.globalCompositeOperation = 'destination-out'
+  ctx.fillStyle = 'rgba(0,0,0,0.08)'
+  ctx.fillRect(0, 0, cvs.value!.width, cvs.value!.height)
 
-    for (let i = 0; i < N; i++) {
-      ctx.fillStyle = colours[i]
-      const x = posX[i] * scale + cvs.value!.width * 0.5
-      const y = posY[i] * scale + cvs.value!.height * 0.5
-      ctx.beginPath()
-      ctx.arc(x,y,radius,0,Math.PI*2)
-      ctx.fill()
-    }
+  ctx.globalCompositeOperation = 'source-over'
+
+  for (let i = 0; i < N; i++) {
+    ctx.fillStyle = colours[i]
+    const x = posX[i] * scale + cvs.value!.width * 0.5
+    const y = posY[i] * scale + cvs.value!.height * 0.5
+    ctx.beginPath()
+    ctx.arc(x, y, radius, 0, Math.PI * 2)
+    ctx.fill()
   }
+}
+
 
   computeAcc()
   let last = performance.now()
