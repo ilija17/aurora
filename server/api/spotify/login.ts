@@ -5,7 +5,12 @@ import { randomBytes } from 'crypto'
 export default defineEventHandler((event) => {
   const { spotifyClientId, spotifyRedirectUri } = useRuntimeConfig()
   const state = randomBytes(16).toString('hex')
-  setCookie(event, 'spotify_state', state, { httpOnly: true, sameSite: 'lax' })
+  setCookie(event, 'spotify_state', state, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: true,
+    path: '/api/spotify'
+  })
 
   const params = new URLSearchParams({
     response_type: 'code',
