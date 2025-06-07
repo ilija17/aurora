@@ -5,23 +5,27 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, ref } from 'vue'
+import { onMounted, onBeforeUnmount, ref, nextTick } from 'vue'
 
 const cvs = ref<HTMLCanvasElement | null>(null)
 let raf = 0
 
-onMounted(() => {
+onMounted(async () => {
   if (!cvs.value) return
   const ctx = cvs.value.getContext('2d', { alpha: true })!
 
   let scale = 180
   const resize = () => {
     const dpr = window.devicePixelRatio || 1
-    cvs.value!.width  = cvs.value!.clientWidth  * dpr
-    cvs.value!.height = cvs.value!.clientHeight * dpr
+    const width  = cvs.value!.clientWidth
+    const height = cvs.value!.clientHeight
+    cvs.value!.width  = width  * dpr
+    cvs.value!.height = height * dpr
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-    scale = Math.min(cvs.value!.width, cvs.value!.height) * 0.25
+    const factor = Math.min(width, height) < 600 ? 0.35 : 0.25
+    scale = Math.min(width, height) * factor
   }
+  await nextTick()
   resize()
   window.addEventListener('resize', resize)
 
