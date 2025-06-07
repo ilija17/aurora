@@ -43,10 +43,15 @@ export const useDek = () => {
   const hasKek = computed(() => kek.value !== null);
 
   async function storeKek(password: string, salt: string) {
-    const { key } = await deriveKey(password, salt);
-    kek.value = key;
-    await saveKek(kek.value)
-    currentSalt.value = salt;
+    startDecryptAnimation()
+    try {
+      const { key } = await deriveKey(password, salt);
+      kek.value = key;
+      await saveKek(kek.value)
+      currentSalt.value = salt;
+    } finally {
+      stopDecryptAnimation()
+    }
   }
 
   function clearSession() {
@@ -190,9 +195,16 @@ export const useDek = () => {
         throw new Error('unlock first');
       }
     }
-    
-    const { iv, blob } = await aesGcmEncrypt(JSON.stringify(payload), dek.value);
-    return { enc_iv: iv, enc_blob: blob };
+    startDecryptAnimation()
+    try {
+      const { iv, blob } = await aesGcmEncrypt(
+        JSON.stringify(payload),
+        dek.value
+      )
+      return { enc_iv: iv, enc_blob: blob }
+    } finally {
+      stopDecryptAnimation()
+    }
   }
 
   async function open<T>(row: { enc_iv: string; enc_blob: string }): Promise<T> {
@@ -236,19 +248,23 @@ export const useDek = () => {
     if (!currentSalt.value) {
       throw new Error('Missing salt');
     }
+    startDecryptAnimation()
+    try {
+      const { key: newKek } = await deriveKey(newPassword, currentSalt.value)
+      const wrappedDek      = await wrapDek(dek.value!, newKek)
 
-    const { key: newKek } = await deriveKey(newPassword, currentSalt.value);
-    const wrappedDek      = await wrapDek(dek.value!, newKek);
+      const { error } = await sb
+        .from('profiles')
+        .update({ wrapped_dek: wrappedDek })
+        .eq('id', user.value.id)
 
-    const { error } = await sb
-      .from('profiles')
-      .update({ wrapped_dek: wrappedDek })
-      .eq('id', user.value.id);
+      if (error) throw error
 
-    if (error) throw error;
-
-    kek.value = newKek;
-    await saveKek(newKek);
+      kek.value = newKek
+      await saveKek(newKek)
+    } finally {
+      stopDecryptAnimation()
+    }
   }
 
   return { 

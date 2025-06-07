@@ -1,48 +1,47 @@
 <template>
-  <canvas ref="cvs" width="1000" height="1000"></canvas>
+  <canvas ref="cvs"></canvas>
 </template>
 
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount, ref } from 'vue'
 
 const cvs = ref<HTMLCanvasElement | null>(null)
-let frame = 0
+let raf = 0
 
 onMounted(() => {
   if (!cvs.value) return
-  const ctx = cvs.value.getContext('2d')!
+  const ctx = cvs.value.getContext('2d', { alpha: true })!
 
-  const G   = 1
-  const DT  = 0.01
-  const N   = 3
-
-  const mass   = new Float32Array([1, 1, 1])
-  const posX   = new Float32Array(N)
-  const posY   = new Float32Array(N)
-  const velX   = new Float32Array(N)
-  const velY   = new Float32Array(N)
-  const accX   = new Float32Array(N)
-  const accY   = new Float32Array(N)
-
-  const angles = [0, (2 * Math.PI) / 3, (4 * Math.PI) / 3]
-  for (let i = 0; i < N; i++) {
-    posX[i] = Math.cos(angles[i])
-    posY[i] = Math.sin(angles[i])
+  const resize = () => {
+    const dpr = window.devicePixelRatio || 1
+    cvs.value!.width  = cvs.value!.clientWidth  * dpr
+    cvs.value!.height = cvs.value!.clientHeight * dpr
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
   }
+  resize()
+  window.addEventListener('resize', resize)
 
-  const speed = 0.1
-  for (let i = 0; i < N; i++) {
-    velX[i] = -speed * Math.sin(angles[i])
-    velY[i] = speed * Math.cos(angles[i])
-  }
+  const G = 1
+  const DT = 0.00005
+  const N = 3
+  const EPS2 = 0.0004
 
-  function computeAcc() {
+  const mass = new Float32Array([1, 1, 1])
+  const posX = new Float32Array([-0.97000436, 0, 0.97000436])
+  const posY = new Float32Array([ 0.24308753, 0,-0.24308753])
+  const velX = new Float32Array([ 0.066203685,-0.73240737,0.266203685])
+  const velY = new Float32Array([ 0.23236573,-0.56473146,0.23236573])
+  const accX = new Float32Array(N)
+  const accY = new Float32Array(N)
+
+  const computeAcc = () => {
     accX.fill(0); accY.fill(0)
-    for (let i = 0; i < N - 1; ++i) {
-      for (let j = i + 1; j < N; ++j) {
-        const rx = posX[j] - posX[i]
-        const ry = posY[j] - posY[i]
-        const d2 = rx * rx + ry * ry + 1e-9
+    for (let i = 0; i < N - 1; i++) {
+      for (let j = i + 1; j < N; j++) {
+        let rx = posX[j] - posX[i]
+        let ry = posY[j] - posY[i]
+        let d2 = rx * rx + ry * ry
+        if (d2 < EPS2) d2 = EPS2
         const invD = 1 / Math.sqrt(d2)
         const f = G * mass[i] * mass[j] * invD * invD
         const fx = f * rx * invD
@@ -53,49 +52,55 @@ onMounted(() => {
     }
   }
 
-  function verlet() {
-    for (let i = 0; i < N; ++i) {
+  const verlet = () => {
+    for (let i = 0; i < N; i++) {
       velX[i] += 0.5 * accX[i] * DT
       velY[i] += 0.5 * accY[i] * DT
       posX[i] += velX[i] * DT
       posY[i] += velY[i] * DT
     }
     computeAcc()
-    for (let i = 0; i < N; ++i) {
+    for (let i = 0; i < N; i++) {
       velX[i] += 0.5 * accX[i] * DT
       velY[i] += 0.5 * accY[i] * DT
     }
   }
 
-  const scale = 100
-  const radius = 5
-  const colours = ['#f44', '#4f4', '#44f']
+  const scale = 180
+  const radius = 6
+  const colours = ['#e44','#4e4','#44e']
 
-  function draw() {
-    ctx.fillStyle = 'rgba(0,0,0,0.5)'
-    ctx.fillRect(0, 0, cvs.value!.width, cvs.value!.height)
+  const draw = () => {
+    ctx.save()
+    ctx.globalCompositeOperation = 'destination-out'
+    ctx.fillStyle = 'rgba(0,0,0,5.2)'
+    ctx.fillRect(0,0,cvs.value!.width,cvs.value!.height)
+    ctx.restore()
 
-    for (let b = 0; b < N; ++b) {
-      ctx.fillStyle = colours[b]
-      const x = posX[b] * scale + cvs.value!.width / 2
-      const y = posY[b] * scale + cvs.value!.height / 2
-      ctx.beginPath();
-      ctx.arc(x, y, radius, 0, 2 * Math.PI)
+    for (let i = 0; i < N; i++) {
+      ctx.fillStyle = colours[i]
+      const x = posX[i] * scale + cvs.value!.width * 0.5
+      const y = posY[i] * scale + cvs.value!.height * 0.5
+      ctx.beginPath()
+      ctx.arc(x,y,radius,0,Math.PI*2)
       ctx.fill()
     }
   }
 
   computeAcc()
-  function tick() {
-    verlet()
+  let last = performance.now()
+  const loop = (t:number) => {
+    let acc = (t - last) / 1000
+    while (acc > DT) { verlet(); acc -= DT }
     draw()
-    frame = requestAnimationFrame(tick)
+    last = t
+    raf = requestAnimationFrame(loop)
   }
-  tick()
+  raf = requestAnimationFrame(loop)
 })
 
 onBeforeUnmount(() => {
-  cancelAnimationFrame(frame)
+  cancelAnimationFrame(raf)
 })
 </script>
 
@@ -104,6 +109,7 @@ canvas {
   width: 100%;
   height: 100%;
   display: block;
+  background: transparent;
 }
 </style>
 
