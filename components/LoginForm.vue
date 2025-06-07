@@ -103,6 +103,7 @@ import { useDekRepair }          from '~/composables/useDekRepair';
 import { usePublicContextData }  from '~/composables/usePublicContextData';
 
 import { saveSalt, clearSalt }   from '~/utils/cryptoHelpers';
+import { extractErrorMessage }   from '~/utils/errorHelpers';
 
 const router     = useRouter();
 const supabase   = useSupabaseClient();
@@ -187,7 +188,7 @@ async function handleAuth() {
     }
 
   } catch (err: any) {
-    errorMsg.value = err.message ?? 'Unexpected error';
+    errorMsg.value = extractErrorMessage(err)
   } finally {
     password.value = '';
     confirmPassword.value = '';
