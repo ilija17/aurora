@@ -1,5 +1,7 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { streamText } from 'ai';
+import { readBody, createError } from 'h3'
+import { serverSupabaseUser } from '#supabase/server'
 
 export default defineLazyEventHandler(async () => {
   const openai = createOpenAI({
@@ -7,6 +9,10 @@ export default defineLazyEventHandler(async () => {
   });
 
   return defineEventHandler(async (event: any) => {
+    const user = await serverSupabaseUser(event)
+    if (!user) {
+      throw createError({ statusCode: 401, statusMessage: 'Not authenticated' })
+    }
     const { messages } = await readBody(event);
 
 

@@ -1,9 +1,14 @@
-import { defineEventHandler, readBody } from 'h3'
+import { defineEventHandler, readBody, createError } from 'h3'
+import { serverSupabaseUser } from '#supabase/server'
 import OpenAI from 'openai'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
 export default defineEventHandler(async (event) => {
+  const user = await serverSupabaseUser(event)
+  if (!user) {
+    throw createError({ statusCode: 401, statusMessage: 'Not authenticated' })
+  }
   const { tracks = [], artists = [], character} =
     (await readBody(event)) || {}
 
@@ -31,8 +36,8 @@ export default defineEventHandler(async (event) => {
     roast his music taste
     `
 
-  const user = `
-${prompt}
+  const userPrompt = `
+    ${prompt}
 
 Top‑10 Tracks:
 ${trackLines}
@@ -45,7 +50,7 @@ ${artistLines}
     model: 'gpt-4.1',
     messages: [
       { role: 'system', content: system.trim() },
-      { role: 'user',   content: user.trim()   }
+      { role: 'user',   content: userPrompt.trim() }
     ],
     temperature: 0.9,
     max_tokens: 1500,
