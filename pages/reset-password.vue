@@ -78,6 +78,25 @@ const updatePassword = async () => {
   } catch (e) {
     try {
       await repairIfMissing(password.value, null, null)
+      // remove old encrypted data which can't be decrypted anymore
+      const userId = user.value?.id
+      if (userId) {
+        const { data: moodIds } = await supabase
+          .from('mood_entries')
+          .select('id')
+          .eq('user_id', userId)
+
+        const ids = moodIds?.map((row: any) => row.id) || []
+        if (ids.length) {
+          await supabase
+            .from('mood_entries_detailed_moods')
+            .delete()
+            .in('mood_entry_id', ids)
+        }
+
+        await supabase.from('mood_entries').delete().eq('user_id', userId)
+        await supabase.from('diary_entries').delete().eq('user_id', userId)
+      }
     } catch (e2) {
       console.error('Failed to reset encryption keys', e2)
     }
