@@ -2,6 +2,7 @@
 import { useChat } from '@ai-sdk/vue';
 import { onMounted, computed } from 'vue';
 import MarkdownIt from 'markdown-it'
+import TypingText from '~/components/TypingText.vue'
 import { useMoodEntries } from '~/composables/useMoodEntries';
 
 const { finalizedEntries, fetchFinalizedMoodEntries } = useMoodEntries();
@@ -43,7 +44,8 @@ const messageList = computed(() => messages.value); // computed property for typ
         >
           <template v-for="part in message.parts">
             <template v-if="part.type === 'text'">
-              <span v-html="renderMarkdown(part.text)" />
+              <TypingText v-if="message.role === 'assistant'" :text="part.text" />
+              <span v-else v-html="renderMarkdown(part.text)" />
             </template>
             <template v-else-if="part.type === 'tool-invocation'">
               <template

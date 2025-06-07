@@ -82,7 +82,8 @@ function updateChart () {
 const summaryMessage = ref('')
 
 async function generateSummary () {
-  input.value = 'Provide a short summary of my recent mood trends.'
+  const dataString = JSON.stringify(finalizedEntries.value)
+  input.value = `Here is my mood data: ${dataString}. Provide a short summary of my recent mood trends.`
   await handleSubmit()
 }
 
