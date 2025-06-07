@@ -74,7 +74,7 @@ const updatePassword = async () => {
   const { repairIfMissing } = useDekRepair()
 
   try {
-    await updateDekPassword(password.value)
+    await updateDekPassword(password.value, { suppressRedirect: true })
   } catch (e) {
     try {
       await repairIfMissing(password.value, null, null)
