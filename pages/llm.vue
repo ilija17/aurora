@@ -30,8 +30,13 @@ const messageList = computed(() => messages.value); // computed property for typ
 </script>
 
 <template>
-  <div class="relative max-w-xl mx-auto p-4 sm:p-6">
+  <div class="relative max-w-xl lg:max-w-2xl mx-auto p-4 sm:p-6">
     <h1 class="text-center text-2xl font-bold mb-4">Pseudo-psychiatrist</h1>
+    <p class="text-xs text-gray-500 mb-2">
+      Two helper functions are available to the assistant:
+      <code>getAllUserData</code> and <code>getUserTopSongs</code>.
+      See <code>server/api/openai/chat-with-data.ts</code> for details.
+    </p>
     <p class="text-sm text-gray-500 mb-4 flex flex-wrap items-center gap-1">
       You can ask ChatGPT to get all your data
       <InfoTooltip>
@@ -51,7 +56,7 @@ const messageList = computed(() => messages.value); // computed property for typ
         :class="message.role === 'user' ? 'justify-end' : 'justify-start'"
       >
         <div
-          class="max-w-[75%] sm:max-w-md px-4 py-2 rounded-lg whitespace-pre-wrap"
+          class="max-w-[75%] sm:max-w-lg px-4 py-2 rounded-lg whitespace-pre-wrap"
           :class="message.role === 'user' ? 'bg-[var(--primary)] text-white' : 'bg-[var(--secondary)] text-[var(--fg)]'"
         >
           <template v-for="part in message.parts">
@@ -159,7 +164,7 @@ const messageList = computed(() => messages.value); // computed property for typ
 
     <form
       @submit="handleSubmit"
-      class="fixed bottom-0 left-0 right-0 max-w-xl mx-auto p-4 bg-[var(--bg)] border-t border-[var(--border)]"
+      class="fixed bottom-0 left-0 right-0 max-w-xl lg:max-w-2xl mx-auto p-4 bg-[var(--bg)] border-t border-[var(--border)]"
     >
       <input
         class="w-full p-3 rounded-lg bg-[var(--input-bg)] text-[var(--input-color)] border border-[var(--input-border)]"
