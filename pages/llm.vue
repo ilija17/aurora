@@ -31,6 +31,11 @@ const messageList = computed(() => messages.value); // computed property for typ
 <template>
   <div class="relative max-w-xl mx-auto p-4 sm:p-6">
     <h1 class="text-center text-2xl font-bold mb-4">Pseudo-psychiatrist</h1>
+    <p class="text-sm text-gray-500 mb-4">
+      Available tools:
+      <code>getAllUserData</code> and <code>getUserTopSongs</code>. See
+      <code>server/api/openai/chat-with-data.ts</code> for details.
+    </p>
     <div class="space-y-4 pb-24">
       <div
         v-for="message in messageList"
