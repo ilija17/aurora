@@ -1,5 +1,7 @@
 <template>
-  <canvas ref="cvs"></canvas>
+  <div class="loader">
+    <canvas ref="cvs"></canvas>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -22,9 +24,9 @@ onMounted(() => {
   window.addEventListener('resize', resize)
 
   const G = 1
-  const DT = 0.00005
+  const DT = 5e-5
+  const EPS2 = 4e-4
   const N = 3
-  const EPS2 = 0.0004
 
   const mass = new Float32Array([1, 1, 1])
   const posX = new Float32Array([-0.97000436, 0, 0.97000436])
@@ -66,27 +68,23 @@ onMounted(() => {
     }
   }
 
-  const scale = 180
+  const scale  = 180
   const radius = 6
-  const colours = ['#e44','#4e4','#44e']
+  const colours = ['#e44', '#4e4', '#44e']
 
   const draw = () => {
-  ctx.globalCompositeOperation = 'destination-out'
-  ctx.fillStyle = 'rgba(0,0,0,0.08)'
-  ctx.fillRect(0, 0, cvs.value!.width, cvs.value!.height)
+    ctx.fillStyle = 'rgba(0,0,0,0.10)'
+    ctx.fillRect(0,0,cvs.value!.width,cvs.value!.height)
 
-  ctx.globalCompositeOperation = 'source-over'
-
-  for (let i = 0; i < N; i++) {
-    ctx.fillStyle = colours[i]
-    const x = posX[i] * scale + cvs.value!.width * 0.5
-    const y = posY[i] * scale + cvs.value!.height * 0.5
-    ctx.beginPath()
-    ctx.arc(x, y, radius, 0, Math.PI * 2)
-    ctx.fill()
+    for (let i = 0; i < N; i++) {
+      ctx.fillStyle = colours[i]
+      const x = posX[i]*scale + cvs.value!.width * 0.5
+      const y = posY[i]*scale + cvs.value!.height * 0.5
+      ctx.beginPath()
+      ctx.arc(x,y,radius,0,Math.PI*2)
+      ctx.fill()
+    }
   }
-}
-
 
   computeAcc()
   let last = performance.now()
@@ -100,17 +98,23 @@ onMounted(() => {
   raf = requestAnimationFrame(loop)
 })
 
-onBeforeUnmount(() => {
-  cancelAnimationFrame(raf)
-})
+onBeforeUnmount(() => cancelAnimationFrame(raf))
 </script>
 
 <style scoped>
-canvas {
-  width: 100%;
-  height: 100%;
-  display: block;
-  background: transparent;
+.loader{
+  position:fixed;
+  inset:0;
+  background:#000;
+  opacity: 80%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+canvas{
+  width:100%;
+  height:100%;
+  display:block;
 }
 </style>
-
