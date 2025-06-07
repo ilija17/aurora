@@ -25,7 +25,7 @@
             <span class="rank">{{ idx + 1 }}.</span>
             <img :src="t.album.images[2]?.url" alt="Album art" />
             <div class="info">
-              <a :href="t.external_urls.spotify" target="_blank">
+              <a :href="t.external_urls.spotify" target="_blank" rel="noopener noreferrer">
                 <strong>{{ t.name }}</strong>
               </a>
               <p>{{ t.artists.map(a => a.name).join(', ') }}</p>
@@ -40,7 +40,7 @@
             <span class="rank">{{ idx + 1 }}.</span>
             <img :src="a.images[2]?.url" alt="Artist image" />
             <div class="info">
-              <a :href="a.external_urls.spotify" target="_blank">
+              <a :href="a.external_urls.spotify" target="_blank" rel="noopener noreferrer">
                 <strong>{{ a.name }}</strong>
               </a>
             </div>
