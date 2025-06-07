@@ -1,13 +1,8 @@
 <template>
   <span class="relative block">
     <span
-      v-html="rendered"
-      :class="['whitespace-pre-wrap', done ? '' : 'invisible']"
-    />
-    <span
-      v-if="!done"
-      v-html="renderedProgress"
-      class="absolute inset-0 whitespace-pre-wrap"
+      v-html="done ? rendered : renderedProgress"
+      class="whitespace-pre-wrap block"
     />
   </span>
 </template>
