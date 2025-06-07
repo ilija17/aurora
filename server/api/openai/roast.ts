@@ -1,9 +1,14 @@
-import { defineEventHandler, readBody } from 'h3'
+import { defineEventHandler, readBody, createError } from 'h3'
+import { serverSupabaseUser } from '#supabase/server'
 import OpenAI from 'openai'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
 export default defineEventHandler(async (event) => {
+  const user = await serverSupabaseUser(event)
+  if (!user) {
+    throw createError({ statusCode: 401, statusMessage: 'Not authenticated' })
+  }
   const { tracks = [], artists = [], character} =
     (await readBody(event)) || {}
 

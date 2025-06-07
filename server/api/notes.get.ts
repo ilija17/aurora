@@ -1,15 +1,11 @@
 import { defineEventHandler, createError } from 'h3'
-import { serverSupabaseClient } from '#supabase/server'
+import { serverSupabaseClient, serverSupabaseUser } from '#supabase/server'
 
 export default defineEventHandler(async (event) => {
   const supabase = await serverSupabaseClient(event)
+  const user = await serverSupabaseUser(event)
 
-  const {
-    data: { user },
-    error: authError
-  } = await supabase.auth.getUser()
-
-  if (authError || !user) {
+  if (!user) {
     throw createError({ statusCode: 401, statusMessage: 'Not authenticated' })
   }
 
