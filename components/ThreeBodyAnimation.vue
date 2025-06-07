@@ -17,8 +17,9 @@ onMounted(async () => {
   let scale = 180
   const resize = () => {
     const dpr = window.devicePixelRatio || 1
-    const width  = cvs.value!.clientWidth
-    const height = cvs.value!.clientHeight
+    const rect = cvs.value!.getBoundingClientRect()
+    const width  = rect.width
+    const height = rect.height
     cvs.value!.width  = width  * dpr
     cvs.value!.height = height * dpr
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
@@ -26,7 +27,7 @@ onMounted(async () => {
     scale = Math.min(width, height) * factor
   }
   await nextTick()
-  resize()
+  requestAnimationFrame(resize)
   window.addEventListener('resize', resize)
 
   const G = 1
@@ -117,6 +118,7 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
   justify-content:center;
   align-items:center;
   min-height:100vh;
+  height:100dvh;
   overflow:hidden;
 }
 
