@@ -2,6 +2,7 @@
 import { useChat } from '@ai-sdk/vue';
 import { onMounted, computed } from 'vue';
 import MarkdownIt from 'markdown-it'
+import DOMPurify from 'dompurify'
 import TypingText from '~/components/TypingText.vue'
 import InfoTooltip from '~/components/InfoTooltip.vue'
 import { useMoodEntries } from '~/composables/useMoodEntries';
@@ -9,7 +10,7 @@ import { useMoodEntries } from '~/composables/useMoodEntries';
 const { finalizedEntries, fetchFinalizedMoodEntries } = useMoodEntries();
 
 const md = new MarkdownIt()
-const renderMarkdown = (text: string) => md.render(text)
+const renderMarkdown = (text: string) => DOMPurify.sanitize(md.render(text))
 
 const { input, handleSubmit, messages, addToolResult } = useChat({
   api: '/api/openai/chat-with-data',

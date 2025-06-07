@@ -71,14 +71,16 @@ export default defineEventHandler(async (event) => {
       httpOnly: true,
       sameSite: 'lax',
       path: '/',
-      maxAge: session.expires_in
+      maxAge: session.expires_in,
+      secure: true
     })
 
     setCookie(event, REFRESH_COOKIE, session.refresh_token, {
       httpOnly: true,
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24 * 365 // 1 year
+      maxAge: 60 * 60 * 24 * 365, // 1 year
+      secure: true
     })
   }
 
