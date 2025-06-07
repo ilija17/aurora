@@ -23,6 +23,8 @@
 
 <script setup lang="ts">
 import zxcvbn from 'zxcvbn'
+import { useDek } from '~/composables/useDek'
+import { useDekRepair } from '~/composables/useDekRepair'
 
 definePageMeta({
   requiresAuth: false
@@ -65,10 +67,23 @@ const updatePassword = async () => {
 
   if (error) {
     message.value = error.message
-  } else {
-    message.value = 'Password updated! You can now log in.'
-    // Optional: Redirect to login
-    setTimeout(() => navigateTo('/login'), 2000)
+    return
   }
+
+  const { updateDekPassword } = useDek()
+  const { repairIfMissing } = useDekRepair()
+
+  try {
+    await updateDekPassword(password.value)
+  } catch (e) {
+    try {
+      await repairIfMissing(password.value, null, null)
+    } catch (e2) {
+      console.error('Failed to reset encryption keys', e2)
+    }
+  }
+
+  message.value = 'Password updated! You can now log in.'
+  setTimeout(() => navigateTo('/login'), 2000)
 }
 </script>
