@@ -31,7 +31,7 @@ const messageList = computed(() => messages.value); // computed property for typ
 </script>
 
 <template>
-  <div class="relative max-w-xl lg:max-w-2xl mx-auto p-4 sm:p-6">
+  <div class="relative max-w-xl lg:max-w-2xl mx-auto p-4 sm:p-6 h-screen flex flex-col">
     <h1 class="text-center text-2xl font-bold mb-4">Pseudo-psychiatrist</h1>
     <p class="text-sm text-gray-500 mb-4 flex flex-wrap items-center gap-1">
       You can ask ChatGPT to get all your data
@@ -44,7 +44,9 @@ const messageList = computed(() => messages.value); // computed property for typ
       </InfoTooltip>
       ;)
     </p>
-    <div class="space-y-4 pb-24">
+    
+    <!-- Scrollable message container -->
+    <div class="flex-1 overflow-y-auto space-y-4 pb-4 scroll-smooth">
       <div
         v-for="message in messageList"
         :key="message.id"
@@ -52,13 +54,13 @@ const messageList = computed(() => messages.value); // computed property for typ
         :class="message.role === 'user' ? 'justify-end' : 'justify-start'"
       >
         <div
-          class="max-w-[75%] sm:max-w-lg px-4 py-2 rounded-lg whitespace-pre-wrap"
+          class="max-w-[75%] sm:max-w-lg px-4 py-2 rounded-lg break-words overflow-wrap-anywhere"
           :class="message.role === 'user' ? 'bg-[var(--primary)] text-white' : 'bg-[var(--secondary)] text-[var(--fg)]'"
         >
           <template v-for="part in message.parts">
             <template v-if="part.type === 'text'">
-              <TypingText v-if="message.role === 'assistant'" :text="part.text" />
-              <span v-else v-html="renderMarkdown(part.text)" />
+              <TypingText v-if="message.role === 'assistant'" :text="part.text" class="whitespace-pre-wrap break-words" />
+              <span v-else v-html="renderMarkdown(part.text)" class="whitespace-pre-wrap break-words" />
             </template>
             <template v-else-if="part.type === 'tool-invocation'">
               <template
@@ -67,10 +69,10 @@ const messageList = computed(() => messages.value); // computed property for typ
                 <template v-if="part.toolInvocation.state === 'call'">
                   <div
                     :key="part.toolInvocation.toolCallId"
-                    class="text-gray-500"
+                    class="text-gray-500 break-words"
                   >
                     {{ part.toolInvocation.args.message }}
-                    <div class="flex gap-2">
+                    <div class="flex gap-2 mt-2">
                       <button
                         class="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
                         @click="
@@ -99,7 +101,7 @@ const messageList = computed(() => messages.value); // computed property for typ
                 <template v-if="part.toolInvocation.state === 'result'">
                   <div
                     :key="part.toolInvocation.toolCallId"
-                    class="text-gray-500"
+                    class="text-gray-500 break-words"
                   >
                     Location access allowed: {{ part.toolInvocation.result }}
                   </div>
@@ -118,7 +120,7 @@ const messageList = computed(() => messages.value); // computed property for typ
                 <template v-if="part.toolInvocation.state === 'result'">
                   <div
                     :key="part.toolInvocation.toolCallId"
-                    class="text-gray-500"
+                    class="text-gray-500 break-words"
                   >
                     Location: {{ part.toolInvocation.result }}
                   </div>
@@ -129,14 +131,14 @@ const messageList = computed(() => messages.value); // computed property for typ
                 v-if="part.toolInvocation.toolName === 'getWeatherInformation'"
               >
                 <template v-if="part.toolInvocation.state === 'partial-call'">
-                  <pre :key="part.toolInvocation.toolCallId">
+                  <pre :key="part.toolInvocation.toolCallId" class="whitespace-pre-wrap break-words overflow-x-auto text-xs">
                     {{ JSON.stringify(part.toolInvocation, null, 2) }}
                   </pre>
                 </template>
                 <template v-if="part.toolInvocation.state === 'call'">
                   <div
                     :key="part.toolInvocation.toolCallId"
-                    class="text-gray-500"
+                    class="text-gray-500 break-words"
                   >
                     Getting weather information for
                     {{ part.toolInvocation.args.city }}...
@@ -145,7 +147,7 @@ const messageList = computed(() => messages.value); // computed property for typ
                 <template v-if="part.toolInvocation.state === 'result'">
                   <div
                     :key="part.toolInvocation.toolCallId"
-                    class="text-gray-500"
+                    class="text-gray-500 break-words"
                   >
                     Weather in {{ part.toolInvocation.args.city }}:
                     {{ part.toolInvocation.result }}
@@ -158,9 +160,10 @@ const messageList = computed(() => messages.value); // computed property for typ
       </div>
     </div>
 
+    <!-- Fixed input form at bottom -->
     <form
       @submit="handleSubmit"
-      class="sticky bottom-0 left-0 right-0 max-w-xl lg:max-w-2xl mx-auto p-4 bg-[var(--bg)] border-t border-[var(--border)]"
+      class="flex-shrink-0 p-4 bg-[var(--bg)] border-t border-[var(--border)]"
     >
       <input
         class="w-full p-3 rounded-lg bg-[var(--input-bg)] text-[var(--input-color)] border border-[var(--input-border)]"
