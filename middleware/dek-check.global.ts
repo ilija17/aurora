@@ -3,7 +3,7 @@ export default defineNuxtRouteMiddleware((to) => {
 
   if (to.meta.requiresAuth === false) return;
 
-  if (to.path === '/unlock' || to.path === '/spotify') return;
+  if (to.path === '/unlock' || to.path === '/spotify' || to.path === '/reset-password') return;
 
   const { dek, kek } = useDek();
   if (!dek.value || !kek.value) {
