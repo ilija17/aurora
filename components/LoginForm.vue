@@ -133,20 +133,22 @@ async function handleAuth() {
         access_token: session.access_token,
         refresh_token: session.refresh_token,
       });
-    }
 
-    await unlock(userPassword);
+      await unlock(userPassword);
 
-    const { repairIfMissing } = useDekRepair();
-    await repairIfMissing(userPassword, salt, wrappedDek);
+      const { repairIfMissing } = useDekRepair();
+      await repairIfMissing(userPassword, salt, wrappedDek);
 
-    // spremi KEK NAVODNO, kek nestane brže nego Amelia Earhart
-    if (salt) {
-      await storeKek(userPassword, salt);
-      await saveSalt(salt);
-      console.log('[CACHE] KEK cached for session');
+      // spremi KEK NAVODNO, kek nestane brže nego Amelia Earhart
+      if (salt) {
+        await storeKek(userPassword, salt);
+        await saveSalt(salt);
+        console.log('[CACHE] KEK cached for session');
+      } else {
+        console.warn('[AUTH] No salt returned from server');
+      }
     } else {
-      console.warn('[AUTH] No salt returned from server');
+      console.log('[AUTH] Registration requires email confirmation. No session set');
     }
 
     const { fetchContextData } = usePublicContextData();
