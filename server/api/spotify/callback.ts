@@ -41,13 +41,13 @@ export default defineEventHandler(async (event) => {
     maxAge: tokenRes.expires_in,
     sameSite: 'lax',
     secure,
-    path: '/api/spotify'
+    path: '/'
   })
   setCookie(event, 'spotify_refresh_token', tokenRes.refresh_token, {
     httpOnly: true,
     sameSite: 'lax',
     secure,
-    path: '/api/spotify'
+    path: '/'
   })
 
   sendRedirect(event, '/spotify')
