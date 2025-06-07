@@ -1,16 +1,24 @@
 <template>
-  <div class="grid place-items-center h-screen">
-    <div>
-      <h2>Reset your password</h2><br>
-      <input v-model="email" type="email" placeholder="Your email" /><br><br>
-      <button @click="sendResetEmail">Send reset link</button><br>
-      <p class="text-sm text-[var(--muted)] mt-2">
+  <section class="min-h-screen flex items-center justify-center px-4">
+    <div
+      class="max-w-md w-full space-y-4 bg-[var(--secondary)] p-6 sm:p-8 rounded-3xl shadow-2xl"
+    >
+      <h2 class="text-2xl font-bold text-center">Reset your password</h2>
+      <FormInput
+        id="email"
+        label="Email"
+        type="email"
+        v-model="email"
+        placeholder="Your email"
+      />
+      <button @click="sendResetEmail" class="btn w-full">Send reset link</button>
+      <p class="text-sm text-[var(--muted)]">
         Resetting the password without knowing the old one will make existing
         encrypted data unreadable.
       </p>
       <p v-if="message">{{ message }}</p>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -20,6 +28,7 @@ definePageMeta({
 
 import { ref } from 'vue'
 import { useRuntimeConfig, useSupabaseClient } from '#imports'
+import FormInput from '~/components/FormInput.vue'
 
 const { public: { siteUrl } } = useRuntimeConfig()
 const supabase      = useSupabaseClient()

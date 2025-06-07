@@ -1,7 +1,9 @@
 <template>
-  <div class="grid place-items-center h-screen">
-    <div>
-      <h2 class="grid place-items-center mb-4">Unlock Encryption</h2>
+  <section class="min-h-screen flex items-center justify-center px-4">
+    <div
+      class="max-w-md w-full space-y-4 bg-[var(--secondary)] p-6 sm:p-8 rounded-3xl shadow-2xl"
+    >
+      <h2 class="text-2xl font-bold text-center mb-4">Unlock Encryption</h2>
       <form @submit.prevent="handleUnlock" class="space-y-4">
         <FormInput
           id="password"
@@ -14,14 +16,14 @@
         <button
           type="submit"
           :disabled="submitting || !password"
-          class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+          class="btn w-full disabled:opacity-50"
         >
           Unlock
         </button>
       </form>
       <p v-if="errorMsg" class="mt-2 text-red-600">{{ errorMsg }}</p>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">

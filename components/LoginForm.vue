@@ -5,7 +5,7 @@
         {{ isLogin ? 'Login' : 'Register' }}
       </h2>
 
-      <form @submit.prevent="handleAuth" class="space-y-4">
+  <form @submit.prevent="handleAuth" class="space-y-4">
         <!-- Username (registration only) -->
         <div v-if="!isLogin">
           <FormInput
@@ -38,6 +38,22 @@
           placeholder="••••••••"
         />
 
+        <!-- Confirm Password (registration only) -->
+        <FormInput
+          v-if="!isLogin"
+          id="confirm-password"
+          label="Confirm Password"
+          type="password"
+          v-model="confirmPassword"
+          placeholder="••••••••"
+        />
+        <p
+          v-if="!isLogin && confirmPassword && confirmPassword !== password"
+          class="text-red-600 text-sm mt-1"
+        >
+          Passwords do not match
+        </p>
+
         <!-- Password strength feedback (registration only) -->
         <div v-if="!isLogin" class="text-sm">
           <p>Strength: {{ strengthText }}</p>
@@ -46,7 +62,12 @@
 
         <button
           type="submit"
-          :disabled="submitting || !email || !password || (!isLogin && passwordScore < 3)"
+          :disabled="
+            submitting ||
+            !email ||
+            !password ||
+            (!isLogin && (passwordScore < 3 || confirmPassword !== password))
+          "
           class="btn w-full disabled:opacity-50"
         >
           {{ isLogin ? 'Login' : 'Register' }}
@@ -89,6 +110,7 @@ const supabase   = useSupabaseClient();
 const isLogin    = ref(true);
 const email      = ref('');
 const password   = ref('');
+const confirmPassword = ref('');
 const username   = ref('');
 const errorMsg   = ref('');
 const submitting = ref(false);
@@ -104,6 +126,7 @@ const { unlock, storeKek, clearSession } = useDek();
 function toggleMode() {
   isLogin.value = !isLogin.value;
   errorMsg.value = '';
+  confirmPassword.value = '';
 }
 
 function goToResetPage() {
@@ -113,6 +136,12 @@ function goToResetPage() {
 async function handleAuth() {
   errorMsg.value = '';
   submitting.value = true;
+
+  if (!isLogin.value && confirmPassword.value !== password.value) {
+    errorMsg.value = 'Passwords do not match';
+    submitting.value = false;
+    return;
+  }
 
   //ovo je doslovni brainrot al budemo kasnije popravili
   const userPassword = password.value;
@@ -161,6 +190,7 @@ async function handleAuth() {
     errorMsg.value = err.message ?? 'Unexpected error';
   } finally {
     password.value = '';
+    confirmPassword.value = '';
     submitting.value = false;
   }
 }
