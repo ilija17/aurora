@@ -78,6 +78,11 @@ const updatePassword = async () => {
   } catch (e) {
     try {
       await repairIfMissing(password.value, null, null)
+      const userId = user.value?.id
+      if (userId) {
+        await supabase.from('mood_entries').delete().eq('user_id', userId)
+        await supabase.from('diary_entries').delete().eq('user_id', userId)
+      }
     } catch (e2) {
       console.error('Failed to reset encryption keys', e2)
     }
