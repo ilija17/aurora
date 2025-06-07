@@ -4,6 +4,10 @@
       <h2>Reset your password</h2><br>
       <input v-model="email" type="email" placeholder="Your email" /><br><br>
       <button @click="sendResetEmail">Send reset link</button><br>
+      <p class="text-sm text-[var(--muted)] mt-2">
+        Resetting the password without knowing the old one will make existing
+        encrypted data unreadable.
+      </p>
       <p v-if="message">{{ message }}</p>
     </div>
   </div>

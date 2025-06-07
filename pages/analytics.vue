@@ -13,13 +13,14 @@ import {
 } from 'chart.js'
 import { format, parseISO } from 'date-fns'
 import MarkdownIt from 'markdown-it'
+import DOMPurify from 'dompurify'
 import { useChat } from '@ai-sdk/vue'
 import { useMoodEntries } from '~/composables/useMoodEntries'
 
 Chart.register(LineElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend)
 
 const md = new MarkdownIt()
-const renderMarkdown = (text: string) => md.render(text)
+const renderMarkdown = (text: string) => DOMPurify.sanitize(md.render(text))
 
 const { finalizedEntries, fetchFinalizedMoodEntries } = useMoodEntries()
 
