@@ -160,7 +160,7 @@ const messageList = computed(() => messages.value); // computed property for typ
 
     <form
       @submit="handleSubmit"
-      class="fixed bottom-0 left-0 right-0 max-w-xl lg:max-w-2xl mx-auto p-4 bg-[var(--bg)] border-t border-[var(--border)]"
+      class="sticky bottom-0 left-0 right-0 max-w-xl lg:max-w-2xl mx-auto p-4 bg-[var(--bg)] border-t border-[var(--border)]"
     >
       <input
         class="w-full p-3 rounded-lg bg-[var(--input-bg)] text-[var(--input-color)] border border-[var(--input-border)]"
