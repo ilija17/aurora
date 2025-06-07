@@ -31,8 +31,15 @@ export default defineLazyEventHandler(async () => {
           description: 'Return all mood-entry data for the signed-in user',
           parameters: z.object({}),
           execute: async () => {
-            const decrypted = data?.userData ?? await getUserData(supabase, user.id)
-            return { userData: decrypted }
+            try {
+              const decrypted =
+                data?.userData ?? (await getUserData(supabase, user.id))
+              return { userData: decrypted }
+            } catch (err: any) {
+              return {
+                error: `Failed to get user data: ${err?.message || err}`,
+              }
+            }
           },
         },
 
@@ -44,7 +51,9 @@ export default defineLazyEventHandler(async () => {
           execute: async ({ timeframe }) => {
             let token = getCookie(event, 'spotify_access_token')
             if (!token) {
-              throw createError({ statusCode: 401, statusMessage: 'Not authenticated with Spotify' })
+              return {
+                error: 'Not authenticated with Spotify',
+              }
             }
 
             const fetchTracks = () =>
@@ -78,7 +87,9 @@ export default defineLazyEventHandler(async () => {
                 ])
                 return { tracks, artists }
               }
-              throw err
+              return {
+                error: `Failed to get top songs: ${err?.message || err}`,
+              }
             }
           },
         },
