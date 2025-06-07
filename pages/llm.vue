@@ -3,6 +3,7 @@ import { useChat } from '@ai-sdk/vue';
 import { onMounted, computed } from 'vue';
 import MarkdownIt from 'markdown-it'
 import TypingText from '~/components/TypingText.vue'
+import InfoTooltip from '~/components/InfoTooltip.vue'
 import { useMoodEntries } from '~/composables/useMoodEntries';
 
 const { finalizedEntries, fetchFinalizedMoodEntries } = useMoodEntries();
@@ -31,10 +32,16 @@ const messageList = computed(() => messages.value); // computed property for typ
 <template>
   <div class="relative max-w-xl mx-auto p-4 sm:p-6">
     <h1 class="text-center text-2xl font-bold mb-4">Pseudo-psychiatrist</h1>
-    <p class="text-sm text-gray-500 mb-4">
-      Available tools:
-      <code>getAllUserData</code> and <code>getUserTopSongs</code>. See
-      <code>server/api/openai/chat-with-data.ts</code> for details.
+    <p class="text-sm text-gray-500 mb-4 flex flex-wrap items-center gap-1">
+      You can ask ChatGPT to get all your data
+      <InfoTooltip>
+        Uses <code>getAllUserData</code> to return your mood entries.
+      </InfoTooltip>
+      or your favorite Spotify songs
+      <InfoTooltip>
+        Uses <code>getUserTopSongs</code> to fetch your top tracks.
+      </InfoTooltip>
+      ;)
     </p>
     <div class="space-y-4 pb-24">
       <div
