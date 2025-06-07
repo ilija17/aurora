@@ -3,6 +3,7 @@ import { useSupabaseClient } from '#imports';
 import {
   makeSalt, deriveKey, generateDek, wrapDek, saveSalt
 } from '~/utils/cryptoHelpers';
+import { startDecryptAnimation, stopDecryptAnimation } from '~/composables/useCryptoAnimation'
 
 export function useDekRepair() {
   const supabase = useSupabaseClient();
@@ -12,6 +13,8 @@ export function useDekRepair() {
     saltB64: string | null,
     wrappedDekB64: string | null
   ) {
+    startDecryptAnimation()
+    try {
     if (saltB64 && wrappedDekB64) {
       await saveSalt(saltB64);
       return;
@@ -34,6 +37,9 @@ export function useDekRepair() {
 
 
     await saveSalt(salt);
+    } finally {
+      stopDecryptAnimation()
+    }
   }
 
   return { repairIfMissing };
