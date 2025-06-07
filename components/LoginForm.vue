@@ -1,11 +1,11 @@
 <template>
-  <div class="grid place-items-center h-screen">
-    <div>
-      <h2 class="grid place-items-center">
+  <section class="min-h-screen flex items-center justify-center px-4">
+    <div class="max-w-md w-full space-y-6 bg-[var(--secondary)] p-6 sm:p-8 rounded-3xl shadow-2xl">
+      <h2 class="text-2xl font-bold text-center">
         {{ isLogin ? 'Login' : 'Register' }}
       </h2>
 
-      <form @submit.prevent="handleAuth" class="space-y-4">
+  <form @submit.prevent="handleAuth" class="space-y-4">
         <!-- Username (registration only) -->
         <div v-if="!isLogin">
           <FormInput
@@ -38,6 +38,22 @@
           placeholder="••••••••"
         />
 
+        <!-- Confirm Password (registration only) -->
+        <FormInput
+          v-if="!isLogin"
+          id="confirm-password"
+          label="Confirm Password"
+          type="password"
+          v-model="confirmPassword"
+          placeholder="••••••••"
+        />
+        <p
+          v-if="!isLogin && confirmPassword && confirmPassword !== password"
+          class="text-red-600 text-sm mt-1"
+        >
+          Passwords do not match
+        </p>
+
         <!-- Password strength feedback (registration only) -->
         <div v-if="!isLogin" class="text-sm">
           <p>Strength: {{ strengthText }}</p>
@@ -46,8 +62,13 @@
 
         <button
           type="submit"
-          :disabled="submitting || !email || !password || (!isLogin && passwordScore < 3)"
-          class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+          :disabled="
+            submitting ||
+            !email ||
+            !password ||
+            (!isLogin && (passwordScore < 3 || confirmPassword !== password))
+          "
+          class="btn w-full disabled:opacity-50"
         >
           {{ isLogin ? 'Login' : 'Register' }}
         </button>
@@ -55,19 +76,19 @@
 
       <p v-if="errorMsg" class="mt-2 text-red-600">{{ errorMsg }}</p>
 
-      <p class="mt-4">
+      <p class="mt-4 text-center">
         <a href="#" @click.prevent="toggleMode" class="text-blue-500 hover:underline">
           {{ isLogin ? "Don't have an account? Register" : "Already have an account? Login" }}
         </a>
       </p>
 
-      <p class="mt-2">
+      <p class="mt-2 text-center">
         <a href="#" @click.prevent="goToResetPage" class="text-blue-500 hover:underline">
           Forgot password?
         </a>
       </p>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -89,6 +110,7 @@ const supabase   = useSupabaseClient();
 const isLogin    = ref(true);
 const email      = ref('');
 const password   = ref('');
+const confirmPassword = ref('');
 const username   = ref('');
 const errorMsg   = ref('');
 const submitting = ref(false);
@@ -104,6 +126,7 @@ const { unlock, storeKek, clearSession } = useDek();
 function toggleMode() {
   isLogin.value = !isLogin.value;
   errorMsg.value = '';
+  confirmPassword.value = '';
 }
 
 function goToResetPage() {
@@ -113,6 +136,12 @@ function goToResetPage() {
 async function handleAuth() {
   errorMsg.value = '';
   submitting.value = true;
+
+  if (!isLogin.value && confirmPassword.value !== password.value) {
+    errorMsg.value = 'Passwords do not match';
+    submitting.value = false;
+    return;
+  }
 
   //ovo je doslovni brainrot al budemo kasnije popravili
   const userPassword = password.value;
@@ -161,6 +190,7 @@ async function handleAuth() {
     errorMsg.value = err.message ?? 'Unexpected error';
   } finally {
     password.value = '';
+    confirmPassword.value = '';
     submitting.value = false;
   }
 }
