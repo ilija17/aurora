@@ -172,7 +172,9 @@ export const useDek = () => {
       if (kek.value) {
         await quickUnlock();
       } else {
-        router.push({ path: '/unlock', query: { redirect: route.fullPath } });
+        if (!opts.suppressRedirect) {
+          router.push({ path: '/unlock', query: { redirect: route.fullPath } });
+        }
         throw new Error('unlock first');
       }
     }
@@ -186,7 +188,9 @@ export const useDek = () => {
       if (kek.value) {
         await quickUnlock();
       } else {
-        router.push({ path: '/unlock', query: { redirect: route.fullPath } });
+        if (!opts.suppressRedirect) {
+          router.push({ path: '/unlock', query: { redirect: route.fullPath } });
+        }
         throw new Error('unlock first');
       }
     }
@@ -195,14 +199,19 @@ export const useDek = () => {
     return JSON.parse(json) as T;
   }
 
-  async function updateDekPassword(newPassword: string) {
+  async function updateDekPassword(
+    newPassword: string,
+    opts: { suppressRedirect?: boolean } = {}
+  ) {
     if (!user.value) throw new Error('no session');
 
     if (!dek.value) {
       if (kek.value) {
         await quickUnlock();
       } else {
-        router.push({ path: '/unlock', query: { redirect: route.fullPath } });
+        if (!opts.suppressRedirect) {
+          router.push({ path: '/unlock', query: { redirect: route.fullPath } });
+        }
         throw new Error('unlock first');
       }
     }
