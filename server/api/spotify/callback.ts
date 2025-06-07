@@ -33,7 +33,9 @@ export default defineEventHandler(async (event) => {
     body: body.toString(),
   })
 
-  const secure = process.env.NODE_ENV === 'production'
+  const secure =
+    event.node.req.headers['x-forwarded-proto'] === 'https' ||
+    Boolean((event.node.req.socket as any)?.encrypted)
   setCookie(event, 'spotify_access_token', tokenRes.access_token, {
     httpOnly: true,
     maxAge: tokenRes.expires_in,

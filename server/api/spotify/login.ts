@@ -5,7 +5,9 @@ import { randomBytes } from 'crypto'
 export default defineEventHandler((event) => {
   const { spotifyClientId, spotifyRedirectUri } = useRuntimeConfig()
   const state = randomBytes(16).toString('hex')
-  const secure = process.env.NODE_ENV === 'production'
+  const secure =
+    event.node.req.headers['x-forwarded-proto'] === 'https' ||
+    Boolean((event.node.req.socket as any)?.encrypted)
   setCookie(event, 'spotify_state', state, {
     httpOnly: true,
     sameSite: 'lax',
