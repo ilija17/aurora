@@ -143,12 +143,9 @@ async function handleAuth() {
       if (salt) {
         await storeKek(userPassword, salt);
         await saveSalt(salt);
-        console.log('[CACHE] KEK cached for session');
       } else {
-        console.warn('[AUTH] No salt returned from server');
       }
     } else {
-      console.log('[AUTH] Registration requires email confirmation. No session set');
     }
 
     const { fetchContextData } = usePublicContextData();

@@ -38,7 +38,6 @@ export function useMoodEntries() {
       rawEntries.value = data || []
     } catch (e: any) {
       error.value = e.message || String(e)
-      console.error('[useMoodEntries:fetchRawMoodEntries]', e)
     } finally {
       loading.value = false
     }
@@ -76,7 +75,6 @@ export function useMoodEntries() {
       finalizedEntries.value = await enrichEntries(decrypted)
     } catch (e: any) {
       error.value = e.message || String(e)
-      console.error('[useMoodEntries:fetchFinalizedMoodEntries]', e)
     } finally {
       loading.value = false
     }
