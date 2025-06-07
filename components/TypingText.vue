@@ -1,6 +1,8 @@
 <template>
-  <span v-if="done" class="whitespace-pre-wrap" v-html="renderMarkdown(text)" />
-  <span v-else class="whitespace-pre-wrap" v-text="display" />
+  <span
+    class="whitespace-pre-wrap"
+    v-html="done ? renderMarkdown(display) : display"
+  />
 </template>
 
 <script setup lang="ts">
@@ -8,8 +10,9 @@ import { ref, watch, onUnmounted } from 'vue'
 import MarkdownIt from 'markdown-it'
 
 const props = defineProps<{ text: string; speed?: number }>()
-const { text, speed } = props
+const { speed } = props
 
+const fullText = ref(props.text)
 const display = ref('')
 const done = ref(false)
 let timer: ReturnType<typeof setTimeout> | null = null
@@ -17,25 +20,26 @@ let timer: ReturnType<typeof setTimeout> | null = null
 const md = new MarkdownIt()
 const renderMarkdown = (t: string) => md.render(t)
 
-function startTyping (txt: string) {
-  if (timer) clearTimeout(timer)
-  display.value = ''
-  done.value = false
-  let i = 0
+function tick () {
   const step = speed ?? 20
-  const tick = () => {
-    if (i <= txt.length) {
-      display.value = txt.slice(0, i)
-      i++
-      timer = setTimeout(tick, step)
-    } else {
-      done.value = true
-    }
+  if (display.value.length < fullText.value.length) {
+    display.value += fullText.value.charAt(display.value.length)
+    timer = setTimeout(tick, step)
+  } else {
+    done.value = true
+    timer = null
   }
-  tick()
 }
 
-watch(() => text, startTyping, { immediate: true })
+watch(
+  () => props.text,
+  (val) => {
+    fullText.value = val
+    done.value = false
+    if (!timer) tick()
+  },
+  { immediate: true }
+)
 
 onUnmounted(() => {
   if (timer) clearTimeout(timer)
