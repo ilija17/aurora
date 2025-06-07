@@ -22,7 +22,7 @@ onMounted(async () => {
     cvs.value!.width  = width  * dpr
     cvs.value!.height = height * dpr
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-    const factor = Math.min(width, height) < 600 ? 0.35 : 0.25
+    const factor = Math.min(width, height) < 600 ? 0.45 : 0.25
     scale = Math.min(width, height) * factor
   }
   await nextTick()
@@ -111,7 +111,8 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
   position:fixed;
   inset:0;
   background:#000;
-  opacity: 80%;
+  opacity: 0.8;
+  z-index: 100;
   display:flex;
   justify-content:center;
   align-items:center;
