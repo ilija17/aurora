@@ -329,7 +329,6 @@
       entryDetailsById.value = entry;
     } catch (err: any) {
       fetchError.value = err;
-      console.error('[fetchEntryById]', err);
     } finally {
       loadingEntryByYear.value = false;
     }
@@ -397,7 +396,7 @@
       moodEntries.value = filtered;
     } catch (err: any) {
       fetchError.value = err;
-      console.error('[fetchEntriesByYear]', err);
+
     } finally {
       loadingEntriesByYear.value = false;
     }

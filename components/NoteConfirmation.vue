@@ -67,7 +67,6 @@ async function submit() {
     // 700 hydradtion errora za sekundu
     await router.push('/calendar')
   } catch (err: any) {
-    console.error('Failed to submit:', err)
     
     // ako fali kek dobij password
     if (err.message.includes('No cached KEK')) {

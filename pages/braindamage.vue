@@ -118,7 +118,6 @@ async function loadEntries() {
     entries.value = ok
     if (bad.length) error.value = `Failed rows: ${bad.join(', ')}`
   } catch (e: any) {
-    console.error('[Decrypt] failed', e)
     error.value = e.message ?? 'Unknown error'
   } finally {
     loadingEntries.value = false

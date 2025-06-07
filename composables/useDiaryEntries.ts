@@ -75,7 +75,6 @@ export function useDiaryEntries() {
       const errorMessage = e.message || String(e)
       error.value = errorMessage
       globalError.value = errorMessage
-      console.error('[useDiaryEntries:fetchFinalizedDiaryEntries]', e)
     } finally {
       loading.value = false
     }
@@ -115,7 +114,6 @@ export function useDiaryEntries() {
       await fetchFinalizedDiaryEntries()
     } catch (e: any) {
       error.value = e.message || String(e)
-      console.error('[useDiaryEntries:submitDiaryEntry]', e)
     } finally {
       isSubmitting.value = false
     }
@@ -133,7 +131,6 @@ export function useDiaryEntries() {
       await fetchFinalizedDiaryEntries()
     } catch (e: any) {
       error.value = e.message || String(e)
-      console.error('[useDiaryEntries:deleteDiaryEntry]', e)
     }
   }
 

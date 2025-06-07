@@ -142,7 +142,6 @@ export const useDek = () => {
       kek.value = null;
       dek.value = null;
       currentSalt.value = null;
-      console.warn('[DEK] Unlock failed', err);
       throw new Error('Incorrect password');
     }
   }

@@ -1,29 +1,16 @@
-import { defineEventHandler, readBody, getCookie, createError } from 'h3'
-import { createClient } from '@supabase/supabase-js'
-import jwt from 'jsonwebtoken'
+import { defineEventHandler, readBody, createError } from 'h3'
+import { serverSupabaseClient } from '#supabase/server'
 
 export default defineEventHandler(async (event) => {
+  const supabase = await serverSupabaseClient(event)
+
   const {
-    public: { supabaseUrl },
-    supabaseServiceRoleKey
-  } = useRuntimeConfig()
+    data: { user },
+    error: authError
+  } = await supabase.auth.getUser()
 
-  const supabase = createClient(supabaseUrl, supabaseServiceRoleKey)
-
-  const accessToken = getCookie(event, 'sb-access-token')
-  if (!accessToken) {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
-  }
-
-  let userId: string
-  try {
-    const decoded = jwt.decode(accessToken) as any
-    userId = decoded.sub
-    if (!userId) {
-      throw new Error('No user ID in token')
-    }
-  } catch (error) {
-    throw createError({ statusCode: 401, statusMessage: 'Invalid token' })
+  if (authError || !user) {
+    throw createError({ statusCode: 401, statusMessage: 'Not authenticated' })
   }
 
   const body = await readBody(event)
@@ -39,7 +26,7 @@ export default defineEventHandler(async (event) => {
   const { data, error } = await supabase
     .from('notes_enc')
     .insert({
-      user_id: userId,
+      user_id: user.id,
       ciphertext: ciphertext,
       salt: salt,
       iv: iv

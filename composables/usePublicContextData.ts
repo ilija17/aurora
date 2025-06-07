@@ -21,7 +21,6 @@ export function usePublicContextData() {
       data.value = response
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch context data'
-      console.error('[usePublicContextData]', err)
     } finally {
       loading.value = false
     }
