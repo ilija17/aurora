@@ -1,21 +1,15 @@
 <template>
-  <div>
-    <div>
-      <div class="grid h-screen place-items-center">
-        Check your email for a confirmation link.
-        <p class="mt-2 text-gray-600">
-          If you don't see it, check your spam folder or try again.
-        </p>
-
-        <button
-          @click="$router.push('/login')"
-          style="margin: 5px; padding: 10px;"
-        >
-          {{ "Go to login" }}
-        </button>
-      </div>
+  <section class="min-h-screen flex items-center justify-center px-4">
+    <div
+      class="max-w-md w-full text-center space-y-6 bg-[var(--secondary)] p-6 sm:p-8 rounded-3xl shadow-2xl"
+    >
+      <h1 class="text-2xl font-bold">Check your inbox</h1>
+      <p class="text-[var(--muted)]">
+        If you don't see the confirmation email, check your spam folder or try again.
+      </p>
+      <button @click="$router.push('/login')" class="btn w-full">Go to login</button>
     </div>
-  </div>
+  </section>
 </template>
 
 <script lang="ts" setup>
@@ -23,8 +17,3 @@ definePageMeta({
   requiresAuth: false
 })
 </script>
-
-
-<style>
-
-</style>
