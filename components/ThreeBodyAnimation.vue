@@ -12,27 +12,29 @@ onMounted(() => {
   if (!cvs.value) return
   const ctx = cvs.value.getContext('2d')!
 
-  const G   = 6.67430e-11
+  const G   = 1
   const DT  = 0.01
   const N   = 3
-  const TRAIL = 5000
-  const SKIP  = 4
 
-  const mass   = new Float32Array([1, 1, 2e10])
+  const mass   = new Float32Array([1, 1, 1])
   const posX   = new Float32Array(N)
   const posY   = new Float32Array(N)
   const velX   = new Float32Array(N)
   const velY   = new Float32Array(N)
   const accX   = new Float32Array(N)
   const accY   = new Float32Array(N)
-  const trailX = Array.from({ length: N }, () => new Float32Array(TRAIL))
-  const trailY = Array.from({ length: N }, () => new Float32Array(TRAIL))
-  const trailI = new Uint32Array(N)
 
-  posX.set([1, 0, 0])
-  posY.set([0, Math.sqrt(3)/2, -Math.sqrt(3)/2])
-  velX.set([0, -0.5, 0])
-  velY.set([0, 0, 0.5])
+  const angles = [0, (2 * Math.PI) / 3, (4 * Math.PI) / 3]
+  for (let i = 0; i < N; i++) {
+    posX[i] = Math.cos(angles[i])
+    posY[i] = Math.sin(angles[i])
+  }
+
+  const speed = 0.1
+  for (let i = 0; i < N; i++) {
+    velX[i] = -speed * Math.sin(angles[i])
+    velY[i] = speed * Math.cos(angles[i])
+  }
 
   function computeAcc() {
     accX.fill(0); accY.fill(0)
@@ -70,44 +72,22 @@ onMounted(() => {
   const colours = ['#f44', '#4f4', '#44f']
 
   function draw() {
-    ctx.clearRect(0, 0, cvs.value!.width, cvs.value!.height)
     ctx.fillStyle = 'rgba(0,0,0,0.5)'
     ctx.fillRect(0, 0, cvs.value!.width, cvs.value!.height)
 
-    const camX = posX[2], camY = posY[2]
-
-    for (let b = 0; b < N; ++b) {
-      const p = new Path2D()
-      p.moveTo(
-        (trailX[b][trailI[b]] - camX) * scale + cvs.value!.width / 2,
-        (trailY[b][trailI[b]] - camY) * scale + cvs.value!.height / 2
-      )
-      for (let k = 0; k < TRAIL; k += SKIP) {
-        const idx = (trailI[b] + k) % TRAIL
-        p.lineTo(
-          (trailX[b][idx] - camX) * scale + cvs.value!.width / 2,
-          (trailY[b][idx] - camY) * scale + cvs.value!.height / 2
-        )
-      }
-      ctx.strokeStyle = colours[b] + '66'
-      ctx.stroke(p)
-    }
-
     for (let b = 0; b < N; ++b) {
       ctx.fillStyle = colours[b]
-      const x = (posX[b] - camX) * scale + cvs.value!.width / 2
-      const y = (posY[b] - camY) * scale + cvs.value!.height / 2
-      ctx.beginPath(); ctx.arc(x, y, radius, 0, 2 * Math.PI); ctx.fill()
-
-      trailX[b][trailI[b]] = posX[b]
-      trailY[b][trailI[b]] = posY[b]
-      trailI[b] = (trailI[b] + 1) % TRAIL
+      const x = posX[b] * scale + cvs.value!.width / 2
+      const y = posY[b] * scale + cvs.value!.height / 2
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, 2 * Math.PI)
+      ctx.fill()
     }
   }
 
   computeAcc()
   function tick() {
-    for (let i = 0; i < 4; i++) verlet()
+    verlet()
     draw()
     frame = requestAnimationFrame(tick)
   }
