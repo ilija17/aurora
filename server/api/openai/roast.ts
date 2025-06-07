@@ -36,8 +36,8 @@ export default defineEventHandler(async (event) => {
     roast his music taste
     `
 
-  const user = `
-${prompt}
+  const userPrompt = `
+    ${prompt}
 
 Top‑10 Tracks:
 ${trackLines}
@@ -50,7 +50,7 @@ ${artistLines}
     model: 'gpt-4.1',
     messages: [
       { role: 'system', content: system.trim() },
-      { role: 'user',   content: user.trim()   }
+      { role: 'user',   content: userPrompt.trim() }
     ],
     temperature: 0.9,
     max_tokens: 1500,
