@@ -78,11 +78,12 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import MarkdownIt from 'markdown-it'
+import DOMPurify from 'dompurify'
 
 definePageMeta({ requiresAuth: false })
 
 const md = new MarkdownIt()
-const renderMarkdown = (text: string) => md.render(text)
+const renderMarkdown = (text: string) => DOMPurify.sanitize(md.render(text))
 const characters = ref('Default')
 const timeframe = ref<'short_term' | 'medium_term' | 'long_term'>('short_term')
 const { data: tracks, error: tracksError } =
