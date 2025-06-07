@@ -24,6 +24,7 @@
       <NuxtLink
         to="/welcome"
         class="rounded-full flex items-center justify-center"
+        @click="triggerSecret"
       >
         <svg  xmlns="http://www.w3.org/2000/svg"  width="48"  height="48"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="1"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rocket"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 13a8 8 0 0 1 7 7a6 6 0 0 0 3 -5a9 9 0 0 0 6 -8a3 3 0 0 0 -3 -3a9 9 0 0 0 -8 6a6 6 0 0 0 -5 3" /><path d="M7 14a6 6 0 0 0 -3 6a6 6 0 0 0 6 -3" /><path d="M15 9m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
       </NuxtLink>
@@ -102,9 +103,9 @@
 
         <!-- Navigation Links -->
         <div class="space-y-2">
-          <NuxtLink 
-            to="/welcome" 
-            @click="showMobileMenu = false"
+          <NuxtLink
+            to="/welcome"
+            @click="()=>{ showMobileMenu.value = false; triggerSecret(); }"
             class="flex items-center space-x-3 p-3 text-white hover:bg-[var(--highlighted)] rounded-lg transition-colors duration-200"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-rocket"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 13a8 8 0 0 1 7 7a6 6 0 0 0 3 -5a9 9 0 0 0 6 -8a3 3 0 0 0 -3 -3a9 9 0 0 0 -8 6a6 6 0 0 0 -5 3" /><path d="M7 14a6 6 0 0 0 -3 6a6 6 0 0 0 6 -3" /><path d="M15 9m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
@@ -154,6 +155,7 @@
         <NuxtLink
           to="/welcome"
           class="rounded-full flex items-center justify-center"
+          @click="triggerSecret"
         >
           <svg  xmlns="http://www.w3.org/2000/svg"  width="48"  height="48"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="1"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rocket"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 13a8 8 0 0 1 7 7a6 6 0 0 0 3 -5a9 9 0 0 0 6 -8a3 3 0 0 0 -3 -3a9 9 0 0 0 -8 6a6 6 0 0 0 -5 3" /><path d="M7 14a6 6 0 0 0 -3 6a6 6 0 0 0 6 -3" /><path d="M15 9m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
         </NuxtLink>
@@ -234,6 +236,15 @@ const toggleDropdown = () => {
 
 const toggleMobileMenu = () => {
   showMobileMenu.value = !showMobileMenu.value
+}
+
+const rocketCount = ref(0)
+function triggerSecret () {
+  rocketCount.value++
+  if (rocketCount.value === 5) {
+    rocketCount.value = 0
+    navigateTo('/secrets')
+  }
 }
 
 // Close dropdowns when clicking outside
