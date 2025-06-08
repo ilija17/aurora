@@ -74,15 +74,17 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, watch } from 'vue'
+  import { ref, computed, watch, onMounted } from 'vue'
   import MoodSelector from '~/components/MoodSelector.vue'
   import DetailedMood from '~/components/DetailedMood.vue'
   import AdditionalContext from '~/components/AdditionalContext.vue'
   import SpotifySearch from '~/components/SpotifySearch.vue'
   import NoteConfirmation from '~/components/NoteConfirmation.vue'
   import { useSpotify } from '~/composables/useSpotify'
+  import { useDek } from '~/composables/useDek'
 
   const { isAuthenticated } = useSpotify()
+  const { ensureUnlocked } = useDek()
 
   const baseSlides = 5  
   // ako nije logged in, spotify slide se ne prikazuje
@@ -115,5 +117,9 @@
 
   watch(selectedMood, () => {
     current.value = 0
+  })
+
+  onMounted(() => {
+    ensureUnlocked()
   })
 </script>
