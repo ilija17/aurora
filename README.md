@@ -1,91 +1,60 @@
-# Nuxt Minimal Starter
+# Aurora
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Aurora is a Nuxt 3 application for tracking your mood, writing encrypted diary entries and analysing the data with generative AI.  
+It uses Supabase as a backend, OpenAI for chat features and Spotify to pull your top tracks.
 
-## Setup
+## Features
+- **Encrypted Notes & Mood Entries** – Data is encrypted in the browser using AES‑GCM. The key encryption key is derived from your password with scrypt and stored only in session storage.
+- **Mood Tracker** – Record daily moods with optional detailed emotions, social and location context.
+- **Diary** – Write personal notes that remain private thanks to client‑side encryption.
+- **Analytics Dashboard** – Visualise average moods over time and generate summaries via ChatGPT.
+- **Chat With Your Data** – Query your mood history or favourite songs using an AI chat interface.
+- **Spotify Integration** – Connect your account to view top tracks/artists and even get a playful roast of your taste.
 
-Make sure to install dependencies:
+## Getting Started
+### Prerequisites
+- Node.js 20+
+- A Supabase project with the database schema from [`types/database.types.ts`](types/database.types.ts)
+- OpenAI and Spotify API credentials
 
+### Installation
 ```bash
-# npm
+# install dependencies
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
+```
+Create an `.env` file (or set environment variables) with at least:
+```
+SUPABASE_URL=...
+SUPABASE_ANON_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...
+OPENAI_API_KEY=...
+SPOTIFY_CLIENT_ID=...
+SPOTIFY_CLIENT_SECRET=...
+SPOTIFY_REDIRECT_URI=http://localhost:3000/api/spotify/callback
+NUXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
+### Development
+Start a hot‑reload dev server:
 ```bash
-# npm
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
+Visit `http://localhost:3000` to use the app.
 
-## Production
-
-Build the application for production:
-
+### Production
+Build and preview the production bundle:
 ```bash
-# npm
 npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
 npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
 ```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
 
 ## Encryption Overview
+Aurora never sends plaintext content to the server. When you create a note or mood entry:
+1. A unique **content encryption key (DEK)** is generated with `AES‑GCM`.
+2. The DEK is wrapped using a key derived from your password with `scrypt` (the **KEK**).
+3. Only the ciphertext, IV and salt are stored in Supabase. Keys live in session storage and memory only.
 
-This app encrypts all user content in the browser before it is sent to the server.
+This ensures that your private data stays private even if the backend is compromised.
 
-- A **content encryption key (DEK)** is generated using `AES-GCM` and is only
-  kept in memory during the session.
-- The DEK is wrapped with a key derived from the user's password using the
-  memory-hard `scrypt` algorithm. The key encryption key (KEK) and DEK are cached
-  in `sessionStorage` so they persist across page reloads, while the salt is also
-  cached there for convenience.
-- Base64 helpers rely on the `js-base64` library to work in both Node and browser
-  contexts without polyfills.
-- Only the ciphertext, IV and salt are stored remotely, ensuring the server never
-  sees plaintext or keys.
-
+---
+Inspired by the Nuxt minimal starter.
