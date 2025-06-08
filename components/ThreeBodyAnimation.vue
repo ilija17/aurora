@@ -40,12 +40,43 @@ onMounted(async () => {
   const N = 3
 
   const mass = new Float32Array([1, 1, 1])
-  const posX = new Float32Array([-0.97000436, 0, 0.97000436])
-  const posY = new Float32Array([0.24308753, 0, -0.24308753])
-  const velX = new Float32Array([0.066203685, -0.73240737, 0.266203685])
-  const velY = new Float32Array([0.23236573, -0.56473146, 0.23236573])
+  const posX = new Float32Array(N)
+  const posY = new Float32Array(N)
+  const velX = new Float32Array(N)
+  const velY = new Float32Array(N)
   const accX = new Float32Array(N)
   const accY = new Float32Array(N)
+
+  const initBodies = () => {
+    const angles = Array.from({ length: N }, () => Math.random() * Math.PI * 2)
+    const rBase = 0.4 + Math.random() * 0.8
+    let sumX = 0
+    let sumY = 0
+    let sumVX = 0
+    let sumVY = 0
+    for (let i = 0; i < N; i++) {
+      posX[i] = rBase * Math.cos(angles[i])
+      posY[i] = rBase * Math.sin(angles[i])
+      const speed = 0.2 + Math.random() * 0.4
+      velX[i] = -speed * Math.sin(angles[i])
+      velY[i] = speed * Math.cos(angles[i])
+      sumX += posX[i] * mass[i]
+      sumY += posY[i] * mass[i]
+      sumVX += velX[i] * mass[i]
+      sumVY += velY[i] * mass[i]
+    }
+    const mTot = mass[0] + mass[1] + mass[2]
+    const cx = sumX / mTot
+    const cy = sumY / mTot
+    const cvx = sumVX / mTot
+    const cvy = sumVY / mTot
+    for (let i = 0; i < N; i++) {
+      posX[i] -= cx
+      posY[i] -= cy
+      velX[i] -= cvx
+      velY[i] -= cvy
+    }
+  }
 
   const computeAcc = () => {
     accX.fill(0)
@@ -98,6 +129,7 @@ onMounted(async () => {
     }
   }
 
+  initBodies()
   computeAcc()
   let last = performance.now()
   const loop = (t: number) => {
