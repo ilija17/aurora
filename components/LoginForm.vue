@@ -164,16 +164,16 @@ async function handleAuth() {
         refresh_token: session.refresh_token,
       });
 
+      const { repairIfMissing } = useDekRepair();
+      const res = await repairIfMissing(userPassword, salt, wrappedDek);
+      const actualSalt = res?.salt ?? salt;
+
       await unlock(userPassword);
 
-      const { repairIfMissing } = useDekRepair();
-      await repairIfMissing(userPassword, salt, wrappedDek);
-
-      // spremi KEK NAVODNO, kek nestane brže nego Amelia Earhart
-      if (salt) {
-        await storeKek(userPassword, salt);
-        await saveSalt(salt);
-      } else {
+      // persist KEK and salt for quick unlock
+      if (actualSalt) {
+        await storeKek(userPassword, actualSalt);
+        await saveSalt(actualSalt);
       }
     } else {
     }

@@ -12,12 +12,12 @@ export function useDekRepair() {
     password: string,
     saltB64: string | null,
     wrappedDekB64: string | null
-  ) {
+  ): Promise<{ salt: string; wrappedDek: string } | undefined> {
     startDecryptAnimation()
     try {
     if (saltB64 && wrappedDekB64) {
       await saveSalt(saltB64);
-      return;
+      return { salt: saltB64, wrappedDek: wrappedDekB64 };
     }
 
     const salt = makeSalt();
@@ -37,6 +37,7 @@ export function useDekRepair() {
 
 
     await saveSalt(salt);
+    return { salt, wrappedDek };
     } finally {
       stopDecryptAnimation()
     }
