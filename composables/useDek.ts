@@ -184,6 +184,19 @@ export const useDek = () => {
     }
   }
 
+  async function ensureUnlocked() {
+    if (dek.value) return
+    if (kek.value) {
+      try {
+        await quickUnlock()
+      } catch {}
+    }
+    if (!dek.value) {
+      router.push({ path: '/unlock', query: { redirect: route.fullPath } })
+      throw new Error('Password required to unlock')
+    }
+  }
+
   async function seal<T>(payload: T) {
     if (!dek.value) {
       if (kek.value) {
@@ -276,7 +289,8 @@ export const useDek = () => {
     quickUnlock,
     lock, 
     seal, 
-    open, 
+    open,
+    ensureUnlocked,
     storeKek,
     clearSession,
     updateDekPassword

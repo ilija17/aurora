@@ -50,6 +50,20 @@ export default defineEventHandler(async (event) => {
     if (password.length < 6) {
       throw createError({ statusCode: 400, statusMessage: 'Password must be at least 6 characters.' })
     }
+
+    const { data: existing, error: checkError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('username', username)
+      .maybeSingle()
+
+    if (checkError) {
+      throw createError({ statusCode: 500, statusMessage: checkError.message })
+    }
+
+    if (existing) {
+      throw createError({ statusCode: 409, statusMessage: 'Username already taken!' })
+    }
   }
 
   const { data, error } = isLogin

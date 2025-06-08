@@ -313,7 +313,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useDek } from '~/composables/useDek'
 import { useDiaryEntries } from '~/composables/useDiaryEntries'
 
 const passwordInput = ref('')
@@ -335,6 +336,8 @@ const {
   unlock,
   isSubmitting,
 } = useDiaryEntries()
+
+const { ensureUnlocked } = useDek()
 
 const selectedNote = ref<{ id: number; payload: { title: string; body: string } } | null>(null)
 const saving = isSubmitting
@@ -362,8 +365,12 @@ async function autoLoadIfUnlocked() {
   }
 }
 
-// Check for cached DEK on component mount
-autoLoadIfUnlocked()
+onMounted(async () => {
+  try {
+    await ensureUnlocked()
+    await autoLoadIfUnlocked()
+  } catch {}
+})
 
 function clearSelection() {
   selectedNote.value = null
