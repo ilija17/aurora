@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-const pageTransition = { name: 'fade', mode: 'out-in' }
+const pageTransition = { name: 'fade' }
 </script>
 
 <style>
