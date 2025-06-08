@@ -1,5 +1,5 @@
 <template>
-  <section class="min-h-screen flex items-center justify-center px-4">
+  <section class="min-h-screen flex items-center justify-center px-4 fade-in">
     <div class="max-w-md w-full space-y-6 bg-[var(--secondary)] p-6 sm:p-8 rounded-3xl shadow-2xl">
       <h2 class="text-2xl font-bold text-center">
         {{ isLogin ? 'Login' : 'Register' }}

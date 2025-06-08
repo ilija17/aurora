@@ -1,5 +1,5 @@
 <template>
-  <footer class="border-t border-[var(--border)] bg-[var(--secondary)] text-[var(--muted)]">
+  <footer class="border-t border-[var(--border)] bg-[var(--secondary)] text-[var(--muted)] fade-in">
     <div class="max-w-screen-xl mx-auto px-4 py-6 flex flex-col items-center space-y-2">
       <p
         class="text-sm cursor-pointer select-none"
