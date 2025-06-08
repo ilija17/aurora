@@ -28,7 +28,12 @@ const chartData = ref({ labels: [], datasets: [] })
 const chartOptions = {
   responsive: true,
   scales: {
-    y: { beginAtZero: true, max: 5 }
+    y: {
+      beginAtZero: false,
+      min: 1,
+      max: 5,
+      reverse: true
+    }
   }
 }
 
