@@ -18,6 +18,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import confetti from 'canvas-confetti'
 import { useRouter } from 'vue-router'
 import { useDek } from '~/composables/useDek'
 import { useSupabaseClient } from '#imports'
@@ -64,7 +65,7 @@ async function submit() {
       }
     })
 
-    // 700 hydradtion errora za sekundu
+    confetti()
     await router.push('/calendar')
   } catch (err: any) {
     

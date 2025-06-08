@@ -19,6 +19,7 @@
     "@vee-validate/nuxt": "^4.15.0",
     "ai": "^4.3.16",
     "base-64": "^1.0.0",
+    "canvas-confetti": "^1.9.2",
     "chart.js": "^4.4.9",
     "cookie": "^0.7.2",
     "date-fns": "^4.1.0",
