@@ -18,13 +18,13 @@ jobs:
       - name: Copy .env into the build context
         run: cp /home/ilija/.env $GITHUB_WORKSPACE/.env
 
-      - name: 🏗️ Build image
+      - name: Build image
         run: docker build -t nuxt-app:latest $GITHUB_WORKSPACE
 
-      - name: 🔥 Replace old container
+      - name: Replace old container
         run: docker rm -f aurora || true
 
-      - name: 🚀 Run container
+      - name: Run container
         run: |
           docker run \
             --name aurora \
