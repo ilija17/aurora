@@ -16,7 +16,7 @@
       <nav class="flex space-x-4 text-sm">
         <NuxtLink to="/welcome" class="hover:text-[var(--fg)] transition-colors">Home</NuxtLink>
         <NuxtLink to="/settings" class="hover:text-[var(--fg)] transition-colors">Settings</NuxtLink>
-        <a href="https://github.com" target="_blank" class="hover:text-[var(--fg)] transition-colors">GitHub</a>
+        <a href="https://github.com/ilija17/aurora" target="_blank" class="hover:text-[var(--fg)] transition-colors">GitHub</a>
       </nav>
     </div>
   </footer>
