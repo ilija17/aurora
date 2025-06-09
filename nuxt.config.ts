@@ -16,8 +16,8 @@ export default defineNuxtConfig({
   colorMode: {
     classSuffix: '',
     dataValue: 'theme',
-    preference: 'system',
-    fallback: 'light',
+    preference: 'dark',
+    fallback: 'dark',
   },
 
   nitro: {
