@@ -186,14 +186,21 @@
       </div>
     </div>
 
-    <div class="mt-auto pt-4 border-t border-[var(--border)]">
-      <button
-        @click="closeEntryModal"
-        class="w-full sm:w-auto px-4 py-2 rounded bg-[var(--border)] hover:bg-[var(--muted)] text-[var(--fg)] transition touch-manipulation"
-      >
-        Close
-      </button>
-    </div>
+      <div class="mt-auto pt-4 border-t border-[var(--border)] flex gap-2">
+        <button
+          @click="deleteSelectedEntry"
+          :disabled="deleting"
+          class="w-full sm:w-auto px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white transition touch-manipulation disabled:opacity-50"
+        >
+          {{ deleting ? 'Deleting…' : 'Delete' }}
+        </button>
+        <button
+          @click="closeEntryModal"
+          class="w-full sm:w-auto px-4 py-2 rounded bg-[var(--border)] hover:bg-[var(--muted)] text-[var(--fg)] transition touch-manipulation"
+        >
+          Close
+        </button>
+      </div>
   </div>
 </div>
 </template>
@@ -332,6 +339,23 @@
     } finally {
       loadingEntryByYear.value = false;
     }
+}
+
+const deleting = ref(false);
+
+async function deleteSelectedEntry() {
+  if (selectedEntryId.value === null) return;
+  if (!confirm('Delete this entry?')) return;
+  deleting.value = true;
+  try {
+    await $fetch(`/api/mood-entry/${selectedEntryId.value}`, { method: 'DELETE' });
+    await fetchEntriesByYear();
+    closeEntryModal();
+  } catch (err: any) {
+    alert(err.message || 'Failed to delete entry');
+  } finally {
+    deleting.value = false;
+  }
 }
 
 
